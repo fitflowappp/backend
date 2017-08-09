@@ -3,9 +3,18 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.magpie</groupId>
 	<artifactId>base</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>${project.version}</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>data</module>
 	</modules>
+	<properties>
+		<project.version>0.0.1-SNAPSHOT</project.version>
+	</properties>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.5.6.RELEASE</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
 </project>
