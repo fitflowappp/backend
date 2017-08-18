@@ -13,7 +13,7 @@
 		<groupId>com.magpie</groupId>
 		<artifactId>base</artifactId>
 		<version>${project.version}</version>
-		<relativePath>../base</relativePath> 
+		<relativePath>../base</relativePath>
 	</parent>
 
 	<properties>
@@ -23,6 +23,11 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.magpie</groupId>
+			<artifactId>data</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
