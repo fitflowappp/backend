@@ -41,12 +41,12 @@ public class AdminCacheService {
 	private final String RESERVE_USER_COUNT_PREFIX = getClass().getName() + ":reserveuc:";// 新预约用户数
 	private final String ADMINS_PREFIX = getClass().getName() + ":ids";// 管理员ids
 
-	@Resource(name = "redisTemplate")
+	@Resource(name = "stringRedisTemplate")
 	private ValueOperations<String, String> valueOperations;
-	@Resource(name = "redisTemplate")
+	@Resource(name = "stringRedisTemplate")
 	private ListOperations<String, String> listOperations;
 	@Autowired
-	private StringRedisTemplate redisTemplate;
+	private StringRedisTemplate stringRedisTemplate;
 
 	public void setAdmins(List<String> adminIds) {
 
@@ -148,12 +148,12 @@ public class AdminCacheService {
 		String key = LOGIN_KEY_PREFIX + sessionId;
 		String idKey = USER_KEY_PREFIX + user.getId();
 		valueOperations.set(key, idKey);
-		redisTemplate.expire(key, 30, TimeUnit.DAYS);
+		stringRedisTemplate.expire(key, 30, TimeUnit.DAYS);
 
 		// "bwm:user:session:uidxxxxxxxx":"bwm:user:login:sessionIdxxxxxxx"
 		String sessionKey = USER_SESSIONKEY_PREFIX + user.getId();
 		valueOperations.set(sessionKey, key);
-		redisTemplate.expire(sessionKey, 30, TimeUnit.DAYS);
+		stringRedisTemplate.expire(sessionKey, 30, TimeUnit.DAYS);
 		this.saveUser(user);
 	}
 	
@@ -169,7 +169,7 @@ public class AdminCacheService {
 		String key = USER_KEY_PREFIX + user.getId();
 
 		valueOperations.set(key, JSON.toJSONString(user));
-		redisTemplate.expire(key, 30, TimeUnit.DAYS);
+		stringRedisTemplate.expire(key, 30, TimeUnit.DAYS);
 	}
 
 }

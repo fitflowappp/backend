@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -27,12 +26,12 @@ public class UserCacheService {
 	private final String USER_SESSIONKEY_PREFIX = getClass().getName() + ":session:";
 	private final String USER_INDAYVARIFY_PREFIX = getClass().getName() + ":indayvarify:";
 
-	@Resource(name = "redisTemplate")
+	@Resource(name = "stringRedisTemplate")
 	private ValueOperations<String, String> valueOperations;
-	@Resource(name = "redisTemplate")
+	@Resource(name = "stringRedisTemplate")
 	private SetOperations<String, String> setOperations;
 	@Autowired
-	private StringRedisTemplate redisTemplate;
+	private StringRedisTemplate stringRedisTemplate;
 
 	/**
 	 * 根据用户Id取得用户信息 Redis key:"user:xxxxxx"
@@ -94,12 +93,12 @@ public class UserCacheService {
 		String key = LOGIN_KEY_PREFIX + sessionId;
 		String idKey = USER_KEY_PREFIX + user.getId();
 		valueOperations.set(key, idKey);
-		redisTemplate.expire(key, 30, TimeUnit.DAYS);
+		stringRedisTemplate.expire(key, 30, TimeUnit.DAYS);
 
 		// "bwm:user:session:uidxxxxxxxx":"bwm:user:login:sessionIdxxxxxxx"
 		String sessionKey = USER_SESSIONKEY_PREFIX + user.getId();
 		valueOperations.set(sessionKey, key);
-		redisTemplate.expire(sessionKey, 30, TimeUnit.DAYS);
+		stringRedisTemplate.expire(sessionKey, 30, TimeUnit.DAYS);
 		this.saveUser(user);
 	}
 
@@ -133,7 +132,7 @@ public class UserCacheService {
 		String key = USER_KEY_PREFIX + user.getId();
 
 		valueOperations.set(key, JSON.toJSONString(user));
-		redisTemplate.expire(key, 30, TimeUnit.DAYS);
+		stringRedisTemplate.expire(key, 30, TimeUnit.DAYS);
 	}
 
 	/**
@@ -142,7 +141,7 @@ public class UserCacheService {
 	public void saveEmailCheckInfoByUserId(String emailSessionId, String userId) {
 		String key = ACTIVATE_KEY_PREFIX + userId;
 		valueOperations.set(key, emailSessionId);
-		redisTemplate.expire(key, 2, TimeUnit.DAYS);
+		stringRedisTemplate.expire(key, 2, TimeUnit.DAYS);
 	}
 
 	/**
@@ -164,7 +163,7 @@ public class UserCacheService {
 	public void saveToken(String token, String tokenKey, int time) {
 		String key = FILE_KEY_PREFIX_STRING + tokenKey;
 		valueOperations.set(key, token);
-		redisTemplate.expire(key, time, TimeUnit.SECONDS);
+		stringRedisTemplate.expire(key, time, TimeUnit.SECONDS);
 	}
 
 	// 保存没有时间限制的token
@@ -173,7 +172,7 @@ public class UserCacheService {
 		valueOperations.set(key, token);
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, 1);
-		redisTemplate.expireAt(key, calendar.getTime());
+		stringRedisTemplate.expireAt(key, calendar.getTime());
 	}
 
 	public String getToken(String tokenKey) {
@@ -190,7 +189,7 @@ public class UserCacheService {
 		String key = ACTIVATE_KEY_PREFIX + phone;
 		if (StringUtils.isEmpty(valueOperations.get(key))) {
 			valueOperations.increment(key, 1);
-			redisTemplate.expire(key, time, TimeUnit.SECONDS);
+			stringRedisTemplate.expire(key, time, TimeUnit.SECONDS);
 		} else {
 			valueOperations.increment(key, 1);
 		}
@@ -232,7 +231,7 @@ public class UserCacheService {
 		calendar.set(Calendar.SECOND, 59);
 		calendar.set(Calendar.MILLISECOND, 999);
 		valueOperations.increment(key, 1);
-		redisTemplate.expireAt(key, calendar.getTime());
+		stringRedisTemplate.expireAt(key, calendar.getTime());
 	}
 
 	/**
@@ -264,7 +263,7 @@ public class UserCacheService {
 		calendar.set(Calendar.SECOND, 59);
 		calendar.set(Calendar.MILLISECOND, 999);
 		valueOperations.increment(key, 1);
-		redisTemplate.expireAt(key, calendar.getTime());
+		stringRedisTemplate.expireAt(key, calendar.getTime());
 	}
 
 	/**
