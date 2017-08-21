@@ -2,9 +2,10 @@ package com.magpie.user.model;
 
 import java.util.Date;
 
+import com.magpie.base.model.BaseModel;
 import com.magpie.resource.model.ResourceRef;
 
-public class User {
+public class User extends BaseModel {
 	
 	private String id;
 	private String pcode;// 用户手机唯一码
