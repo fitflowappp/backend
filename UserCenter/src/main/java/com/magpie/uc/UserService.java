@@ -14,7 +14,7 @@ import com.magpie.base.view.BaseView;
 import com.magpie.base.view.Result;
 import com.magpie.cache.UserCacheService;
 import com.magpie.dao.UserDao;
-import com.magpie.uc.in.SimpleRegUser;
+import com.magpie.uc.req.SimpleRegUser;
 import com.magpie.uc.view.UserView;
 import com.magpie.user.model.User;
 import com.magpie.user.model.UserRef;
@@ -24,6 +24,7 @@ public class UserService {
 
 	@Autowired
 	private UserDao userDao;
+	
 	@Autowired
 	private UserCacheService userCacheService;
 
