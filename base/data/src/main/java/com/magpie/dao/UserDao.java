@@ -2,6 +2,7 @@ package com.magpie.dao;
 
 import java.io.Serializable;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -14,6 +15,7 @@ import com.magpie.user.model.User;
 @Repository
 public class UserDao extends BaseMongoRepository<User, Serializable> {
 
+	@Autowired
 	public UserDao(MongoRepositoryFactory mongoRepositoryFactory, MongoOperations mongoOps) {
 		super(mongoRepositoryFactory.getEntityInformation(User.class), mongoOps);
 	}
