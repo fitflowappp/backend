@@ -41,9 +41,22 @@ public class UserCacheService {
 	 */
 	public UserRef getById(String uid) {
 		String key = USER_KEY_PREFIX + uid;
-		return JSON.parseObject(valueOperations.get(key), UserRef.class);
+		return getByUserKey(key);
 	}
 
+	/**
+	 * 根据用户Id取得用户信息 Redis key:"user:xxxxxx"
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public UserRef getByUserKey(String userKey) {
+		if (!StringUtils.isEmpty(userKey)) {
+			return JSON.parseObject(valueOperations.get(userKey), UserRef.class);
+		} else {
+			return null;
+		}
+	}
 
 	/**
 	 * 从Redis中取得登陆用户信息 Redis key:"login:xxxxxx"
@@ -55,7 +68,7 @@ public class UserCacheService {
 		String key = LOGIN_KEY_PREFIX + sessionId;
 		String idKey = valueOperations.get(key);
 		if (idKey != null) {
-			return JSON.parseObject(valueOperations.get(key), UserRef.class);
+			return getByUserKey(valueOperations.get(key));
 		} else {
 			return null;
 		}
