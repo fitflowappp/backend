@@ -2,6 +2,7 @@ package com.magpie.mvcconfig;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -19,6 +20,9 @@ public class SpringMvcConfiguration extends WebMvcConfigurerAdapter {
 	//
 	// @Autowired
 	// private ActDynamicConfig actDynamicConfig;
+	
+	@Autowired
+	private ActiveUserWebArgumentResolver activeUserResolver;
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -58,6 +62,6 @@ public class SpringMvcConfiguration extends WebMvcConfigurerAdapter {
 
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-		argumentResolvers.add(new ActiveUserWebArgumentResolver());
+		argumentResolvers.add(activeUserResolver);
 	}
 }

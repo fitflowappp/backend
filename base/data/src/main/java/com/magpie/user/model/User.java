@@ -25,16 +25,10 @@ public class User extends BaseModel {
 	private String signIntro;// 签名简介
 	private String intro;// 简介
 
-	private String sig;// qq云通信平台passcode
-	private boolean online;// 是否在线
-
 	private String role;// {#RoleType}
-	private String weixinNumber;// 微信号
-	private String agent;//
 	
 	private Date lastLoginDate;// 上次登录时间
 	private Date registerDate;// 注册时间
-	private boolean specialLogin; // 是否采用特殊方式登录
 	private Date latestMsgDate;// 最后发送消息的时间
 
 	private String from;// 来源
@@ -47,8 +41,11 @@ public class User extends BaseModel {
 
 	private String client;// 手机系统
 
-	private String openId;// 用户微信openId
-	private String sessionKey;// wechat sessionKey
+	private String openId;// 
+	private String sessionKey;// 
+	
+	private boolean specialLogin;
+	
 	public String getId() {
 		return id;
 	}
@@ -127,35 +124,11 @@ public class User extends BaseModel {
 	public void setIntro(String intro) {
 		this.intro = intro;
 	}
-	public String getSig() {
-		return sig;
-	}
-	public void setSig(String sig) {
-		this.sig = sig;
-	}
-	public boolean isOnline() {
-		return online;
-	}
-	public void setOnline(boolean online) {
-		this.online = online;
-	}
 	public String getRole() {
 		return role;
 	}
 	public void setRole(String role) {
 		this.role = role;
-	}
-	public String getWeixinNumber() {
-		return weixinNumber;
-	}
-	public void setWeixinNumber(String weixinNumber) {
-		this.weixinNumber = weixinNumber;
-	}
-	public String getAgent() {
-		return agent;
-	}
-	public void setAgent(String agent) {
-		this.agent = agent;
 	}
 	public Date getLastLoginDate() {
 		return lastLoginDate;
@@ -168,12 +141,6 @@ public class User extends BaseModel {
 	}
 	public void setRegisterDate(Date registerDate) {
 		this.registerDate = registerDate;
-	}
-	public boolean isSpecialLogin() {
-		return specialLogin;
-	}
-	public void setSpecialLogin(boolean specialLogin) {
-		this.specialLogin = specialLogin;
 	}
 	public Date getLatestMsgDate() {
 		return latestMsgDate;
@@ -228,6 +195,18 @@ public class User extends BaseModel {
 	}
 	public void setSessionKey(String sessionKey) {
 		this.sessionKey = sessionKey;
+	}
+	/**
+	 * @return the specialLogin
+	 */
+	public boolean isSpecialLogin() {
+		return specialLogin;
+	}
+	/**
+	 * @param specialLogin the specialLogin to set
+	 */
+	public void setSpecialLogin(boolean specialLogin) {
+		this.specialLogin = specialLogin;
 	}
 	
 }
