@@ -7,7 +7,10 @@ import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.support.WebArgumentResolver;
+import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.magpie.cache.AdminCacheService;
 import com.magpie.cache.UserCacheService;
@@ -15,15 +18,15 @@ import com.magpie.user.model.UserRef;
 
 
 @Service
-public class ActiveUserWebArgumentResolver implements WebArgumentResolver {
+public class ActiveUserWebArgumentResolver implements HandlerMethodArgumentResolver {
 
 	@Autowired
 	private UserCacheService userCacheService;
 	@Autowired
 	private AdminCacheService adminCacheService;
 
-	@Override
-	public Object resolveArgument(MethodParameter methodParameter, NativeWebRequest webRequest) {
+
+	private Object resolveArgument(MethodParameter methodParameter, NativeWebRequest webRequest) {
 		Annotation[] annotations = methodParameter.getParameterAnnotations();
 
 		if (methodParameter.getParameterType().equals(UserRef.class)) {
@@ -62,5 +65,16 @@ public class ActiveUserWebArgumentResolver implements WebArgumentResolver {
 			return userRef;
 		}
 		return new UserRef();
+	}
+
+	@Override
+	public boolean supportsParameter(MethodParameter parameter) {
+		return true;
+	}
+
+	@Override
+	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+		return resolveArgument(parameter, webRequest);
 	}
 }
