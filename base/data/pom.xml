@@ -40,16 +40,6 @@
 			<version>1.2.31</version>
 		</dependency>
 		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>${springfox.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<version>${springfox.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>com.didispace</groupId>
 			<artifactId>spring-boot-starter-swagger</artifactId>
 			<version>1.4.1.RELEASE</version>
