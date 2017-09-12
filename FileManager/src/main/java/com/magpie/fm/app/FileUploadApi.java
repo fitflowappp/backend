@@ -27,6 +27,8 @@ import com.magpie.session.ActiveUser;
 import com.magpie.session.AdminUser;
 import com.magpie.user.model.UserRef;
 
+import io.swagger.annotations.ApiOperation;
+
 /**
  * 
  * 文件上传
@@ -46,7 +48,7 @@ public class FileUploadApi {
 
 	@RequestMapping(method = RequestMethod.POST, headers = "content-type=multipart/form-data")
 	@ResponseBody
-
+	@ApiOperation("上传文件")
 	public List<ResourceRef> uploadStandaloneFile(@ActiveUser UserRef userRef, final HttpServletRequest request,
 			@RequestParam("file") MultipartFile[] multipartFiles) {
 
