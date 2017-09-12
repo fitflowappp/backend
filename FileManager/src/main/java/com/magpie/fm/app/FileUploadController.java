@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.magpie.cache.AdminCacheService;
 import com.magpie.cache.UserCacheService;
 import com.magpie.fm.ResourceService;
 import com.magpie.resource.constant.ResourceType;
@@ -35,23 +36,22 @@ import com.magpie.user.model.UserRef;
  * 
  */
 @RestController
-@RequestMapping(value = "/upload")
-public class FileUploadApi {
+@RequestMapping(value = "/manage/upload")
+public class FileUploadController {
 
 	// 资源处理服务类
 	@Autowired
 	private ResourceService resourceService;
 	@Autowired
-	private UserCacheService userCacheService;
+	private AdminCacheService adminCacheService;
 
 	@RequestMapping(method = RequestMethod.POST, headers = "content-type=multipart/form-data")
 	@ResponseBody
-
-	public List<ResourceRef> uploadStandaloneFile(@ActiveUser UserRef userRef, final HttpServletRequest request,
+	public List<ResourceRef> uploadStandaloneFile(@AdminUser UserRef userRef, final HttpServletRequest request,
 			@RequestParam("file") MultipartFile[] multipartFiles) {
 
 		String code = request.getHeader("Authorization");
-		UserRef user = userCacheService.getBySessionId(code);
+		UserRef user = adminCacheService.getBySessionId(code);
 		if (user == null || StringUtils.isEmpty(user.getId())) {
 			return null;
 		}
@@ -80,24 +80,4 @@ public class FileUploadApi {
 
 	}
 
-	// /**
-	// * 功能：微信端头像保存，base64转图片并保存<br>
-	// *
-	// * @param userRef
-	// * @param image
-	// * base64Image:必需<br>
-	// * uid:必需<br>
-	// * @return Resource
-	// * @time 20160310
-	// */
-	// @RequestMapping(value = "/base64image", method = RequestMethod.POST)
-	// @ResponseBody
-	// public ResourceRef saveBase64Image(@ActiveUser UserRef userRef,
-	// @RequestBody Base64Image image) {
-	// image.setUid(userRef.getId());
-	// Resource resource = resourceService.saveBase64Image(image);
-	// ResourceRef ref = new ResourceRef();
-	// BeanUtils.copyProperties(resource, ref);
-	// return ref;
-	// }
 }
