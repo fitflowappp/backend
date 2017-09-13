@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 import com.magpie.base.view.BaseView;
 import com.magpie.session.ActiveUser;
-import com.magpie.user.model.UserRef;
+import com.magpie.share.UserRef;
 import com.magpie.story.manage.req.ReqStoryContent;
 
 @RestController
