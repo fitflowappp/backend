@@ -1,4 +1,4 @@
-package com.magpie.uc.req;
+package com.magpie.user.req;
 
 public class SimpleRegUser {
 

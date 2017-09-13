@@ -1,4 +1,4 @@
-package com.magpie.uc.view;
+package com.magpie.user.view;
 
 import com.magpie.user.model.User;
 

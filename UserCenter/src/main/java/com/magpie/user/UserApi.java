@@ -1,4 +1,4 @@
-package com.magpie.uc;
+package com.magpie.user;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,10 +10,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.magpie.user.model.User;
+import com.magpie.user.req.SimpleRegUser;
+
 import io.swagger.annotations.ApiOperation;
 
 import com.magpie.base.view.BaseView;
-import com.magpie.uc.req.SimpleRegUser;
 
 @RestController
 @RequestMapping(value="/user")

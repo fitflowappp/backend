@@ -1,4 +1,4 @@
-package com.magpie.uc;
+package com.magpie.user;
 
 import java.util.Calendar;
 import java.util.Random;
@@ -13,11 +13,10 @@ import com.magpie.base.utils.DateUtil;
 import com.magpie.base.view.BaseView;
 import com.magpie.base.view.Result;
 import com.magpie.cache.UserCacheService;
-import com.magpie.dao.UserDao;
-import com.magpie.uc.req.SimpleRegUser;
-import com.magpie.uc.view.UserView;
+import com.magpie.share.UserRef;
 import com.magpie.user.model.User;
-import com.magpie.user.model.UserRef;
+import com.magpie.user.req.SimpleRegUser;
+import com.magpie.user.view.UserView;
 
 @Service
 public class UserService {
