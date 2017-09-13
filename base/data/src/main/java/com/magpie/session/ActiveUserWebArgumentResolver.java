@@ -14,7 +14,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.magpie.cache.AdminCacheService;
 import com.magpie.cache.UserCacheService;
-import com.magpie.user.model.UserRef;
+import com.magpie.share.UserRef;
 
 
 @Service

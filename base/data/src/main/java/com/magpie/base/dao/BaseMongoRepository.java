@@ -25,8 +25,8 @@ import org.springframework.data.mongodb.repository.query.MongoEntityInformation;
 import org.springframework.data.mongodb.repository.support.SimpleMongoRepository;
 import org.springframework.util.StringUtils;
 
+import com.magpie.base.query.PageQuery;
 import com.magpie.base.utils.DateUtil;
-import com.magpie.dao.query.PageQuery;
 
 
 public class BaseMongoRepository<T, ID extends Serializable> extends SimpleMongoRepository<T, Serializable> {

@@ -1,4 +1,4 @@
-package com.magpie.user.model;
+package com.magpie.share;
 
 public class UserRef {
 	private String id;

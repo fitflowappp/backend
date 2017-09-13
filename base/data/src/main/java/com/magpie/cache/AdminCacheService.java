@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
-import com.magpie.user.model.UserRef;
+import com.magpie.share.UserRef;
 
 /**
  * login prefix:login:sessionId uid<br>

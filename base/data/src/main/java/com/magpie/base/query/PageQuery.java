@@ -1,4 +1,4 @@
-package com.magpie.dao.query;
+package com.magpie.base.query;
 
 public class PageQuery {
 	private int number = 0;
