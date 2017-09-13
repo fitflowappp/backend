@@ -13,7 +13,7 @@
 		<groupId>com.magpie</groupId>
 		<artifactId>base</artifactId>
 		<version>${project.version}</version>
-		<relativePath>../base</relativePath>
+		<relativePath>../base/pom.xml</relativePath>
 	</parent>
 	<dependencies>
 		<dependency>
