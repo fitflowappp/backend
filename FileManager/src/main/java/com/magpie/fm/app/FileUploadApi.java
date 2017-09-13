@@ -22,10 +22,10 @@ import com.magpie.cache.UserCacheService;
 import com.magpie.fm.ResourceService;
 import com.magpie.resource.constant.ResourceType;
 import com.magpie.resource.model.Resource;
-import com.magpie.resource.model.ResourceRef;
 import com.magpie.session.ActiveUser;
 import com.magpie.session.AdminUser;
-import com.magpie.user.model.UserRef;
+import com.magpie.share.ResourceRef;
+import com.magpie.share.UserRef;
 
 import io.swagger.annotations.ApiOperation;
 
