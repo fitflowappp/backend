@@ -1,13 +1,11 @@
 package com.magpie.cache;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -37,9 +35,12 @@ public class AdminCacheService {
 	private final String USER_KEY_PREFIX = getClass().getName() + ":user:";//
 	private final String USER_SESSIONKEY_PREFIX = getClass().getName() + ":session:";//
 
-	private final String USER_COUNT_PREFIX = getClass().getName() + ":uc:";// 新注册用户数
-	private final String RESERVE_USER_COUNT_PREFIX = getClass().getName() + ":reserveuc:";// 新预约用户数
-	private final String ADMINS_PREFIX = getClass().getName() + ":ids";// 管理员ids
+	// private final String USER_COUNT_PREFIX = getClass().getName() + ":uc:";//
+	// 新注册用户数
+	// private final String RESERVE_USER_COUNT_PREFIX = getClass().getName() +
+	// ":reserveuc:";// 新预约用户数
+	// private final String ADMINS_PREFIX = getClass().getName() + ":ids";//
+	// 管理员ids
 
 	@Resource(name = "stringRedisTemplate")
 	private ValueOperations<String, String> valueOperations;
@@ -48,60 +49,6 @@ public class AdminCacheService {
 	@Autowired
 	private StringRedisTemplate stringRedisTemplate;
 
-	public void setAdmins(List<String> adminIds) {
-
-		String key = ADMINS_PREFIX;
-		listOperations.trim(key, 0, 0);
-		listOperations.rightPop(key);
-		listOperations.leftPushAll(key, adminIds);
-	}
-
-	public List<String> getAdmins() {
-		String key = ADMINS_PREFIX;
-		return listOperations.range(key, 0, -1);
-	}
-
-	public Integer getNewUC(String adminId) {
-		String key = USER_COUNT_PREFIX + adminId;
-		String value = valueOperations.get(key);
-		if (StringUtils.isEmpty(value)) {
-			return 0;
-		} else {
-			return Integer.parseInt(value);
-		}
-	}
-
-	public void incNewUC(String adminId) {
-		String key = USER_COUNT_PREFIX + adminId;
-		valueOperations.increment(key, 1);
-	}
-
-	public void resetNewUC(String adminId) {
-		String key = USER_COUNT_PREFIX + adminId;
-		valueOperations.set(key, "0");
-	}
-
-	public Integer getNewReserveUC(String adminId) {
-		String key = RESERVE_USER_COUNT_PREFIX + adminId;
-		String value = valueOperations.get(key);
-		if (StringUtils.isEmpty(value)) {
-			return 0;
-		} else {
-			return Integer.parseInt(value);
-		}
-
-	}
-
-	public void incNewReserveUC(String adminId) {
-		String key = RESERVE_USER_COUNT_PREFIX + adminId;
-		valueOperations.increment(key, 1);
-	}
-
-	public void resetNewReserveUC(String adminId) {
-		String key = RESERVE_USER_COUNT_PREFIX + adminId;
-		valueOperations.set(key, "0");
-	}
-	
 	/**
 	 * 根据用户Id取得用户信息 Redis key:"user:xxxxxx"
 	 * 
@@ -110,15 +57,22 @@ public class AdminCacheService {
 	 */
 	public UserRef getById(String uid) {
 		String key = USER_KEY_PREFIX + uid;
-		return JSON.parseObject(valueOperations.get(key), UserRef.class);
+		return getByUserKey(key);
 	}
 
-
+	private UserRef getByUserKey(String key) {
+		return JSON.parseObject(valueOperations.get(key), UserRef.class);
+	}
 
 	// 从Redis中取得登陆用户信息 Redis key:"login:xxxxxx"
 	public UserRef getBySessionId(String sessionId) {
 		String key = LOGIN_KEY_PREFIX + sessionId;
-		return JSON.parseObject(valueOperations.get(key), UserRef.class);
+		String idKey = valueOperations.get(key);
+		if (idKey != null) {
+			return getByUserKey(idKey);
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -156,7 +110,7 @@ public class AdminCacheService {
 		stringRedisTemplate.expire(sessionKey, 30, TimeUnit.DAYS);
 		this.saveUser(user);
 	}
-	
+
 	/**
 	 * 保存用户基本信息到Redis，key:"user:xxxxxx"
 	 * 

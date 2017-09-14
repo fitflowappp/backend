@@ -68,7 +68,7 @@ public class UserCacheService {
 		String key = LOGIN_KEY_PREFIX + sessionId;
 		String idKey = valueOperations.get(key);
 		if (idKey != null) {
-			return getByUserKey(valueOperations.get(key));
+			return getByUserKey(idKey);
 		} else {
 			return null;
 		}
@@ -148,31 +148,6 @@ public class UserCacheService {
 		stringRedisTemplate.expire(key, 30, TimeUnit.DAYS);
 	}
 
-	/**
-	 * 保存邮箱验证消息到Redis
-	 */
-	public void saveEmailCheckInfoByUserId(String emailSessionId, String userId) {
-		String key = ACTIVATE_KEY_PREFIX + userId;
-		valueOperations.set(key, emailSessionId);
-		stringRedisTemplate.expire(key, 2, TimeUnit.DAYS);
-	}
-
-	/**
-	 * 
-	 */
-	public String getEmailCheckInfoByUserId(String id) {
-		String key = ACTIVATE_KEY_PREFIX + id;
-		return valueOperations.get(key);
-	}
-
-	/**
-	 * 
-	 */
-	public void deleteEmailCheckInfoByUserId(String id) {
-		String key = ACTIVATE_KEY_PREFIX + id;
-		valueOperations.getOperations().delete(key);
-	}
-
 	public void saveToken(String token, String tokenKey, int time) {
 		String key = FILE_KEY_PREFIX_STRING + tokenKey;
 		valueOperations.set(key, token);
@@ -216,20 +191,6 @@ public class UserCacheService {
 		} else {
 			return Integer.parseInt(value);
 		}
-	}
-
-	// 存游客用户的用户名
-	public void saveVisitorNameCode(String name) {
-		String key = USER_NAME_KEY;
-		valueOperations.set(key, name);
-	}
-
-	public long incVisitorNameCode() {
-		String key = USER_NAME_KEY;
-		if (valueOperations.get(key) == null) {
-			return -1l;
-		}
-		return valueOperations.increment(key, 1);
 	}
 
 	/**
