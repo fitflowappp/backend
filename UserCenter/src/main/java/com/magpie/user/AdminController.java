@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.magpie.base.view.BaseView;
 import com.magpie.user.req.AdminLoginReq;
+import com.magpie.user.view.AdminView;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -31,7 +32,7 @@ public class AdminController {
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "用户登录", response = BaseView.class)
-	public BaseView<?> login(@RequestBody AdminLoginReq admin, HttpServletRequest request) {
+	public BaseView<AdminView> login(@RequestBody AdminLoginReq admin, HttpServletRequest request) {
 		return adminService.login(admin.getName(), admin.getPassword());
 	}
 
