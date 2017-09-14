@@ -1,4 +1,4 @@
-package com.magpie.user;
+package com.magpie.user.dao;
 
 import java.io.Serializable;
 

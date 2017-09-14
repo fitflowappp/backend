@@ -7,20 +7,76 @@ import com.magpie.share.ResourceRef;
 
 public class User extends BaseModel {
 	
+//	User ID	System generated	Integer	
 	private String id;
-	private String pcode;// 用户手机唯一码
+//	Facebook ID	Facebook API	Integer	
+	private String facebookOpenId;// 
+//	Email Address	Facebook API	Alphanumeric	
+	private String email;
+//	Profile Picture	Facebook API	Image	
+	private String headerImgUrl;// 头像Url
+//	Gender	Facebook API	Text	
+	private int gender;// 1:男2:女
+//	Facebook permissions	Facebook API	Text	
+	private String facebookPermissions;
+//	Timestamp of App First Opened	Collected	YYYYMMDDHHMMSS	Time
+	private Date firstOpenDate;
+//	Registered?	Derived	Boolean	
+	private boolean unRegistered;// 未注册
+//	Timestamp of Facebook Registration submitted	Collected	YYYYMMDDHHMMSS	Time
+	private Date submittedDate;
+//	Timestamp of Registration Completed	Collected	YYYYMMDDHHMMSS	Time
+	private Date registrationCompletedDate;
+
+	public String getFacebookOpenId() {
+		return facebookOpenId;
+	}
+	public void setFacebookOpenId(String facebookOpenId) {
+		this.facebookOpenId = facebookOpenId;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getHeaderImgUrl() {
+		return headerImgUrl;
+	}
+	public void setHeaderImgUrl(String headerImgUrl) {
+		this.headerImgUrl = headerImgUrl;
+	}
+	public String getFacebookPermissions() {
+		return facebookPermissions;
+	}
+	public void setFacebookPermissions(String facebookPermissions) {
+		this.facebookPermissions = facebookPermissions;
+	}
+	public Date getFirstOpenDate() {
+		return firstOpenDate;
+	}
+	public void setFirstOpenDate(Date firstOpenDate) {
+		this.firstOpenDate = firstOpenDate;
+	}
+	public Date getSubmittedDate() {
+		return submittedDate;
+	}
+	public void setSubmittedDate(Date submittedDate) {
+		this.submittedDate = submittedDate;
+	}
+	public Date getRegistrationCompletedDate() {
+		return registrationCompletedDate;
+	}
+	public void setRegistrationCompletedDate(Date registrationCompletedDate) {
+		this.registrationCompletedDate = registrationCompletedDate;
+	}
 	private String name;
 	private String phone;
 	private String password;
 	private Date birthday;
 	private int age;
-	private int gender;// 1:男2:女
-
 
 	private ResourceRef headerImg;
-	private String headerImgUri;// 头像Uri
-
-	private ResourceRef fullImg;
 
 	private String signIntro;// 签名简介
 	private String intro;// 简介
@@ -33,14 +89,6 @@ public class User extends BaseModel {
 
 	private String from;// 来源
 
-	private boolean unRegistered;// 未注册
-	private boolean active;// 是否激活（用户首次打开app）
-
-	private String idfa;// 苹果手机的idfa或者安卓手机的IMEI号
-	private String idfaSource;// idfa来源{#IdfaSource}
-
-	private String client;// 手机系统
-
 	private String openId;// 
 	private String sessionKey;// 
 	
@@ -51,12 +99,6 @@ public class User extends BaseModel {
 	}
 	public void setId(String id) {
 		this.id = id;
-	}
-	public String getPcode() {
-		return pcode;
-	}
-	public void setPcode(String pcode) {
-		this.pcode = pcode;
 	}
 	public String getName() {
 		return name;
@@ -99,18 +141,6 @@ public class User extends BaseModel {
 	}
 	public void setHeaderImg(ResourceRef headerImg) {
 		this.headerImg = headerImg;
-	}
-	public String getHeaderImgUri() {
-		return headerImgUri;
-	}
-	public void setHeaderImgUri(String headerImgUri) {
-		this.headerImgUri = headerImgUri;
-	}
-	public ResourceRef getFullImg() {
-		return fullImg;
-	}
-	public void setFullImg(ResourceRef fullImg) {
-		this.fullImg = fullImg;
 	}
 	public String getSignIntro() {
 		return signIntro;
@@ -159,30 +189,6 @@ public class User extends BaseModel {
 	}
 	public void setUnRegistered(boolean unRegistered) {
 		this.unRegistered = unRegistered;
-	}
-	public boolean isActive() {
-		return active;
-	}
-	public void setActive(boolean active) {
-		this.active = active;
-	}
-	public String getIdfa() {
-		return idfa;
-	}
-	public void setIdfa(String idfa) {
-		this.idfa = idfa;
-	}
-	public String getIdfaSource() {
-		return idfaSource;
-	}
-	public void setIdfaSource(String idfaSource) {
-		this.idfaSource = idfaSource;
-	}
-	public String getClient() {
-		return client;
-	}
-	public void setClient(String client) {
-		this.client = client;
 	}
 	public String getOpenId() {
 		return openId;

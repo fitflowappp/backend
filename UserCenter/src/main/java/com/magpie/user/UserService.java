@@ -14,6 +14,7 @@ import com.magpie.base.view.BaseView;
 import com.magpie.base.view.Result;
 import com.magpie.cache.UserCacheService;
 import com.magpie.share.UserRef;
+import com.magpie.user.dao.UserDao;
 import com.magpie.user.model.User;
 import com.magpie.user.req.SimpleRegUser;
 import com.magpie.user.view.UserView;
@@ -49,7 +50,7 @@ public class UserService {
 		user.setRegisterDate(DateUtil.getCurrentDate());
 
 		if (StringUtils.isEmpty(user.getHeaderImg())) {
-			user.setHeaderImgUri(generateRandomPicture());// 随机生成头像
+			user.setHeaderImgUrl(generateRandomPicture());// 随机生成头像
 		}
 
 		// 保存新用户数据
@@ -74,13 +75,8 @@ public class UserService {
 
 		user.setLastLoginDate(DateUtil.getCurrentDate());
 		if (StringUtils.isEmpty(user.getHeaderImg())) {
-			user.setHeaderImgUri(generateRandomPicture());// 随机生成头像
+			user.setHeaderImgUrl(generateRandomPicture());// 随机生成头像
 		}
-		// 保存新用户数据
-		if (!StringUtils.isEmpty(idfa)) {
-			user.setIdfa(idfa);
-		}
-		user.setActive(true);
 		userDao.save(user);
 
 		return new BaseView<>(getLoginUserView(user));
@@ -104,9 +100,6 @@ public class UserService {
 		}
 
 		user.setLastLoginDate(Calendar.getInstance().getTime());
-		if (StringUtils.isEmpty(user.getClient()) && !StringUtils.isEmpty(simpleRegUser.getClient())) {
-			user.setClient(simpleRegUser.getClient());
-		}
 		userDao.save(user);
 
 		return new BaseView<>(getLoginUserView(user));
@@ -125,7 +118,6 @@ public class UserService {
 		user.setUnRegistered(true);// 匿名注册，未注册
 
 		user.setLastLoginDate(DateUtil.getCurrentDate());
-		user.setActive(true);
 		userDao.save(user);
 
 		return new BaseView<>(getLoginUserView(user));
@@ -151,7 +143,7 @@ public class UserService {
 			BeanUtils.copyProperties(user, userView);
 
 			if (user.getHeaderImg() != null) {
-				userView.setHeaderImgUri(user.getHeaderImg().getContentUri());
+				userView.setHeaderImgUrl(user.getHeaderImg().getContentUri());
 			}
 
 		}
