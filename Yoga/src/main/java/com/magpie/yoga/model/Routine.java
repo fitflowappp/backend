@@ -1,8 +1,9 @@
 package com.magpie.yoga.model;
 
+import com.magpie.base.model.BaseModel;
 import com.magpie.share.ResourceRef;
 
-public class Routine {
+public class Routine extends BaseModel {
 	// Routine ID System generated Number
 	private String id;
 	// Routine Code Admin create or edit Alphanumeric
@@ -16,9 +17,9 @@ public class Routine {
 	// Display in Workout detail page? Admin create new or edit Boolean
 	private boolean display;
 	// Number of times started Collected Integer
-//	private int startTimes;
+	// private int startTimes;
 	// Number of times skipped Collected Integer
-//	private int skipTimes;
+	// private int skipTimes;
 
 	public String getId() {
 		return id;

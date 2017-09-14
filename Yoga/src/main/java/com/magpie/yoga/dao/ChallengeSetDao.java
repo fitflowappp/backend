@@ -20,8 +20,8 @@ public class ChallengeSetDao extends BaseMongoRepository<ChallengeSet, Serializa
 		super(mongoRepositoryFactory.getEntityInformation(ChallengeSet.class), mongoOps);
 	}
 
-	public ChallengeSet findOneByPhone(String phone) {
-		return findOneByQuery(new Query().addCriteria(Criteria.where("phone").is(phone)));
+	public ChallengeSet findOneByPrimary(boolean primary) {
+		return findOneByQuery(new Query().addCriteria(Criteria.where("primary").is(primary)));
 	}
-	
+
 }

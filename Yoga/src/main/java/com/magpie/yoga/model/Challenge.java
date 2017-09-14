@@ -2,9 +2,10 @@ package com.magpie.yoga.model;
 
 import java.util.List;
 
+import com.magpie.base.model.BaseModel;
 import com.magpie.share.ResourceRef;
 
-public class Challenge {
+public class Challenge extends BaseModel {
 	// Challenge ID System generated Integer
 	private String id;
 	// Challenge Code Admin create new or edit Alphanumeric
@@ -18,15 +19,18 @@ public class Challenge {
 	// Challenge Description Admin create new or edit Text
 	private String description;
 	// Sequence in Challenge Homepage Admin create new or edit Integer
-	//@see HomePage
-	// Challenge IDs that need to be completed to unlock Admin create new or edit Integer
+	// @see HomePage
+	// Challenge IDs that need to be completed to unlock Admin create new or
+	// edit Integer
 	private boolean unlocked;
 	// Associated Workout IDs, in sequence Admin create new or edit Custom
 	private List<Workout> workouts;
 	// Number of times started Collected Integer
 	// Number of times completed Collected Integer
-	// Number of unique users started Derived, from individual user's started challenge ID Integer
-	// Number of unique users completed Derived, from individual user's completed challenge ID Integer
+	// Number of unique users started Derived, from individual user's started
+	// challenge ID Integer
+	// Number of unique users completed Derived, from individual user's
+	// completed challenge ID Integer
 
 	public String getId() {
 		return id;
@@ -92,7 +96,8 @@ public class Challenge {
 	}
 
 	/**
-	 * @param unlocked the unlocked to set
+	 * @param unlocked
+	 *            the unlocked to set
 	 */
 	public void setUnlocked(boolean unlocked) {
 		this.unlocked = unlocked;
