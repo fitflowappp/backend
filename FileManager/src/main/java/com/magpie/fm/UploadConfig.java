@@ -22,11 +22,11 @@ public class UploadConfig {
 	// allowedVideoTypes=.mp4
 	// imgSize=640x205 100x100 196x110
 
-	private String basedir="/data/bbsdata-pro";
-	private String uploadTemp = basedir +"/temp/";
+	private String basedir = "/data/file";
+	private String uploadTemp = basedir + "/temp/";
 	private String showTemp = "/preview/";
-	private String privatePath = basedir +"/upload";
-	private String publicPath = basedir +"/upload/public";
+	private String privatePath = basedir + "/upload";
+	private String publicPath = basedir + "/upload/public";
 	private String uploadImgPath = "/img";
 	private String showImgPath = "/view/img";
 	private String uploadVideoPath = "/video";
@@ -38,93 +38,123 @@ public class UploadConfig {
 	private String allowedImgTypes = ".jpg.jpeg.png.gif";
 	private String allowedVideoTypes = ".mp4";
 	private String imgSize = "640x205 100x100 196x110";
+
 	public String getUploadTemp() {
 		return uploadTemp;
 	}
+
 	public void setUploadTemp(String uploadTemp) {
 		this.uploadTemp = uploadTemp;
 	}
+
 	public String getShowTemp() {
 		return showTemp;
 	}
+
 	public void setShowTemp(String showTemp) {
 		this.showTemp = showTemp;
 	}
+
 	public String getPrivatePath() {
 		return privatePath;
 	}
+
 	public void setPrivatePath(String privatePath) {
 		this.privatePath = privatePath;
 	}
+
 	public String getPublicPath() {
 		return publicPath;
 	}
+
 	public void setPublicPath(String publicPath) {
 		this.publicPath = publicPath;
 	}
+
 	public String getUploadImgPath() {
 		return uploadImgPath;
 	}
+
 	public void setUploadImgPath(String uploadImgPath) {
 		this.uploadImgPath = uploadImgPath;
 	}
+
 	public String getShowImgPath() {
 		return showImgPath;
 	}
+
 	public void setShowImgPath(String showImgPath) {
 		this.showImgPath = showImgPath;
 	}
+
 	public String getUploadVideoPath() {
 		return uploadVideoPath;
 	}
+
 	public void setUploadVideoPath(String uploadVideoPath) {
 		this.uploadVideoPath = uploadVideoPath;
 	}
+
 	public String getShowVideoPath() {
 		return showVideoPath;
 	}
+
 	public void setShowVideoPath(String showVideoPath) {
 		this.showVideoPath = showVideoPath;
 	}
+
 	public String getUploadOtherPath() {
 		return uploadOtherPath;
 	}
+
 	public void setUploadOtherPath(String uploadOtherPath) {
 		this.uploadOtherPath = uploadOtherPath;
 	}
+
 	public String getShowOtherPath() {
 		return showOtherPath;
 	}
+
 	public void setShowOtherPath(String showOtherPath) {
 		this.showOtherPath = showOtherPath;
 	}
+
 	public String getDefaultVideoType() {
 		return defaultVideoType;
 	}
+
 	public void setDefaultVideoType(String defaultVideoType) {
 		this.defaultVideoType = defaultVideoType;
 	}
+
 	public String getDefaultImgType() {
 		return defaultImgType;
 	}
+
 	public void setDefaultImgType(String defaultImgType) {
 		this.defaultImgType = defaultImgType;
 	}
+
 	public String getAllowedImgTypes() {
 		return allowedImgTypes;
 	}
+
 	public void setAllowedImgTypes(String allowedImgTypes) {
 		this.allowedImgTypes = allowedImgTypes;
 	}
+
 	public String getAllowedVideoTypes() {
 		return allowedVideoTypes;
 	}
+
 	public void setAllowedVideoTypes(String allowedVideoTypes) {
 		this.allowedVideoTypes = allowedVideoTypes;
 	}
+
 	public String getImgSize() {
 		return imgSize;
 	}
+
 	public void setImgSize(String imgSize) {
 		this.imgSize = imgSize;
 	}
