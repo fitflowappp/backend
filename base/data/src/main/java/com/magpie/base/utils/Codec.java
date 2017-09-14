@@ -49,10 +49,10 @@ public class Codec {
 		return DigestUtils.md5Hex(timestamp + CONNECT_KEY);
 	}
 
-	public static void main(String[] args) {
-		System.out
-				.println(sha1Digester("jsapi_ticket=sM4AOVdWfPE4DxkXGEs8VNOiNGmUej6VpoYeA2yJTgRsZth1_PRKcaXesj0xknAZIEpCilFFnxCi92GJpV_d-A&noncestr=-4186183367373202285&timestamp=1425195526506&url=http://www.huaya.me/register.html"));
-	}
+	// public static void main(String[] args) {
+	// System.out
+	// .println(sha1Digester("jsapi_ticket=sM4AOVdWfPE4DxkXGEs8VNOiNGmUej6VpoYeA2yJTgRsZth1_PRKcaXesj0xknAZIEpCilFFnxCi92GJpV_d-A&noncestr=-4186183367373202285&timestamp=1425195526506&url=http://www.huaya.me/register.html"));
+	// }
 
 	public static String simpleXOR(String input, String key) {
 		char[] keyArr = key.toCharArray();
