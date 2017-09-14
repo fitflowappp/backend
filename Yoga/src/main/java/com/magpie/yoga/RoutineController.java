@@ -24,14 +24,14 @@ public class RoutineController {
 	@Autowired
 	private RoutineDao routineDao;
 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "get all routines", response = Routine.class, responseContainer = "List")
 	public List<Routine> getRoutine() {
 		return routineDao.findAll();
 	}
 
-	@RequestMapping(value = "/", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "add one new routine")
 	public BaseView<Routine> addRoutine(@RequestBody Routine routine) {

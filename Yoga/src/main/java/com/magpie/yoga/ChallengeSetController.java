@@ -24,14 +24,14 @@ public class ChallengeSetController {
 	@Autowired
 	private ChallengeSetDao challengeSetDao;
 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "get all challengesets", response = ChallengeSet.class, responseContainer = "List")
 	public List<ChallengeSet> getChallenge() {
 		return challengeSetDao.findAll();
 	}
 
-	@RequestMapping(value = "/", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "add one new ChallengeSet")
 	public BaseView<ChallengeSet> addWorkout(@RequestBody ChallengeSet ChallengeSet) {

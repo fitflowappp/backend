@@ -24,14 +24,14 @@ public class WorkoutController {
 	@Autowired
 	private WorkoutDao workoutDao;
 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "get all workouts", response = Workout.class, responseContainer = "List")
 	public List<Workout> getWorkout() {
 		return workoutDao.findAll();
 	}
 
-	@RequestMapping(value = "/", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "add one new Workout")
 	public BaseView<Workout> addWorkout(@RequestBody Workout Workout) {
