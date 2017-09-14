@@ -1,0 +1,17 @@
+server:
+  port: 11000
+spring:
+  data:
+    mongodb:
+      host: 192.168.1.2
+      port: 27017
+      database: yoga
+  redis:
+    host: 192.168.1.2
+    password: 
+    port: 6379
+    pool:
+      max-idle: 100
+      min-idle: 1
+      max-active: 1000
+      max-wait: -1

@@ -1,0 +1,149 @@
+package com.magpie.yoga.model;
+
+import java.util.List;
+
+import com.magpie.base.model.BaseModel;
+
+public class UserState extends BaseModel {
+	private String id;
+	private String uid;
+	// Scheduling in-app notification on? Collected Boolean
+	private boolean notification;
+	// Scheduling calendar reminder on? Collected Boolean
+	private boolean remider;
+
+	// Scheduling days Collected Text
+	private String schedulingDays;
+	// Scheduling time of day Collected HHMM Time
+	private String schedulingTime;
+
+	// Unlocked challenge IDs Collected Integers, comma separated
+	private List<String> unlockedChallengeIds;
+	// Current challenge ID Collected Integer
+	private String currentChallengeId;
+	// Number of completed challenges Derived Integer
+	private int completedChallengeNum;
+	// Started Workout IDs Collected Integers, comma separated
+	private List<String> startedWorkoutIds;
+	// Current Workout ID Collected Integer
+	private String currentWorkoutId;
+	// Cumulative duration of videos watched Derived Integer
+	private int duration;
+	// Number of completed Workouts Derived Integer
+	private int completedWorkoutNum;
+	// Cumulative number of social shares Derived Integer
+	private int socialShareNum;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+
+	public boolean isNotification() {
+		return notification;
+	}
+
+	public void setNotification(boolean notification) {
+		this.notification = notification;
+	}
+
+	public boolean isRemider() {
+		return remider;
+	}
+
+	public void setRemider(boolean remider) {
+		this.remider = remider;
+	}
+
+	public String getSchedulingDays() {
+		return schedulingDays;
+	}
+
+	public void setSchedulingDays(String schedulingDays) {
+		this.schedulingDays = schedulingDays;
+	}
+
+	public String getSchedulingTime() {
+		return schedulingTime;
+	}
+
+	public void setSchedulingTime(String schedulingTime) {
+		this.schedulingTime = schedulingTime;
+	}
+
+	public List<String> getUnlockedChallengeIds() {
+		return unlockedChallengeIds;
+	}
+
+	public void setUnlockedChallengeIds(List<String> unlockedChallengeIds) {
+		this.unlockedChallengeIds = unlockedChallengeIds;
+	}
+
+	public String getCurrentChallengeId() {
+		return currentChallengeId;
+	}
+
+	public void setCurrentChallengeId(String currentChallengeId) {
+		this.currentChallengeId = currentChallengeId;
+	}
+
+	public int getCompletedChallengeNum() {
+		return completedChallengeNum;
+	}
+
+	public void setCompletedChallengeNum(int completedChallengeNum) {
+		this.completedChallengeNum = completedChallengeNum;
+	}
+
+	public List<String> getStartedWorkoutIds() {
+		return startedWorkoutIds;
+	}
+
+	public void setStartedWorkoutIds(List<String> startedWorkoutIds) {
+		this.startedWorkoutIds = startedWorkoutIds;
+	}
+
+	public String getCurrentWorkoutId() {
+		return currentWorkoutId;
+	}
+
+	public void setCurrentWorkoutId(String currentWorkoutId) {
+		this.currentWorkoutId = currentWorkoutId;
+	}
+
+	public int getDuration() {
+		return duration;
+	}
+
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+
+	public int getCompletedWorkoutNum() {
+		return completedWorkoutNum;
+	}
+
+	public void setCompletedWorkoutNum(int completedWorkoutNum) {
+		this.completedWorkoutNum = completedWorkoutNum;
+	}
+
+	public int getSocialShareNum() {
+		return socialShareNum;
+	}
+
+	public void setSocialShareNum(int socialShareNum) {
+		this.socialShareNum = socialShareNum;
+	}
+
+}
