@@ -9,6 +9,7 @@
 		<module>data</module>
 		<module>../UserCenter</module>
 		<module>../FileManager</module>
+		<module>../Yoga</module>
 	</modules>
 	<properties>
 		<project.version>0.0.1-SNAPSHOT</project.version>
@@ -32,6 +33,11 @@
 				<version>${spring-cloud.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.didispace</groupId>
+				<artifactId>spring-boot-starter-swagger</artifactId>
+				<version>1.4.1.RELEASE</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
