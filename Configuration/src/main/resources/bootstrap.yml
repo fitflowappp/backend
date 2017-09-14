@@ -1,3 +1,10 @@
 management:
   security:
     enabled: false
+    
+spring:
+  cloud:
+    config: 
+      server:
+        git:
+          uri: https://git.oschina.net/seacosmos/clickreader
