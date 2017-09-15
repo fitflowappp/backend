@@ -34,6 +34,8 @@ public class UserState extends BaseModel {
 	// Cumulative number of social shares Derived Integer
 	private int socialShareNum;
 
+	private String currentRoutineId;
+
 	public String getId() {
 		return id;
 	}
@@ -144,6 +146,20 @@ public class UserState extends BaseModel {
 
 	public void setSocialShareNum(int socialShareNum) {
 		this.socialShareNum = socialShareNum;
+	}
+
+	/**
+	 * @return the currentRoutineId
+	 */
+	public String getCurrentRoutineId() {
+		return currentRoutineId;
+	}
+
+	/**
+	 * @param currentRoutineId the currentRoutineId to set
+	 */
+	public void setCurrentRoutineId(String currentRoutineId) {
+		this.currentRoutineId = currentRoutineId;
 	}
 
 }

@@ -39,6 +39,13 @@ public class WorkoutController {
 		return new BaseView<Workout>(Workout);
 	}
 
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "get one Workout")
+	public BaseView<Workout> getWorkout(@PathVariable String id) {
+		return new BaseView<Workout>(workoutDao.findOne(id));
+	}
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "edit one Workout")

@@ -39,6 +39,13 @@ public class ChallengeController {
 		return new BaseView<Challenge>(Challenge);
 	}
 
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "get one Challenge")
+	public BaseView<Challenge> getChallenge(@PathVariable String id) {
+		return new BaseView<Challenge>(challengeDao.findOne(id));
+	}
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "edit one Challenge")

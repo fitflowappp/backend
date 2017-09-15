@@ -47,6 +47,13 @@ public class RoutineController {
 		return new BaseView<Routine>(routine);
 	}
 
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "get one routine")
+	public BaseView<Routine> getRoutine(@PathVariable String id) {
+		return new BaseView<Routine>(routineDao.findOne(id));
+	}
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "delete one routine")
