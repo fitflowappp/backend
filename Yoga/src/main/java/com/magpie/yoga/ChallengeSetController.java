@@ -34,17 +34,18 @@ public class ChallengeSetController {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "add one new ChallengeSet")
-	public BaseView<ChallengeSet> addWorkout(@RequestBody ChallengeSet ChallengeSet) {
-		challengeSetDao.save(ChallengeSet);
-		return new BaseView<ChallengeSet>(ChallengeSet);
+	public BaseView<ChallengeSet> addWorkout(@RequestBody ChallengeSet challengeSet) {
+		challengeSetDao.save(challengeSet);
+		return new BaseView<ChallengeSet>(challengeSet);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "edit one ChallengeSet")
-	public BaseView<ChallengeSet> editWorkout(@PathVariable String id, @RequestBody ChallengeSet ChallengeSet) {
-		challengeSetDao.save(ChallengeSet);
-		return new BaseView<ChallengeSet>(ChallengeSet);
+	public BaseView<ChallengeSet> editWorkout(@PathVariable String id, @RequestBody ChallengeSet challengeSet) {
+		challengeSet.setId(id);
+		challengeSetDao.save(challengeSet);
+		return new BaseView<ChallengeSet>(challengeSet);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

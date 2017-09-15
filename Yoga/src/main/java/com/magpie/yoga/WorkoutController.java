@@ -34,9 +34,9 @@ public class WorkoutController {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "add one new Workout")
-	public BaseView<Workout> addWorkout(@RequestBody Workout Workout) {
-		workoutDao.save(Workout);
-		return new BaseView<Workout>(Workout);
+	public BaseView<Workout> addWorkout(@RequestBody Workout workout) {
+		workoutDao.save(workout);
+		return new BaseView<Workout>(workout);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -49,9 +49,10 @@ public class WorkoutController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "edit one Workout")
-	public BaseView<Workout> editWorkout(@PathVariable String id, @RequestBody Workout Workout) {
-		workoutDao.save(Workout);
-		return new BaseView<Workout>(Workout);
+	public BaseView<Workout> editWorkout(@PathVariable String id, @RequestBody Workout workout) {
+		workout.setId(id);
+		workoutDao.save(workout);
+		return new BaseView<Workout>(workout);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

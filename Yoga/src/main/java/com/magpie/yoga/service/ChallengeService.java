@@ -28,6 +28,12 @@ public class ChallengeService {
 	@Autowired
 	private UserWatchHistoryDao userWatchHistoryDao;
 
+	/**
+	 * get user current challenge
+	 * 
+	 * @param uid
+	 * @return
+	 */
 	public ChallengeView getUserCurrentChallenge(String uid) {
 		UserState userState = userStateDao.findUserState(uid);
 		if (userState != null && !StringUtils.isEmpty(userState.getCurrentChallengeId())) {
@@ -48,6 +54,13 @@ public class ChallengeService {
 		return view;
 	}
 
+	/**
+	 * get workout with user history
+	 * 
+	 * @param uid
+	 * @param workoutId
+	 * @return
+	 */
 	public WorkoutView getWorkout(String uid, String workoutId) {
 
 		if (!StringUtils.isEmpty(workoutId)) {

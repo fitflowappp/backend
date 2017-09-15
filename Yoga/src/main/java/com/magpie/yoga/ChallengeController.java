@@ -34,9 +34,9 @@ public class ChallengeController {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "add one new Challenge")
-	public BaseView<Challenge> addWorkout(@RequestBody Challenge Challenge) {
-		challengeDao.save(Challenge);
-		return new BaseView<Challenge>(Challenge);
+	public BaseView<Challenge> addWorkout(@RequestBody Challenge challenge) {
+		challengeDao.save(challenge);
+		return new BaseView<Challenge>(challenge);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -49,9 +49,10 @@ public class ChallengeController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "edit one Challenge")
-	public BaseView<Challenge> editWorkout(@PathVariable String id, @RequestBody Challenge Challenge) {
-		challengeDao.save(Challenge);
-		return new BaseView<Challenge>(Challenge);
+	public BaseView<Challenge> editWorkout(@PathVariable String id, @RequestBody Challenge challenge) {
+		challenge.setId(id);
+		challengeDao.save(challenge);
+		return new BaseView<Challenge>(challenge);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

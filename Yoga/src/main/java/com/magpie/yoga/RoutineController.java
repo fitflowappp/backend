@@ -43,6 +43,7 @@ public class RoutineController {
 	@ResponseBody
 	@ApiOperation(value = "edit one routine")
 	public BaseView<Routine> editRoutine(@PathVariable String id, @RequestBody Routine routine) {
+		routine.setId(id);
 		routineDao.save(routine);
 		return new BaseView<Routine>(routine);
 	}
