@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.repository.support.MongoRepositoryFactory;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +17,10 @@ public class MilestoneDao extends BaseMongoRepository<Milestone, Serializable> {
 	@Autowired
 	public MilestoneDao(MongoRepositoryFactory mongoRepositoryFactory, MongoOperations mongoOps) {
 		super(mongoRepositoryFactory.getEntityInformation(Milestone.class), mongoOps);
+	}
+
+	public Milestone findOne() {
+		return findOneByQuery(new Query());
 	}
 
 }
