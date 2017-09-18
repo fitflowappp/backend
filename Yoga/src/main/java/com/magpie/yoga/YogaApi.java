@@ -1,8 +1,6 @@
 package com.magpie.yoga;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,12 +11,11 @@ import com.magpie.base.view.BaseView;
 import com.magpie.session.ActiveUser;
 import com.magpie.share.UserRef;
 import com.magpie.yoga.constant.HistoryEvent;
-import com.magpie.yoga.dao.ChallengeSetDao;
-import com.magpie.yoga.model.ChallengeSet;
 import com.magpie.yoga.service.YogaService;
 import com.magpie.yoga.view.ActView;
 import com.magpie.yoga.view.ChallengeSetView;
 import com.magpie.yoga.view.ChallengeView;
+import com.magpie.yoga.view.WorkoutView;
 
 import io.swagger.annotations.ApiOperation;
 import springfox.documentation.annotations.ApiIgnore;
@@ -28,30 +25,39 @@ import springfox.documentation.annotations.ApiIgnore;
 public class YogaApi {
 
 	@Autowired
-	private ChallengeSetDao challengeSetDao;
-
-	@Autowired
 	private YogaService yogaService;
 
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "get primary challenge set of homepage", response = BaseView.class)
-	public BaseView<ChallengeSetView> getChallengeSet() {
-		ChallengeSet challengeSet = challengeSetDao.findOneByPrimary(true);
-		ChallengeSetView view = new ChallengeSetView();
-		BeanUtils.copyProperties(challengeSet, view);
-		return new BaseView<ChallengeSetView>(view);
+	public BaseView<ChallengeSetView> getChallengeSet(@ActiveUser UserRef userRef) {
+		return new BaseView<ChallengeSetView>(yogaService.getDefaultChallengeSet(userRef.getId()));
 	}
 
 	@RequestMapping(value = "/challenge/mine", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "get my challenge", response = BaseView.class)
+	@ApiOperation(value = "get my previous challenge", response = BaseView.class)
 	public BaseView<ChallengeView> getMyChallenge(@ApiIgnore @ActiveUser UserRef userRef) {
-		if (StringUtils.isEmpty(userRef.getId())) {
-			return new BaseView<>();
-		} else {
-			return new BaseView<ChallengeView>(yogaService.getUserCurrentChallenge(userRef.getId()));
+		return new BaseView<ChallengeView>(yogaService.getCurrentChallenge(userRef.getId()));
+	}
+
+	@RequestMapping(value = "/challenge/{cid}", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "get challenge", response = BaseView.class)
+	public BaseView<ChallengeView> getChallenge(@ApiIgnore @ActiveUser UserRef userRef, @PathVariable String cid) {
+		return new BaseView<ChallengeView>(yogaService.getChallenge(userRef.getId(), cid));
+	}
+
+	@RequestMapping(value = "/challenge/{cid}/workout/{wid}", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "get workout", response = BaseView.class)
+	public BaseView<WorkoutView> getWorkout(@ApiIgnore @ActiveUser UserRef userRef, @PathVariable String cid,
+			@PathVariable String wid) {
+		WorkoutView workoutView = yogaService.getWorkout(userRef.getId(), wid);
+		if (workoutView != null) {
+			workoutView.setChallengeId(cid);
 		}
+		return new BaseView<WorkoutView>(workoutView);
 	}
 
 	@RequestMapping(value = "/challenge/{cid}/workout/{wid}/routine/{rid}/start", method = RequestMethod.PUT)

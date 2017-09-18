@@ -9,12 +9,14 @@ import com.magpie.yoga.constant.DialogType;
 import com.magpie.yoga.constant.HistoryDest;
 import com.magpie.yoga.constant.HistoryEvent;
 import com.magpie.yoga.dao.ChallengeDao;
+import com.magpie.yoga.dao.ChallengeSetDao;
 import com.magpie.yoga.dao.MilestoneDao;
 import com.magpie.yoga.dao.RoutineDao;
 import com.magpie.yoga.dao.UserStateDao;
 import com.magpie.yoga.dao.UserWatchHistoryDao;
 import com.magpie.yoga.dao.WorkoutDao;
 import com.magpie.yoga.model.Challenge;
+import com.magpie.yoga.model.ChallengeSet;
 import com.magpie.yoga.model.Milestone;
 import com.magpie.yoga.model.Routine;
 import com.magpie.yoga.model.UserState;
@@ -22,6 +24,7 @@ import com.magpie.yoga.model.UserWatchHistory;
 import com.magpie.yoga.model.Workout;
 import com.magpie.yoga.stat.UserWatchHistoryStat;
 import com.magpie.yoga.view.ActView;
+import com.magpie.yoga.view.ChallengeSetView;
 import com.magpie.yoga.view.ChallengeView;
 import com.magpie.yoga.view.WorkoutView;
 
@@ -30,6 +33,8 @@ public class YogaService {
 
 	@Autowired
 	private UserStateDao userStateDao;
+	@Autowired
+	private ChallengeSetDao challengeSetDao;
 	@Autowired
 	private ChallengeDao challengeDao;
 	@Autowired
@@ -42,20 +47,54 @@ public class YogaService {
 	private MilestoneDao milestoneDao;
 
 	/**
+	 * get default challenge set
+	 * 
+	 * @param uid
+	 * @return
+	 */
+	public ChallengeSetView getDefaultChallengeSet(String uid) {
+		ChallengeSet challengeSet = challengeSetDao.findOneByPrimary(true);
+		ChallengeSetView view = new ChallengeSetView();
+		BeanUtils.copyProperties(challengeSet, view);
+		UserState userState = userStateDao.findUserState(uid);
+		if (userState != null) {
+			view.setCurrentChallengeId(userState.getCurrentChallengeId());
+		}
+		return view;
+	}
+
+	/**
 	 * get user current challenge
 	 * 
 	 * @param uid
 	 * @return
 	 */
-	public ChallengeView getUserCurrentChallenge(String uid) {
+	public ChallengeView getCurrentChallenge(String uid) {
 		UserState userState = userStateDao.findUserState(uid);
-		if (userState != null && !StringUtils.isEmpty(userState.getCurrentChallengeId())) {
-			ChallengeView view = initialChallengeView(challengeDao.findOne(userState.getCurrentChallengeId()));
-			view.setCurrentWorkoutId(userState.getCurrentWorkoutId());
-			return view;
+		if (!StringUtils.isEmpty(userState.getCurrentChallengeId())) {
+			return getChallenge(userState, userState.getCurrentChallengeId());
 		} else {
-			return initialChallengeView(challengeDao.findRandomOne());
+			return null;
 		}
+	}
+
+	/**
+	 * get challenge
+	 * 
+	 * @param uid
+	 * @return
+	 */
+	public ChallengeView getChallenge(String uid, String cid) {
+		UserState userState = userStateDao.findUserState(uid);
+		return getChallenge(userState, cid);
+	}
+
+	private ChallengeView getChallenge(UserState userState, String cid) {
+		ChallengeView view = initialChallengeView(challengeDao.findOne(cid));
+		if (userState != null) {
+			view.setCurrentWorkoutId(userState.getCurrentWorkoutId());
+		}
+		return view;
 	}
 
 	private ChallengeView initialChallengeView(Challenge challenge) {
@@ -75,16 +114,15 @@ public class YogaService {
 	 * @return
 	 */
 	public WorkoutView getWorkout(String uid, String workoutId) {
+		WorkoutView view = initialWorkoutView(workoutDao.findOne(workoutId));
 
-		if (!StringUtils.isEmpty(workoutId)) {
-			WorkoutView view = initialWorkoutView(workoutDao.findOne(workoutId));
-			UserWatchHistory lastHist = userWatchHistoryDao.findLastHistory(uid, workoutId);
-			view.setCurrentRoutineId(lastHist == null ? null : lastHist.getRoutineId());
-
-			return view;
-		} else {
-			return null;
+		UserState userState = userStateDao.findUserState(uid);
+		if (userState != null) {
+			view.setCurrentRoutineId(userState.getCurrentRoutineId());
+			view.setSeconds(userState.getCurrentRoutineSeconds());
 		}
+
+		return view;
 	}
 
 	private WorkoutView initialWorkoutView(Workout workout) {

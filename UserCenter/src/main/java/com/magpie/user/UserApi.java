@@ -2,8 +2,6 @@ package com.magpie.user;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,13 +22,11 @@ public class UserApi {
 	@Autowired
 	private UserService userService;
 
-	@RequestMapping(method = RequestMethod.GET)
+	@RequestMapping(value = "/login/anonymous", method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "用户注册")
-	public BaseView<UserView> register(@RequestBody SimpleRegUser simpleRegUser) {
+	@ApiOperation(value = "匿名登录")
+	public BaseView<UserView> anonymousLogin() {
 		User user = new User();
-		BeanUtils.copyProperties(simpleRegUser, user);
-		user.setPassword(DigestUtils.md5Hex(simpleRegUser.getPassword()));
 		return userService.registerAnonymous(user);
 	}
 
