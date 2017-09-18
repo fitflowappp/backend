@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.magpie.yoga.constant.HistoryEvent;
 import com.magpie.yoga.dao.ChallengeDao;
 import com.magpie.yoga.dao.UserStateDao;
 import com.magpie.yoga.dao.UserWatchHistoryDao;
@@ -13,11 +14,12 @@ import com.magpie.yoga.model.Challenge;
 import com.magpie.yoga.model.UserState;
 import com.magpie.yoga.model.UserWatchHistory;
 import com.magpie.yoga.model.Workout;
+import com.magpie.yoga.view.ActView;
 import com.magpie.yoga.view.ChallengeView;
 import com.magpie.yoga.view.WorkoutView;
 
 @Service
-public class ChallengeService {
+public class YogaService {
 
 	@Autowired
 	private UserStateDao userStateDao;
@@ -55,7 +57,7 @@ public class ChallengeService {
 	}
 
 	/**
-	 * get workout with user history
+	 * get workout with user history``
 	 * 
 	 * @param uid
 	 * @param workoutId
@@ -81,6 +83,79 @@ public class ChallengeService {
 		WorkoutView view = new WorkoutView();
 		BeanUtils.copyProperties(workout, view);
 		return view;
+	}
+
+	public ActView watchingRoutine(String uid, String cid, String wid, String rid, int type, int seconds) {
+
+		if (type == HistoryEvent.STOP.getCode()) {
+			// update current user state
+			userStateDao.updateCurrentState(uid, cid, wid, rid, seconds);
+		} else {
+			// update current user state
+			userStateDao.updateCurrentState(uid, cid, wid, rid);
+		}
+
+		UserWatchHistory history = new UserWatchHistory(cid, wid, rid);
+		history.setUid(uid);
+		history.setEvent(type);
+		history.setSeconds(seconds);
+
+		history.setRoutine(true);
+		history.setChallenge(rid.equalsIgnoreCase(getFirstRoutineIdOfChallenge(cid)));
+		history.setWorkout(rid.equalsIgnoreCase(getFirstRoutineIdOfWorkout(wid)));
+
+		userWatchHistoryDao.save(history);
+
+		return new ActView();
+
+	}
+
+	private String getFirstRoutineIdOfChallenge(String cid) {
+		Challenge challenge = challengeDao.findOne(cid);
+		return getFirstRoutineIdOfChallenge(challenge);
+	}
+
+	private String getFirstRoutineIdOfChallenge(Challenge challenge) {
+		if (challenge.getWorkouts() != null && !challenge.getWorkouts().isEmpty()
+				&& challenge.getWorkouts().get(0).getRoutines() != null
+				&& !challenge.getWorkouts().get(0).getRoutines().isEmpty()) {
+			return challenge.getWorkouts().get(0).getRoutines().get(0).getId();
+		} else {
+			return null;
+		}
+	}
+
+	private String getLastRoutineIdOfChallenge(Challenge challenge) {
+		if (challenge.getWorkouts() != null && !challenge.getWorkouts().isEmpty()
+				&& challenge.getWorkouts().get(0).getRoutines() != null
+				&& !challenge.getWorkouts().get(0).getRoutines().isEmpty()) {
+			int size = challenge.getWorkouts().get(0).getRoutines().size();
+			return challenge.getWorkouts().get(0).getRoutines().get(size - 1).getId();
+		} else {
+			return null;
+		}
+	}
+
+	private String getFirstRoutineIdOfWorkout(String wid) {
+		Workout workout = workoutDao.findOne(wid);
+		return getFirstRoutineIdOfWorkout(workout);
+	}
+
+	private String getFirstRoutineIdOfWorkout(Workout workout) {
+		if (workout.getRoutines() != null && !workout.getRoutines().isEmpty()) {
+			return workout.getRoutines().get(0).getId();
+		} else {
+			return null;
+		}
+	}
+
+	private String getLastRoutineIdOfWorkout(Workout workout) {
+		if (workout.getRoutines() != null && !workout.getRoutines().isEmpty()) {
+			int size = workout.getRoutines().size();
+			return workout.getRoutines().get(size - 1).getId();
+		} else {
+			return null;
+		}
 	}
 
 }

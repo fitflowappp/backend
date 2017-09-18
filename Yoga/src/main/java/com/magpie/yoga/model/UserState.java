@@ -35,6 +35,8 @@ public class UserState extends BaseModel {
 	private int socialShareNum;
 
 	private String currentRoutineId;
+	// current routine progress seconds
+	private int currentRoutineSeconds;
 
 	public String getId() {
 		return id;
@@ -156,10 +158,25 @@ public class UserState extends BaseModel {
 	}
 
 	/**
-	 * @param currentRoutineId the currentRoutineId to set
+	 * @param currentRoutineId
+	 *            the currentRoutineId to set
 	 */
 	public void setCurrentRoutineId(String currentRoutineId) {
 		this.currentRoutineId = currentRoutineId;
+	}
+
+	/**
+	 * @return the currentRoutineSeconds
+	 */
+	public int getCurrentRoutineSeconds() {
+		return currentRoutineSeconds;
+	}
+
+	/**
+	 * @param currentRoutineSeconds the currentRoutineSeconds to set
+	 */
+	public void setCurrentRoutineSeconds(int currentRoutineSeconds) {
+		this.currentRoutineSeconds = currentRoutineSeconds;
 	}
 
 }

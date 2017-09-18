@@ -1,10 +1,11 @@
 package com.magpie.yoga.constant;
 
 public enum HistoryEvent {
-	
-	START(1, "start watching"), // 
-	SKIPPED(2, "skip watching"), // 
-	STOP(3, "stop watching");
+
+	START(1, "start watching"), //
+	SKIPPED(2, "skip watching"), //
+	COMPLETE(3, "complete watching"), //
+	STOP(4, "stop watching");
 
 	private int code;
 	private String name;
