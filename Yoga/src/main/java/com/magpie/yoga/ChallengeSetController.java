@@ -31,10 +31,17 @@ public class ChallengeSetController {
 		return challengeSetDao.findAll();
 	}
 
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "get one ChallengeSet")
+	public BaseView<ChallengeSet> getChallengeSet(@PathVariable String id) {
+		return new BaseView<ChallengeSet>(challengeSetDao.findOne(id));
+	}
+
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "add one new ChallengeSet")
-	public BaseView<ChallengeSet> addWorkout(@RequestBody ChallengeSet challengeSet) {
+	public BaseView<ChallengeSet> addChallengeSet(@RequestBody ChallengeSet challengeSet) {
 		challengeSetDao.save(challengeSet);
 		return new BaseView<ChallengeSet>(challengeSet);
 	}
@@ -42,7 +49,7 @@ public class ChallengeSetController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "edit one ChallengeSet")
-	public BaseView<ChallengeSet> editWorkout(@PathVariable String id, @RequestBody ChallengeSet challengeSet) {
+	public BaseView<ChallengeSet> editChallengeSet(@PathVariable String id, @RequestBody ChallengeSet challengeSet) {
 		challengeSet.setId(id);
 		challengeSetDao.save(challengeSet);
 		return new BaseView<ChallengeSet>(challengeSet);
@@ -51,7 +58,7 @@ public class ChallengeSetController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "delete one ChallengeSet")
-	public BaseView<?> removeWorkout(@PathVariable String id) {
+	public BaseView<?> removeChallengeSet(@PathVariable String id) {
 		challengeSetDao.delete(id);
 		return new BaseView<ChallengeSet>(Result.SUCCESS);
 	}
