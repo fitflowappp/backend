@@ -5,6 +5,15 @@ public class ActView {
 	private int type;
 	private String content;
 
+	public ActView() {
+
+	}
+
+	public ActView(int type, String content) {
+		this.type = type;
+		this.content = content;
+	}
+
 	public int getType() {
 		return type;
 	}

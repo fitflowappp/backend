@@ -38,6 +38,27 @@ public class UserState extends BaseModel {
 	// current routine progress seconds
 	private int currentRoutineSeconds;
 
+	// record to see if send dialog
+	private boolean sendAchieveWorkoutDialog;
+	// record to see if send dialog
+	private boolean sendAchieveDurationDialog;
+
+	public boolean isSendAchieveWorkoutDialog() {
+		return sendAchieveWorkoutDialog;
+	}
+
+	public void setSendAchieveWorkoutDialog(boolean sendAchieveWorkoutDialog) {
+		this.sendAchieveWorkoutDialog = sendAchieveWorkoutDialog;
+	}
+
+	public boolean isSendAchieveDurationDialog() {
+		return sendAchieveDurationDialog;
+	}
+
+	public void setSendAchieveDurationDialog(boolean sendAchieveDurationDialog) {
+		this.sendAchieveDurationDialog = sendAchieveDurationDialog;
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -173,7 +194,8 @@ public class UserState extends BaseModel {
 	}
 
 	/**
-	 * @param currentRoutineSeconds the currentRoutineSeconds to set
+	 * @param currentRoutineSeconds
+	 *            the currentRoutineSeconds to set
 	 */
 	public void setCurrentRoutineSeconds(int currentRoutineSeconds) {
 		this.currentRoutineSeconds = currentRoutineSeconds;

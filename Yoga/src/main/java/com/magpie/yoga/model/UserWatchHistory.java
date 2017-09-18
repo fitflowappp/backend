@@ -11,27 +11,11 @@ public class UserWatchHistory extends BaseModel {
 	private String challengeId;
 	// process seconds
 	private int seconds;
+	// duration minutes
+	private int duration;
 
 	private int event;// @see HistoryEvent
-	private boolean workout;//
-	private boolean challenge;
-	private boolean routine;
-
-	public boolean isWorkout() {
-		return workout;
-	}
-
-	public void setWorkout(boolean workout) {
-		this.workout = workout;
-	}
-
-	public boolean isChallenge() {
-		return challenge;
-	}
-
-	public void setChallenge(boolean challenge) {
-		this.challenge = challenge;
-	}
+	private int destType;// @see HistoryDest
 
 	public UserWatchHistory() {
 
@@ -92,21 +76,6 @@ public class UserWatchHistory extends BaseModel {
 	}
 
 	/**
-	 * @return the routine
-	 */
-	public boolean isRoutine() {
-		return routine;
-	}
-
-	/**
-	 * @param routine
-	 *            the routine to set
-	 */
-	public void setRoutine(boolean routine) {
-		this.routine = routine;
-	}
-
-	/**
 	 * @return the seconds
 	 */
 	public int getSeconds() {
@@ -114,10 +83,34 @@ public class UserWatchHistory extends BaseModel {
 	}
 
 	/**
-	 * @param seconds the seconds to set
+	 * @param seconds
+	 *            the seconds to set
 	 */
 	public void setSeconds(int seconds) {
 		this.seconds = seconds;
+	}
+
+	public int getDuration() {
+		return duration;
+	}
+
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+
+	/**
+	 * @return the destType
+	 */
+	public int getDestType() {
+		return destType;
+	}
+
+	/**
+	 * @param destType
+	 *            the destType to set
+	 */
+	public void setDestType(int destType) {
+		this.destType = destType;
 	}
 
 }

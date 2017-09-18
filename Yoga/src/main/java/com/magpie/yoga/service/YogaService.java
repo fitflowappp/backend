@@ -5,15 +5,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.magpie.yoga.constant.DialogType;
+import com.magpie.yoga.constant.HistoryDest;
 import com.magpie.yoga.constant.HistoryEvent;
 import com.magpie.yoga.dao.ChallengeDao;
+import com.magpie.yoga.dao.MilestoneDao;
+import com.magpie.yoga.dao.RoutineDao;
 import com.magpie.yoga.dao.UserStateDao;
 import com.magpie.yoga.dao.UserWatchHistoryDao;
 import com.magpie.yoga.dao.WorkoutDao;
 import com.magpie.yoga.model.Challenge;
+import com.magpie.yoga.model.Milestone;
+import com.magpie.yoga.model.Routine;
 import com.magpie.yoga.model.UserState;
 import com.magpie.yoga.model.UserWatchHistory;
 import com.magpie.yoga.model.Workout;
+import com.magpie.yoga.stat.UserWatchHistoryStat;
 import com.magpie.yoga.view.ActView;
 import com.magpie.yoga.view.ChallengeView;
 import com.magpie.yoga.view.WorkoutView;
@@ -28,7 +35,11 @@ public class YogaService {
 	@Autowired
 	private WorkoutDao workoutDao;
 	@Autowired
+	private RoutineDao routineDao;
+	@Autowired
 	private UserWatchHistoryDao userWatchHistoryDao;
+	@Autowired
+	private MilestoneDao milestoneDao;
 
 	/**
 	 * get user current challenge
@@ -57,7 +68,7 @@ public class YogaService {
 	}
 
 	/**
-	 * get workout with user history``
+	 * get workout with user history
 	 * 
 	 * @param uid
 	 * @param workoutId
@@ -87,33 +98,90 @@ public class YogaService {
 
 	public ActView watchingRoutine(String uid, String cid, String wid, String rid, int type, int seconds) {
 
-		if (type == HistoryEvent.STOP.getCode()) {
-			// update current user state
-			userStateDao.updateCurrentState(uid, cid, wid, rid, seconds);
+		Routine routine = routineDao.findOne(rid);
+		Challenge challenge = challengeDao.findOne(cid);
+		Workout workout = workoutDao.findOne(wid);
+		// only record for routine which show in app
+		if (routine != null && routine.isDisplay()) {
+			if (type == HistoryEvent.STOP.getCode()) {
+				// update current user state
+				userStateDao.updateCurrentState(uid, cid, wid, rid, seconds);
+			} else {
+				// update current user state
+				userStateDao.updateCurrentState(uid, cid, wid, rid);
+			}
+			UserWatchHistory history = new UserWatchHistory(cid, wid, rid);
+			history.setUid(uid);
+			history.setEvent(type);
+			history.setSeconds(seconds);
+			if (type == HistoryEvent.COMPLETE.getCode()) {
+				history.setDuration(routine == null ? 0 : routine.getDuration());
+				history.setDestType(
+						rid.equalsIgnoreCase(getLastRoutineIdOfChallenge(challenge)) ? HistoryDest.CHALLENGE.getCode()
+								: rid.equalsIgnoreCase(getLastRoutineIdOfWorkout(workout))
+										? HistoryDest.WORKOUT.getCode()
+										: HistoryDest.ROUTINE.getCode());
+			}
+
+			if (type == HistoryEvent.START.getCode()) {
+				history.setDestType(
+						rid.equalsIgnoreCase(getFirstRoutineIdOfChallenge(challenge)) ? HistoryDest.CHALLENGE.getCode()
+								: rid.equalsIgnoreCase(getFirstRoutineIdOfWorkout(workout))
+										? HistoryDest.WORKOUT.getCode()
+										: HistoryDest.ROUTINE.getCode());
+			}
+
+			userWatchHistoryDao.save(history);
+			return createActView(uid);
 		} else {
-			// update current user state
-			userStateDao.updateCurrentState(uid, cid, wid, rid);
+			return null;
 		}
 
-		UserWatchHistory history = new UserWatchHistory(cid, wid, rid);
-		history.setUid(uid);
-		history.setEvent(type);
-		history.setSeconds(seconds);
+	}
 
-		history.setRoutine(true);
-		history.setChallenge(rid.equalsIgnoreCase(getFirstRoutineIdOfChallenge(cid)));
-		history.setWorkout(rid.equalsIgnoreCase(getFirstRoutineIdOfWorkout(wid)));
+	private ActView createActView(String uid) {
 
-		userWatchHistoryDao.save(history);
+		UserState userState = userStateDao.findUserState(uid);
+		// dialog has been shown
+		if (userState.isSendAchieveDurationDialog() && userState.isSendAchieveWorkoutDialog()) {
+			return null;
+		}
 
-		return new ActView();
+		Milestone milestone = milestoneDao.findOne();
+
+		int totalDuration = 0;
+		int countOfWorkouts = 0;
+		for (UserWatchHistoryStat stat : userWatchHistoryDao.aggregateUserWatchHistory(uid,
+				HistoryEvent.COMPLETE.getCode())) {
+			totalDuration += stat.getDuration();
+			if (HistoryDest.WORKOUT.getCode() == stat.getDestType()
+					|| HistoryDest.CHALLENGE.getCode() == stat.getDestType()) {
+				countOfWorkouts += stat.getCount();
+			}
+		}
+
+		if (!userState.isSendAchieveDurationDialog() && totalDuration >= milestone.getAchievementMinutes()) {
+			// show minutes dialog
+			return new ActView(DialogType.DURATION.getCode(), milestone.getAchievementMinutesContent());
+		}
+
+		if (!userState.isSendAchieveWorkoutDialog() && countOfWorkouts >= milestone.getAchievementWorkoutNum()) {
+			return new ActView(DialogType.WORKOUT.getCode(), milestone.getAchievementWorkoutContent());
+		}
+
+		return null;
 
 	}
 
-	private String getFirstRoutineIdOfChallenge(String cid) {
-		Challenge challenge = challengeDao.findOne(cid);
-		return getFirstRoutineIdOfChallenge(challenge);
-	}
+	// private String getFirstRoutineIdOfChallenge(String cid) {
+	// Challenge challenge = challengeDao.findOne(cid);
+	// return getFirstRoutineIdOfChallenge(challenge);
+	// }
+	//
+	// private String getFirstRoutineIdOfWorkout(String wid) {
+	// Workout workout = workoutDao.findOne(wid);
+	// return getFirstRoutineIdOfWorkout(workout);
+	// }
 
 	private String getFirstRoutineIdOfChallenge(Challenge challenge) {
 		if (challenge.getWorkouts() != null && !challenge.getWorkouts().isEmpty()
@@ -123,22 +191,6 @@ public class YogaService {
 		} else {
 			return null;
 		}
-	}
-
-	private String getLastRoutineIdOfChallenge(Challenge challenge) {
-		if (challenge.getWorkouts() != null && !challenge.getWorkouts().isEmpty()
-				&& challenge.getWorkouts().get(0).getRoutines() != null
-				&& !challenge.getWorkouts().get(0).getRoutines().isEmpty()) {
-			int size = challenge.getWorkouts().get(0).getRoutines().size();
-			return challenge.getWorkouts().get(0).getRoutines().get(size - 1).getId();
-		} else {
-			return null;
-		}
-	}
-
-	private String getFirstRoutineIdOfWorkout(String wid) {
-		Workout workout = workoutDao.findOne(wid);
-		return getFirstRoutineIdOfWorkout(workout);
 	}
 
 	private String getFirstRoutineIdOfWorkout(Workout workout) {
@@ -153,6 +205,17 @@ public class YogaService {
 		if (workout.getRoutines() != null && !workout.getRoutines().isEmpty()) {
 			int size = workout.getRoutines().size();
 			return workout.getRoutines().get(size - 1).getId();
+		} else {
+			return null;
+		}
+	}
+
+	private String getLastRoutineIdOfChallenge(Challenge challenge) {
+		if (challenge.getWorkouts() != null && !challenge.getWorkouts().isEmpty()
+				&& challenge.getWorkouts().get(0).getRoutines() != null
+				&& !challenge.getWorkouts().get(0).getRoutines().isEmpty()) {
+			int size = challenge.getWorkouts().get(0).getRoutines().size();
+			return challenge.getWorkouts().get(0).getRoutines().get(size - 1).getId();
 		} else {
 			return null;
 		}
