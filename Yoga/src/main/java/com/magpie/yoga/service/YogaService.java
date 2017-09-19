@@ -71,7 +71,7 @@ public class YogaService {
 	 */
 	public ChallengeView getCurrentChallenge(String uid) {
 		UserState userState = userStateDao.findUserState(uid);
-		if (!StringUtils.isEmpty(userState.getCurrentChallengeId())) {
+		if (userState != null && !StringUtils.isEmpty(userState.getCurrentChallengeId())) {
 			return getChallenge(userState, userState.getCurrentChallengeId());
 		} else {
 			return null;
@@ -141,6 +141,11 @@ public class YogaService {
 		Workout workout = workoutDao.findOne(wid);
 		// only record for routine which show in app
 		if (routine != null && routine.isDisplay()) {
+			if (userStateDao.findUserState(uid) == null) {
+				UserState userState = new UserState();
+				userState.setUid(uid);
+				userStateDao.save(userState);
+			}
 			if (type == HistoryEvent.STOP.getCode()) {
 				// update current user state
 				userStateDao.updateCurrentState(uid, cid, wid, rid, seconds);
