@@ -15,7 +15,7 @@ import com.magpie.yoga.model.Milestone;
 import io.swagger.annotations.ApiOperation;
 
 @Controller
-@RequestMapping(value = "/manage/milestone")
+@RequestMapping(value = "/manage/yoga/milestone")
 public class MileStoneController {
 
 	@Autowired
