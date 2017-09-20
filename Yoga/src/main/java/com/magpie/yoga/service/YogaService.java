@@ -160,8 +160,7 @@ public class YogaService {
 		int status = HistoryEvent.UNWATCH.getCode();
 		int seconds = 0;
 		for (Routine r : view.getRoutines()) {
-			UserWatchHistory history = userWatchHistoryDao.findUserHistory(userState.getUid(), cid, view.getId(),
-					r.getId());
+			UserWatchHistory history = userWatchHistoryDao.findUserHistory(uid, cid, view.getId(), r.getId());
 			statuses.add(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
 			if (history != null) {
 				status = history.getEvent();
