@@ -46,6 +46,28 @@ public class UserWatchHistoryDao extends BaseMongoRepository<UserWatchHistory, S
 		return findOneByQuery(query);
 	}
 
+	public UserWatchHistory findUserHistory(String uid, String cid) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("uid").is(uid).and("challengeId").is(cid));
+		query.with(new Sort(Direction.DESC, "event"));
+		return findOneByQuery(query);
+	}
+
+	public UserWatchHistory findUserHistory(String uid, String cid, String wid) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("uid").is(uid).and("challengeId").is(cid).and("workoutId").is(wid));
+		query.with(new Sort(Direction.DESC, "event"));
+		return findOneByQuery(query);
+	}
+
+	public UserWatchHistory findUserHistory(String uid, String cid, String wid, String rid) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("uid").is(uid).and("challengeId").is(cid).and("workoutId").is(wid)
+				.and("routineId").is(rid));
+		query.with(new Sort(Direction.DESC, "event"));
+		return findOneByQuery(query);
+	}
+
 	public List<UserWatchHistoryStat> aggregateUserWatchHistory(String uid, int event) {
 		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class,
 				match(Criteria.where("uid").is(uid).and("event").is(event)),

@@ -53,10 +53,7 @@ public class YogaApi {
 	@ApiOperation(value = "get workout")
 	public BaseView<WorkoutView> getWorkout(@ApiIgnore @ActiveUser UserRef userRef, @PathVariable String cid,
 			@PathVariable String wid) {
-		WorkoutView workoutView = yogaService.getWorkout(userRef.getId(), wid);
-		if (workoutView != null) {
-			workoutView.setChallengeId(cid);
-		}
+		WorkoutView workoutView = yogaService.getWorkout(userRef.getId(), cid, wid);
 		return new BaseView<WorkoutView>(workoutView);
 	}
 

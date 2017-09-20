@@ -1,5 +1,8 @@
 package com.magpie.yoga.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,6 +63,14 @@ public class YogaService {
 		if (userState != null) {
 			view.setCurrentChallengeId(userState.getCurrentChallengeId());
 		}
+		List<Integer> statuses = new ArrayList<>();
+
+		for (Challenge c : view.getChallenges()) {
+			UserWatchHistory history = userWatchHistoryDao.findUserHistory(uid, c.getId());
+			statuses.add(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
+		}
+
+		view.setStatuses(statuses);
 		return view;
 	}
 
@@ -92,8 +103,24 @@ public class YogaService {
 	private ChallengeView getChallenge(UserState userState, String cid) {
 		ChallengeView view = initialChallengeView(challengeDao.findOne(cid));
 		if (userState != null) {
-			view.setCurrentWorkoutId(userState.getCurrentWorkoutId());
+			if (cid.equals(userState.getCurrentChallengeId())) {
+				view.setCurrentWorkoutId(userState.getCurrentWorkoutId());
+			}
 		}
+
+		List<Integer> statuses = new ArrayList<>();
+		int status = HistoryEvent.UNWATCH.getCode();
+		for (Workout w : view.getWorkouts()) {
+			UserWatchHistory history = userWatchHistoryDao.findUserHistory(userState.getUid(), view.getId(), w.getId());
+			statuses.add(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
+			if (history != null) {
+				status = history.getEvent();
+			}
+		}
+		// the status of last watched workout
+		view.setStatus(status);
+		// status list of workouts
+		view.setStatuses(statuses);
 		return view;
 	}
 
@@ -113,14 +140,38 @@ public class YogaService {
 	 * @param workoutId
 	 * @return
 	 */
-	public WorkoutView getWorkout(String uid, String workoutId) {
+	public WorkoutView getWorkout(String uid, String cid, String workoutId) {
 		WorkoutView view = initialWorkoutView(workoutDao.findOne(workoutId));
 
 		UserState userState = userStateDao.findUserState(uid);
 		if (userState != null) {
-			view.setCurrentRoutineId(userState.getCurrentRoutineId());
-			view.setSeconds(userState.getCurrentRoutineSeconds());
+			if (cid.equals(userState.getCurrentChallengeId()) && workoutId.equals(userState.getCurrentWorkoutId())) {
+				view.setCurrentRoutineId(userState.getCurrentRoutineId());
+				view.setSeconds(userState.getCurrentRoutineSeconds());
+			}
 		}
+
+		List<Integer> statuses = new ArrayList<>();
+		int status = HistoryEvent.UNWATCH.getCode();
+		int seconds = 0;
+		for (Routine r : view.getRoutines()) {
+			UserWatchHistory history = userWatchHistoryDao.findUserHistory(userState.getUid(), cid, view.getId(),
+					r.getId());
+			statuses.add(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
+			if (history != null) {
+				status = history.getEvent();
+				if (history.getEvent() == HistoryEvent.STOP.getCode()) {
+					seconds = history.getSeconds();
+				}
+			}
+		}
+
+		view.setSeconds(view.getSeconds() > 0 ? view.getSeconds() : seconds);
+		// the status of last watched routine
+		view.setStatus(status);
+		// status list of routines
+		view.setStatuses(statuses);
+		view.setChallengeId(cid);
 
 		return view;
 	}
