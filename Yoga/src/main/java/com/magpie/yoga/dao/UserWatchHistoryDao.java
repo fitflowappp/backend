@@ -39,23 +39,17 @@ public class UserWatchHistoryDao extends BaseMongoRepository<UserWatchHistory, S
 		return findOneByQuery(query);
 	}
 
-	public UserWatchHistory findLastHistory(String uid, String workoutId) {
+	public UserWatchHistory findUserHistory(String uid, String cid, int destType) {
 		Query query = new Query();
-		query.addCriteria(Criteria.where("uid").is(uid).and("workoutId").is(workoutId));
-		query.with(new Sort(Direction.DESC, "crDate"));
-		return findOneByQuery(query);
-	}
-
-	public UserWatchHistory findUserHistory(String uid, String cid) {
-		Query query = new Query();
-		query.addCriteria(Criteria.where("uid").is(uid).and("challengeId").is(cid));
+		query.addCriteria(Criteria.where("uid").is(uid).and("challengeId").is(cid).and("destType").is(destType));
 		query.with(new Sort(Direction.DESC, "event"));
 		return findOneByQuery(query);
 	}
 
-	public UserWatchHistory findUserHistory(String uid, String cid, String wid) {
+	public UserWatchHistory findUserHistory(String uid, String cid, String wid, int destType) {
 		Query query = new Query();
-		query.addCriteria(Criteria.where("uid").is(uid).and("challengeId").is(cid).and("workoutId").is(wid));
+		query.addCriteria(Criteria.where("uid").is(uid).and("challengeId").is(cid).and("workoutId").is(wid)
+				.and("destType").lte(destType));
 		query.with(new Sort(Direction.DESC, "event"));
 		return findOneByQuery(query);
 	}

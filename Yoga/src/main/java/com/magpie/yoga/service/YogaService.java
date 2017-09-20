@@ -66,7 +66,8 @@ public class YogaService {
 		List<Integer> statuses = new ArrayList<>();
 
 		for (Challenge c : view.getChallenges()) {
-			UserWatchHistory history = userWatchHistoryDao.findUserHistory(uid, c.getId());
+			UserWatchHistory history = userWatchHistoryDao.findUserHistory(uid, c.getId(),
+					HistoryDest.CHALLENGE.getCode());
 			statuses.add(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
 		}
 
@@ -114,7 +115,8 @@ public class YogaService {
 		List<Integer> statuses = new ArrayList<>();
 		int status = HistoryEvent.UNWATCH.getCode();
 		for (Workout w : view.getWorkouts()) {
-			UserWatchHistory history = userWatchHistoryDao.findUserHistory(userState.getUid(), view.getId(), w.getId());
+			UserWatchHistory history = userWatchHistoryDao.findUserHistory(userState.getUid(), view.getId(), w.getId(),
+					HistoryDest.WORKOUT.getCode());
 			statuses.add(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
 			if (history != null) {
 				status = history.getEvent();
