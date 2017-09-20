@@ -62,16 +62,15 @@ public class YogaService {
 		UserState userState = userStateDao.findUserState(uid);
 		if (userState != null) {
 			view.setCurrentChallengeId(userState.getCurrentChallengeId());
-
-			List<Integer> statuses = new ArrayList<>();
-
-			for (Challenge c : view.getChallenges()) {
-				UserWatchHistory history = userWatchHistoryDao.findUserHistory(uid, c.getId());
-				statuses.add(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
-			}
-
-			view.setStatuses(statuses);
 		}
+		List<Integer> statuses = new ArrayList<>();
+
+		for (Challenge c : view.getChallenges()) {
+			UserWatchHistory history = userWatchHistoryDao.findUserHistory(uid, c.getId());
+			statuses.add(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
+		}
+
+		view.setStatuses(statuses);
 		return view;
 	}
 
@@ -98,6 +97,10 @@ public class YogaService {
 	 */
 	public ChallengeView getChallenge(String uid, String cid) {
 		UserState userState = userStateDao.findUserState(uid);
+		if (userState == null) {
+			userState = new UserState();
+			userState.setUid(uid);
+		}
 		return getChallenge(userState, cid);
 	}
 
@@ -107,22 +110,20 @@ public class YogaService {
 			if (cid.equals(userState.getCurrentChallengeId())) {
 				view.setCurrentWorkoutId(userState.getCurrentWorkoutId());
 			}
-
-			List<Integer> statuses = new ArrayList<>();
-			int status = HistoryEvent.UNWATCH.getCode();
-			for (Workout w : view.getWorkouts()) {
-				UserWatchHistory history = userWatchHistoryDao.findUserHistory(userState.getUid(), view.getId(),
-						w.getId());
-				statuses.add(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
-				if (history != null) {
-					status = history.getEvent();
-				}
-			}
-			// the status of last watched workout
-			view.setStatus(status);
-			// status list of workouts
-			view.setStatuses(statuses);
 		}
+		List<Integer> statuses = new ArrayList<>();
+		int status = HistoryEvent.UNWATCH.getCode();
+		for (Workout w : view.getWorkouts()) {
+			UserWatchHistory history = userWatchHistoryDao.findUserHistory(userState.getUid(), view.getId(), w.getId());
+			statuses.add(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
+			if (history != null) {
+				status = history.getEvent();
+			}
+		}
+		// the status of last watched workout
+		view.setStatus(status);
+		// status list of workouts
+		view.setStatuses(statuses);
 		return view;
 	}
 
@@ -151,30 +152,31 @@ public class YogaService {
 				view.setCurrentRoutineId(userState.getCurrentRoutineId());
 				view.setSeconds(userState.getCurrentRoutineSeconds());
 			}
+		}
 
-			List<Integer> statuses = new ArrayList<>();
-			int status = HistoryEvent.UNWATCH.getCode();
-			int seconds = 0;
-			for (Routine r : view.getRoutines()) {
-				UserWatchHistory history = userWatchHistoryDao.findUserHistory(userState.getUid(), cid, view.getId(),
-						r.getId());
-				statuses.add(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
-				if (history != null) {
-					status = history.getEvent();
-					if (history.getEvent() == HistoryEvent.STOP.getCode()) {
-						seconds = history.getSeconds();
-					}
+		List<Integer> statuses = new ArrayList<>();
+		int status = HistoryEvent.UNWATCH.getCode();
+		int seconds = 0;
+		for (Routine r : view.getRoutines()) {
+			UserWatchHistory history = userWatchHistoryDao.findUserHistory(userState.getUid(), cid, view.getId(),
+					r.getId());
+			statuses.add(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
+			if (history != null) {
+				status = history.getEvent();
+				if (history.getEvent() == HistoryEvent.STOP.getCode()) {
+					seconds = history.getSeconds();
 				}
 			}
-
-			view.setSeconds(view.getSeconds() > 0 ? view.getSeconds() : seconds);
-			// the status of last watched routine
-			view.setStatus(status);
-			// status list of routines
-			view.setStatuses(statuses);
 		}
+
+		view.setSeconds(view.getSeconds() > 0 ? view.getSeconds() : seconds);
+		// the status of last watched routine
+		view.setStatus(status);
+		// status list of routines
+		view.setStatuses(statuses);
 		view.setChallengeId(cid);
 		return view;
+
 	}
 
 	private WorkoutView initialWorkoutView(Workout workout) {
