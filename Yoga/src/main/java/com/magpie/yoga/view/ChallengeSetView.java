@@ -10,6 +10,8 @@ public class ChallengeSetView extends ChallengeSet {
 
 	private List<Integer> statuses;// challenge status list
 
+	private List<Boolean> avails;
+
 	public String getCurrentChallengeId() {
 		return currentChallengeId;
 	}
@@ -31,6 +33,20 @@ public class ChallengeSetView extends ChallengeSet {
 	 */
 	public void setStatuses(List<Integer> statuses) {
 		this.statuses = statuses;
+	}
+
+	/**
+	 * @return the avails
+	 */
+	public List<Boolean> getAvails() {
+		return avails;
+	}
+
+	/**
+	 * @param avails the avails to set
+	 */
+	public void setAvails(List<Boolean> avails) {
+		this.avails = avails;
 	}
 
 }
