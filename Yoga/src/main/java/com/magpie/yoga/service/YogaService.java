@@ -64,11 +64,19 @@ public class YogaService {
 			view.setCurrentChallengeId(userState.getCurrentChallengeId());
 		}
 		List<Integer> statuses = new ArrayList<>();
+		List<Boolean> avails = new ArrayList<>();
 
+		boolean unlocked = false;
+		boolean needUnlocked = false;
 		for (Challenge c : view.getChallenges()) {
 			UserWatchHistory history = userWatchHistoryDao.findUserHistory(uid, c.getId(),
 					HistoryDest.CHALLENGE.getCode());
 			statuses.add(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
+			if (c.isUnlocked()) {
+				unlocked = (history != null && history.getEvent() >= HistoryEvent.SKIPPED.getCode());
+				needUnlocked = true;
+			}
+			avails.add(needUnlocked ? unlocked ? true : false : true);
 		}
 
 		view.setStatuses(statuses);
@@ -112,6 +120,7 @@ public class YogaService {
 				view.setCurrentWorkoutId(userState.getCurrentWorkoutId());
 			}
 		}
+
 		List<Integer> statuses = new ArrayList<>();
 		int status = HistoryEvent.UNWATCH.getCode();
 		for (Workout w : view.getWorkouts()) {
