@@ -3,11 +3,11 @@ server:
 spring:
   data:
     mongodb:
-      host: 192.168.1.2
+      host: 127.0.0.1
       port: 27017
       database: yoga
   redis:
-    host: 192.168.1.2
+    host: 127.0.0.1
     password: 
     port: 6379
     pool:
