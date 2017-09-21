@@ -80,6 +80,7 @@ public class YogaService {
 		}
 
 		view.setStatuses(statuses);
+		view.setAvails(avails);
 		return view;
 	}
 
