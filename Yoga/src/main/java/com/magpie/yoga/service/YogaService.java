@@ -94,8 +94,24 @@ public class YogaService {
 		if (userState != null && !StringUtils.isEmpty(userState.getCurrentChallengeId())) {
 			return getChallenge(userState, userState.getCurrentChallengeId());
 		} else {
-			return null;
+			return getDefaultChallenge();
 		}
+	}
+
+	private ChallengeView getDefaultChallenge() {
+		ChallengeView view = initialChallengeView(challengeDao.findRandomOne());
+
+		List<Integer> statuses = new ArrayList<>();
+		int status = HistoryEvent.UNWATCH.getCode();
+		for (@SuppressWarnings("unused")
+		Workout w : view.getWorkouts()) {
+			statuses.add(HistoryEvent.UNWATCH.getCode());
+		}
+		// the status of last watched workout
+		view.setStatus(status);
+		// status list of workouts
+		view.setStatuses(statuses);
+		return view;
 	}
 
 	/**
