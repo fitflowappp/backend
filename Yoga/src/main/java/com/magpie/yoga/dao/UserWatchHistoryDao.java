@@ -73,4 +73,13 @@ public class UserWatchHistoryDao extends BaseMongoRepository<UserWatchHistory, S
 		return result.getMappedResults();
 	}
 
+	public List<UserWatchHistoryStat> aggregateUserWatchHistory() {
+		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class, match(new Criteria()),
+				group("uid", "event").sum("duration").as("duration").count().as("count"),
+				project("uid", "duration", "count", "destType"), sort(new Sort(Direction.DESC, "duration")));
+		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
+				UserWatchHistoryStat.class);
+		return result.getMappedResults();
+	}
+
 }
