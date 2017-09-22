@@ -103,10 +103,14 @@ public class YogaService {
 		ChallengeView view = initialChallengeView(challengeDao.findRandomOne());
 
 		List<Integer> statuses = new ArrayList<>();
+		List<Boolean> avails = new ArrayList<>();
 		int status = HistoryEvent.UNWATCH.getCode();
+		int index = 0;
 		for (@SuppressWarnings("unused")
 		Workout w : view.getWorkouts()) {
 			statuses.add(HistoryEvent.UNWATCH.getCode());
+			avails.add(index == 0);
+			index++;
 		}
 		// the status of last watched workout
 		view.setStatus(status);
@@ -139,7 +143,10 @@ public class YogaService {
 		}
 
 		List<Integer> statuses = new ArrayList<>();
+		List<Boolean> avails = new ArrayList<>();
 		int status = HistoryEvent.UNWATCH.getCode();
+		int first = -1;
+		int last = -1;
 		for (Workout w : view.getWorkouts()) {
 			UserWatchHistory history = userWatchHistoryDao.findUserHistory(userState.getUid(), view.getId(), w.getId(),
 					HistoryDest.WORKOUT.getCode());
@@ -147,7 +154,21 @@ public class YogaService {
 			if (history != null) {
 				status = history.getEvent();
 			}
+
+			if (first == -1) {
+				// first workout avail
+				avails.add(true);
+			} else {
+				avails.add(last < HistoryEvent.SKIPPED.getCode() ? false : true);
+			}
+
+			if (first == -1) {
+				first = status;
+			}
+			last = status;
 		}
+
+		view.setAvails(avails);
 		// the status of last watched workout
 		view.setStatus(status);
 		// status list of workouts
@@ -183,8 +204,11 @@ public class YogaService {
 		}
 
 		List<Integer> statuses = new ArrayList<>();
+		List<Boolean> avails = new ArrayList<>();
 		int status = HistoryEvent.UNWATCH.getCode();
 		int seconds = 0;
+		int first = -1;
+		int last = -1;
 		for (Routine r : view.getRoutines()) {
 			UserWatchHistory history = userWatchHistoryDao.findUserHistory(uid, cid, view.getId(), r.getId());
 			statuses.add(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
@@ -193,6 +217,21 @@ public class YogaService {
 				if (history.getEvent() == HistoryEvent.STOP.getCode()) {
 					seconds = history.getSeconds();
 				}
+			}
+			if (r.isDisplay()) {
+				if (first == -1) {
+					// first workout avail
+					avails.add(true);
+				} else {
+					avails.add(last < HistoryEvent.SKIPPED.getCode() ? false : true);
+				}
+
+				if (first == -1) {
+					first = status;
+				}
+				last = status;
+			} else {
+				avails.add(false);
 			}
 		}
 
@@ -213,6 +252,39 @@ public class YogaService {
 		WorkoutView view = new WorkoutView();
 		BeanUtils.copyProperties(workout, view);
 		return view;
+	}
+
+	public ActView skipWorkout(String uid, String cid, String wid) {
+
+		Challenge challenge = challengeDao.findOne(cid);
+		Workout workout = workoutDao.findOne(wid);
+
+		String lastRoutineIdOfChallenge = getLastRoutineIdOfChallenge(challenge);
+
+		Routine lastRoutine = null;
+		Routine firstRoutine = null;
+		List<UserWatchHistory> histories = new ArrayList<>();
+		for (Routine routine : workout.getRoutines()) {
+			if (routine.isDisplay()) {
+				if (firstRoutine == null) {
+					firstRoutine = routine;
+				}
+				lastRoutine = routine;
+				UserWatchHistory history = new UserWatchHistory(cid, wid, routine.getId());
+				history.setUid(uid);
+				history.setEvent(HistoryEvent.SKIPPED.getCode());
+				history.setDestType(
+						routine.getId().equalsIgnoreCase(lastRoutineIdOfChallenge) ? HistoryDest.CHALLENGE.getCode()
+								: HistoryDest.ROUTINE.getCode());
+				histories.add(history);
+			}
+
+		}
+		if (lastRoutine != null) {
+			userStateDao.updateCurrentState(uid, cid, wid, lastRoutine.getId());
+		}
+		userWatchHistoryDao.save(histories);
+		return createActView(uid);
 	}
 
 	public ActView watchingRoutine(String uid, String cid, String wid, String rid, int type, int seconds) {
@@ -308,10 +380,8 @@ public class YogaService {
 	// }
 
 	private String getFirstRoutineIdOfChallenge(Challenge challenge) {
-		if (challenge.getWorkouts() != null && !challenge.getWorkouts().isEmpty()
-				&& challenge.getWorkouts().get(0).getRoutines() != null
-				&& !challenge.getWorkouts().get(0).getRoutines().isEmpty()) {
-			return challenge.getWorkouts().get(0).getRoutines().get(0).getId();
+		if (challenge.getWorkouts() != null && !challenge.getWorkouts().isEmpty()) {
+			return getFirstRoutineIdOfWorkout(challenge.getWorkouts().get(0));
 		} else {
 			return null;
 		}
@@ -319,7 +389,16 @@ public class YogaService {
 
 	private String getFirstRoutineIdOfWorkout(Workout workout) {
 		if (workout.getRoutines() != null && !workout.getRoutines().isEmpty()) {
-			return workout.getRoutines().get(0).getId();
+			Routine firstRoutine = null;
+			for (Routine routine : workout.getRoutines()) {
+				if (routine.isDisplay()) {
+					if (firstRoutine == null) {
+						firstRoutine = routine;
+						break;
+					}
+				}
+			}
+			return firstRoutine == null ? null : firstRoutine.getId();
 		} else {
 			return null;
 		}
@@ -327,19 +406,21 @@ public class YogaService {
 
 	private String getLastRoutineIdOfWorkout(Workout workout) {
 		if (workout.getRoutines() != null && !workout.getRoutines().isEmpty()) {
-			int size = workout.getRoutines().size();
-			return workout.getRoutines().get(size - 1).getId();
+			Routine lastRoutine = null;
+			for (Routine routine : workout.getRoutines()) {
+				if (routine.isDisplay()) {
+					lastRoutine = routine;
+				}
+			}
+			return lastRoutine == null ? null : lastRoutine.getId();
 		} else {
 			return null;
 		}
 	}
 
 	private String getLastRoutineIdOfChallenge(Challenge challenge) {
-		if (challenge.getWorkouts() != null && !challenge.getWorkouts().isEmpty()
-				&& challenge.getWorkouts().get(0).getRoutines() != null
-				&& !challenge.getWorkouts().get(0).getRoutines().isEmpty()) {
-			int size = challenge.getWorkouts().get(0).getRoutines().size();
-			return challenge.getWorkouts().get(0).getRoutines().get(size - 1).getId();
+		if (challenge.getWorkouts() != null && !challenge.getWorkouts().isEmpty()) {
+			return getLastRoutineIdOfWorkout(challenge.getWorkouts().get(0));
 		} else {
 			return null;
 		}

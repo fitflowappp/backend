@@ -14,6 +14,8 @@ public class WorkoutView extends Workout {
 
 	private List<Integer> statuses;// routine status list
 
+	private List<Boolean> avails;//
+
 	public String getChallengeId() {
 		return challengeId;
 	}
@@ -73,6 +75,20 @@ public class WorkoutView extends Workout {
 	 */
 	public void setStatuses(List<Integer> statuses) {
 		this.statuses = statuses;
+	}
+
+	/**
+	 * @return the avails
+	 */
+	public List<Boolean> getAvails() {
+		return avails;
+	}
+
+	/**
+	 * @param avails the avails to set
+	 */
+	public void setAvails(List<Boolean> avails) {
+		this.avails = avails;
 	}
 
 }

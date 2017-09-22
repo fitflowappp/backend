@@ -12,6 +12,8 @@ public class ChallengeView extends Challenge {
 
 	private List<Integer> statuses;// workout status list
 
+	private List<Boolean> avails;//
+
 	public String getCurrentWorkoutId() {
 		return currentWorkoutId;
 	}
@@ -48,6 +50,20 @@ public class ChallengeView extends Challenge {
 	 */
 	public void setStatuses(List<Integer> statuses) {
 		this.statuses = statuses;
+	}
+
+	/**
+	 * @return the avails
+	 */
+	public List<Boolean> getAvails() {
+		return avails;
+	}
+
+	/**
+	 * @param avails the avails to set
+	 */
+	public void setAvails(List<Boolean> avails) {
+		this.avails = avails;
 	}
 
 }
