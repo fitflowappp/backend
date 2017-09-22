@@ -2,19 +2,33 @@ package com.magpie.yoga.view;
 
 import java.util.List;
 
-import com.magpie.yoga.model.Workout;
+import com.magpie.share.ResourceRef;
 
-public class WorkoutView extends Workout {
+public class WorkoutView {
+
+	// Workout ID System generated Integer
+	private String id;
+	// Workout Code Admin create new or edit Alphanumeric
+	private String code;
+	// Workout Title Admin create new or edit Text
+	private String title;
+	// Workout Image Admin create new or edit png, jpg, gif
+	private ResourceRef coverImg;
+	// Workout Description Admin create new or edit Text
+	private String description;
+	// Workout Duration Admin create new or edit Integer Minutes
+	private int duration;
+	// Completion message Admin create new or edit Text
+	private String message;
+	// Associated Routine IDs, in sequence Admin create new or edit Custom
+	private List<RoutineView> routines;
 
 	private String currentRoutineId;
 	private int seconds;
 	private String challengeId;
 
 	private int status;// HistoryEvent
-
-	private List<Integer> statuses;// routine status list
-
-	private List<Boolean> avails;//
+	private boolean avail;
 
 	public String getChallengeId() {
 		return challengeId;
@@ -63,32 +77,82 @@ public class WorkoutView extends Workout {
 	}
 
 	/**
-	 * @return the statuses
+	 * @return the avail
 	 */
-	public List<Integer> getStatuses() {
-		return statuses;
+	public boolean isAvail() {
+		return avail;
 	}
 
 	/**
-	 * @param statuses
-	 *            the statuses to set
+	 * @param avail
+	 *            the avail to set
 	 */
-	public void setStatuses(List<Integer> statuses) {
-		this.statuses = statuses;
+	public void setAvail(boolean avail) {
+		this.avail = avail;
 	}
 
-	/**
-	 * @return the avails
-	 */
-	public List<Boolean> getAvails() {
-		return avails;
+	public String getId() {
+		return id;
 	}
 
-	/**
-	 * @param avails the avails to set
-	 */
-	public void setAvails(List<Boolean> avails) {
-		this.avails = avails;
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public ResourceRef getCoverImg() {
+		return coverImg;
+	}
+
+	public void setCoverImg(ResourceRef coverImg) {
+		this.coverImg = coverImg;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public int getDuration() {
+		return duration;
+	}
+
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public List<RoutineView> getRoutines() {
+		return routines;
+	}
+
+	public void setRoutines(List<RoutineView> routines) {
+		this.routines = routines;
 	}
 
 }

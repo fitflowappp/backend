@@ -2,15 +2,32 @@ package com.magpie.yoga.view;
 
 import java.util.List;
 
-import com.magpie.yoga.model.ChallengeSet;
+public class ChallengeSetView {
 
-public class ChallengeSetView extends ChallengeSet {
+	private String id;
+	private List<ChallengeView> challenges;
+	private boolean primary;
 
 	private String currentChallengeId;
 
-	private List<Integer> statuses;// challenge status list
+	private int status;
+	private boolean avail;
 
-	private List<Boolean> avails;
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public boolean isAvail() {
+		return avail;
+	}
+
+	public void setAvail(boolean avail) {
+		this.avail = avail;
+	}
 
 	public String getCurrentChallengeId() {
 		return currentChallengeId;
@@ -20,33 +37,28 @@ public class ChallengeSetView extends ChallengeSet {
 		this.currentChallengeId = currentChallengeId;
 	}
 
-	/**
-	 * @return the statuses
-	 */
-	public List<Integer> getStatuses() {
-		return statuses;
+	public String getId() {
+		return id;
 	}
 
-	/**
-	 * @param statuses
-	 *            the statuses to set
-	 */
-	public void setStatuses(List<Integer> statuses) {
-		this.statuses = statuses;
+	public void setId(String id) {
+		this.id = id;
 	}
 
-	/**
-	 * @return the avails
-	 */
-	public List<Boolean> getAvails() {
-		return avails;
+	public List<ChallengeView> getChallenges() {
+		return challenges;
 	}
 
-	/**
-	 * @param avails the avails to set
-	 */
-	public void setAvails(List<Boolean> avails) {
-		this.avails = avails;
+	public void setChallenges(List<ChallengeView> challenges) {
+		this.challenges = challenges;
+	}
+
+	public boolean isPrimary() {
+		return primary;
+	}
+
+	public void setPrimary(boolean primary) {
+		this.primary = primary;
 	}
 
 }
