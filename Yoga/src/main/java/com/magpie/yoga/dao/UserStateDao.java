@@ -1,6 +1,7 @@
 package com.magpie.yoga.dao;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -40,11 +41,25 @@ public class UserStateDao extends BaseMongoRepository<UserState, Serializable> {
 						.set("currentRoutineId", currentRoutineId).set("currentRoutineSeconds", seconds));
 	}
 
-	public long countReminder() {
-		return count(new Query().addCriteria(Criteria.where("reminder").is(true)));
+	public long countReminder(Date start, Date end) {
+		Criteria criteria = Criteria.where("reminder").is(true);
+		addDateCriteria(start, end, criteria);
+		return count(new Query().addCriteria(criteria));
 	}
 
-	public long countNotification() {
-		return count(new Query().addCriteria(Criteria.where("notification").is(true)));
+	public long countNotification(Date start, Date end) {
+		Criteria criteria = Criteria.where("notification").is(true);
+		addDateCriteria(start, end, criteria);
+		return count(new Query().addCriteria(criteria));
+	}
+
+	private void addDateCriteria(Date start, Date end, Criteria criteria) {
+		if (start != null && end != null) {
+			criteria.andOperator(Criteria.where("crDate").gte(start), Criteria.where("crDate").lt(end));
+		} else if (start != null && end == null) {
+			criteria.and("crDate").gte(start);
+		} else if (start == null && end != null) {
+			criteria.and("crDate").lt(end);
+		}
 	}
 }

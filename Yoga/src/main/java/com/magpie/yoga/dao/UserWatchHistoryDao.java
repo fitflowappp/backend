@@ -7,6 +7,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.proj
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,9 +74,13 @@ public class UserWatchHistoryDao extends BaseMongoRepository<UserWatchHistory, S
 		return result.getMappedResults();
 	}
 
-	public List<UserWatchHistoryStat> aggregateStartCompleteNum() {
+	public List<UserWatchHistoryStat> aggregateStartCompleteNum(Date start, Date end) {
+
+		Criteria criteria = new Criteria();
+		addDateCriteria(start, end, criteria);
+
 		TypedAggregation<UserWatchHistory> aggregation = newAggregation(
-				UserWatchHistory.class, match(new Criteria()), group("event", "destType").sum("duration").as("duration")
+				UserWatchHistory.class, match(criteria), group("event", "destType").sum("duration").as("duration")
 						.count().as("count").first("destType").as("destType").first("event").as("event"),
 				project("duration", "count", "destType", "event"));
 		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
@@ -83,18 +88,33 @@ public class UserWatchHistoryDao extends BaseMongoRepository<UserWatchHistory, S
 		return result.getMappedResults();
 	}
 
-	public List<UserWatchHistoryStat> aggregateWorkoutCompleteUsers(int destType, int event) {
-		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class,
-				match(Criteria.where("event").is(event).and("destType").lte(destType)),
+	public List<UserWatchHistoryStat> aggregateWorkoutCompleteUsers(int destType, int event, Date start, Date end) {
+		Criteria criteria = Criteria.where("event").is(event).and("destType").lte(destType);
+		addDateCriteria(start, end, criteria);
+
+		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class, match(criteria),
 				group("uid").count().as("count"), project("count"));
 		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
 				UserWatchHistoryStat.class);
 		return result.getMappedResults();
 	}
 
-	public UserWatchHistoryStat aggregateTotalDuration(int event) {
-		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class,
-				match(Criteria.where("event").is(event)), group().sum("duration").as("duration"), project("duration"));
+	private void addDateCriteria(Date start, Date end, Criteria criteria) {
+		if (start != null && end != null) {
+			criteria.andOperator(Criteria.where("crDate").gte(start), Criteria.where("crDate").lt(end));
+		} else if (start != null && end == null) {
+			criteria.and("crDate").gte(start);
+		} else if (start == null && end != null) {
+			criteria.and("crDate").lt(end);
+		}
+	}
+
+	public UserWatchHistoryStat aggregateTotalDuration(int event, Date start, Date end) {
+		Criteria criteria = Criteria.where("event").is(event);
+		addDateCriteria(start, end, criteria);
+
+		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class, match(criteria),
+				group().sum("duration").as("duration"), project("duration"));
 		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
 				UserWatchHistoryStat.class);
 		if (result.getMappedResults() != null && !result.getMappedResults().isEmpty()) {
