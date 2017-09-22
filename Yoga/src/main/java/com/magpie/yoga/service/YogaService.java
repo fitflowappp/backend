@@ -64,6 +64,8 @@ public class YogaService {
 		ChallengeSet challengeSet = challengeSetDao.findOneByPrimary(true);
 		ChallengeSetView view = initialChallengeSetView(challengeSet);
 
+		UserState userState = userStateDao.findUserState(uid);
+
 		boolean unlocked = false;
 		boolean needUnlocked = false;
 		ChallengeView currentChallenge = null;
@@ -76,6 +78,10 @@ public class YogaService {
 				needUnlocked = true;
 			}
 			c.setAvail(needUnlocked ? unlocked ? true : false : true);
+			if (userState != null) {
+				// 只有当前的才能看
+				c.setAvail(c.isAvail() && c.getId().equals(userState.getCurrentChallengeId()));
+			}
 			if (history != null) {
 				currentChallenge = c;
 			}
@@ -121,6 +127,11 @@ public class YogaService {
 		return view;
 	}
 
+	public ChallengeView chooseChallenge(String uid, String cid) {
+		userStateDao.updateCurrentState(uid, cid, null, null);
+		return getChallenge(uid, cid);
+	}
+
 	/**
 	 * get challenge
 	 * 
@@ -143,12 +154,15 @@ public class YogaService {
 		int first = -1;
 		int last = -1;
 		WorkoutView lastWorkout = null;
+		String currentRoutineId = null;
+
 		for (WorkoutView w : view.getWorkouts()) {
 			UserWatchHistory history = userWatchHistoryDao.findUserHistory(userState.getUid(), view.getId(), w.getId(),
 					HistoryDest.WORKOUT.getCode());
 			w.setStatus(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
 			if (history != null) {
 				status = history.getEvent();
+				currentRoutineId = history.getRoutineId();
 			}
 
 			boolean avail = false;
@@ -174,8 +188,10 @@ public class YogaService {
 
 		// current workout in current challenge
 		if (cid.equals(userState.getCurrentChallengeId())) {
-			view.setCurrentWorkoutId(userState.getCurrentWorkoutId());
-			view.setCurrentRoutineId(userState.getCurrentRoutineId());
+			view.setCurrentWorkoutId(
+					userState.getCurrentWorkoutId() == null ? lastWorkout.getId() : userState.getCurrentWorkoutId());
+			view.setCurrentRoutineId(
+					userState.getCurrentRoutineId() == null ? currentRoutineId : userState.getCurrentRoutineId());
 			view.setSeconds(userState.getCurrentRoutineSeconds());
 		} else {
 			// current workout in every challenge

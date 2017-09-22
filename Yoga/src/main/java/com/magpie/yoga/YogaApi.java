@@ -48,6 +48,13 @@ public class YogaApi {
 		return new BaseView<ChallengeView>(yogaService.getChallenge(userRef.getId(), cid));
 	}
 
+	@RequestMapping(value = "/challenge/{cid}/change", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "unlock challenge")
+	public BaseView<ChallengeView> changeChallenge(@ApiIgnore @ActiveUser UserRef userRef, @PathVariable String cid) {
+		return new BaseView<ChallengeView>(yogaService.getChallenge(userRef.getId(), cid));
+	}
+
 	@RequestMapping(value = "/challenge/{cid}/workout/{wid}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "get workout")
