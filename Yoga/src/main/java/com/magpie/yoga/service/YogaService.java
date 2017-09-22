@@ -160,10 +160,6 @@ public class YogaService {
 			UserWatchHistory history = userWatchHistoryDao.findUserHistory(userState.getUid(), view.getId(), w.getId(),
 					HistoryDest.WORKOUT.getCode());
 			w.setStatus(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
-			if (history != null) {
-				status = history.getEvent();
-				currentRoutineId = history.getRoutineId();
-			}
 
 			boolean avail = false;
 			if (first == -1) {
@@ -175,6 +171,10 @@ public class YogaService {
 			w.setAvail(avail);
 			if (avail) {
 				lastWorkout = w;
+				if (history != null) {
+					status = history.getEvent();
+					currentRoutineId = history.getRoutineId();
+				}
 			}
 
 			if (first == -1) {
@@ -197,6 +197,7 @@ public class YogaService {
 		} else {
 			// current workout in every challenge
 			view.setCurrentWorkoutId(lastWorkout.getId());
+			view.setCurrentRoutineId(currentRoutineId);
 		}
 		return view;
 	}
