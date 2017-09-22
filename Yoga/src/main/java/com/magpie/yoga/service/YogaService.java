@@ -302,10 +302,19 @@ public class YogaService {
 
 		}
 		if (lastRoutine != null) {
+			createIfNoUserState(uid);
 			userStateDao.updateCurrentState(uid, cid, wid, lastRoutine.getId());
 		}
 		userWatchHistoryDao.save(histories);
 		return createActView(uid);
+	}
+
+	private void createIfNoUserState(String uid) {
+		if (userStateDao.findUserState(uid) == null) {
+			UserState userState = new UserState();
+			userState.setUid(uid);
+			userStateDao.save(userState);
+		}
 	}
 
 	public ActView watchingRoutine(String uid, String cid, String wid, String rid, int type, int seconds) {
@@ -315,11 +324,7 @@ public class YogaService {
 		Workout workout = workoutDao.findOne(wid);
 		// only record for routine which show in app
 		if (routine != null && routine.isDisplay()) {
-			if (userStateDao.findUserState(uid) == null) {
-				UserState userState = new UserState();
-				userState.setUid(uid);
-				userStateDao.save(userState);
-			}
+			createIfNoUserState(uid);
 			if (type == HistoryEvent.STOP.getCode()) {
 				// update current user state
 				userStateDao.updateCurrentState(uid, cid, wid, rid, seconds);
