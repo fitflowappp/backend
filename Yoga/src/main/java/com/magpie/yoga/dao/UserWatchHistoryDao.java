@@ -73,13 +73,35 @@ public class UserWatchHistoryDao extends BaseMongoRepository<UserWatchHistory, S
 		return result.getMappedResults();
 	}
 
-	public List<UserWatchHistoryStat> aggregateUserWatchHistory() {
-		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class, match(new Criteria()),
-				group("uid", "event").sum("duration").as("duration").count().as("count"),
-				project("uid", "duration", "count", "destType"), sort(new Sort(Direction.DESC, "duration")));
+	public List<UserWatchHistoryStat> aggregateStartCompleteNum() {
+		TypedAggregation<UserWatchHistory> aggregation = newAggregation(
+				UserWatchHistory.class, match(new Criteria()), group("event", "destType").sum("duration").as("duration")
+						.count().as("count").first("destType").as("destType").first("event").as("event"),
+				project("duration", "count", "destType", "event"));
 		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
 				UserWatchHistoryStat.class);
 		return result.getMappedResults();
+	}
+
+	public List<UserWatchHistoryStat> aggregateWorkoutCompleteUsers(int destType, int event) {
+		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class,
+				match(Criteria.where("event").is(event).and("destType").lte(destType)),
+				group("uid").count().as("count"), project("count"));
+		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
+				UserWatchHistoryStat.class);
+		return result.getMappedResults();
+	}
+
+	public UserWatchHistoryStat aggregateTotalDuration(int event) {
+		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class,
+				match(Criteria.where("event").is(event)), group().sum("duration").as("duration"), project("duration"));
+		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
+				UserWatchHistoryStat.class);
+		if (result.getMappedResults() != null && !result.getMappedResults().isEmpty()) {
+			return result.getMappedResults().get(0);
+		} else {
+			return new UserWatchHistoryStat();
+		}
 	}
 
 }

@@ -8,13 +8,13 @@ import org.springframework.data.mongodb.repository.support.MongoRepositoryFactor
 import org.springframework.stereotype.Repository;
 
 import com.magpie.base.dao.BaseMongoRepository;
-import com.magpie.yoga.model.AchievementRecord;
+import com.magpie.yoga.model.ShareRecord;
 
 @Repository
-public class AchievementRecordDao extends BaseMongoRepository<AchievementRecord, Serializable> {
+public class ShareRecordDao extends BaseMongoRepository<ShareRecord, Serializable> {
 
 	@Autowired
-	public AchievementRecordDao(MongoRepositoryFactory mongoRepositoryFactory, MongoOperations mongoOps) {
-		super(mongoRepositoryFactory.getEntityInformation(AchievementRecord.class), mongoOps);
+	public ShareRecordDao(MongoRepositoryFactory mongoRepositoryFactory, MongoOperations mongoOps) {
+		super(mongoRepositoryFactory.getEntityInformation(ShareRecord.class), mongoOps);
 	}
 }

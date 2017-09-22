@@ -39,4 +39,12 @@ public class UserStateDao extends BaseMongoRepository<UserState, Serializable> {
 				new Update().set("currentChallengeId", currentChallengeId).set("currentWorkoutId", currentWorkoutId)
 						.set("currentRoutineId", currentRoutineId).set("currentRoutineSeconds", seconds));
 	}
+
+	public long countReminder() {
+		return count(new Query().addCriteria(Criteria.where("reminder").is(true)));
+	}
+
+	public long countNotification() {
+		return count(new Query().addCriteria(Criteria.where("notification").is(true)));
+	}
 }
