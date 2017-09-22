@@ -172,6 +172,7 @@ public class YogaService {
 			} else {
 				avail = (last < HistoryEvent.SKIPPED.getCode() ? false : true);
 			}
+			w.setAvail(avail);
 			if (avail) {
 				lastWorkout = w;
 			}
