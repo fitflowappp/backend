@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 import com.magpie.yoga.constant.DialogType;
 import com.magpie.yoga.constant.HistoryDest;
 import com.magpie.yoga.constant.HistoryEvent;
+import com.magpie.yoga.dao.AchievementRecordDao;
 import com.magpie.yoga.dao.ChallengeDao;
 import com.magpie.yoga.dao.ChallengeSetDao;
 import com.magpie.yoga.dao.MilestoneDao;
@@ -18,6 +19,7 @@ import com.magpie.yoga.dao.RoutineDao;
 import com.magpie.yoga.dao.UserStateDao;
 import com.magpie.yoga.dao.UserWatchHistoryDao;
 import com.magpie.yoga.dao.WorkoutDao;
+import com.magpie.yoga.model.AchievementRecord;
 import com.magpie.yoga.model.Challenge;
 import com.magpie.yoga.model.ChallengeSet;
 import com.magpie.yoga.model.Milestone;
@@ -49,6 +51,8 @@ public class YogaService {
 	private UserWatchHistoryDao userWatchHistoryDao;
 	@Autowired
 	private MilestoneDao milestoneDao;
+	@Autowired
+	private AchievementRecordDao achievementRecordDao;
 
 	/**
 	 * get default challenge set
@@ -147,18 +151,22 @@ public class YogaService {
 				status = history.getEvent();
 			}
 
+			boolean avail = false;
 			if (first == -1) {
 				// first workout avail
-				w.setAvail(true);
+				avail = true;
 			} else {
-				w.setAvail(last < HistoryEvent.SKIPPED.getCode() ? false : true);
+				avail = (last < HistoryEvent.SKIPPED.getCode() ? false : true);
+			}
+			if (avail) {
+				lastWorkout = w;
 			}
 
 			if (first == -1) {
 				first = status;
 			}
 			last = status;
-			lastWorkout = w;
+
 		}
 
 		// the status of last watched workout
@@ -369,11 +377,14 @@ public class YogaService {
 		}
 
 		if (!userState.isSendAchieveDurationDialog() && totalDuration >= milestone.getAchievementMinutes()) {
+
+			achievementRecordDao.save(new AchievementRecord(uid, DialogType.DURATION.getCode()));
 			// show minutes dialog
 			return new ActView(DialogType.DURATION.getCode(), milestone.getAchievementMinutesContent());
 		}
 
 		if (!userState.isSendAchieveWorkoutDialog() && countOfWorkouts >= milestone.getAchievementWorkoutNum()) {
+			achievementRecordDao.save(new AchievementRecord(uid, DialogType.WORKOUT.getCode()));
 			return new ActView(DialogType.WORKOUT.getCode(), milestone.getAchievementWorkoutContent());
 		}
 
