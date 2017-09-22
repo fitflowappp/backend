@@ -58,8 +58,7 @@ public class YogaService {
 	 */
 	public ChallengeSetView getDefaultChallengeSet(String uid) {
 		ChallengeSet challengeSet = challengeSetDao.findOneByPrimary(true);
-		ChallengeSetView view = new ChallengeSetView();
-		BeanUtils.copyProperties(challengeSet, view);
+		ChallengeSetView view = initialChallengeSetView(challengeSet);
 
 		boolean unlocked = false;
 		boolean needUnlocked = false;
@@ -78,6 +77,19 @@ public class YogaService {
 			}
 		}
 		view.setCurrentChallengeId(currentChallenge == null ? null : currentChallenge.getId());
+		return view;
+	}
+
+	private ChallengeSetView initialChallengeSetView(ChallengeSet challengeSet) {
+		ChallengeSetView view = new ChallengeSetView();
+		BeanUtils.copyProperties(challengeSet, view, "challenges");
+		List<ChallengeView> challengeViews = new ArrayList<>();
+		for (Challenge challenge : challengeSet.getChallenges()) {
+			ChallengeView challengeView = new ChallengeView();
+			BeanUtils.copyProperties(challenge, challengeView);
+			challengeViews.add(challengeView);
+		}
+		view.setChallenges(challengeViews);
 		return view;
 	}
 
@@ -169,7 +181,14 @@ public class YogaService {
 			return null;
 		}
 		ChallengeView view = new ChallengeView();
-		BeanUtils.copyProperties(challenge, view);
+		BeanUtils.copyProperties(challenge, view, "workouts");
+		List<WorkoutView> workoutViews = new ArrayList<>();
+		for (Workout workout : challenge.getWorkouts()) {
+			WorkoutView workoutView = new WorkoutView();
+			BeanUtils.copyProperties(workout, workoutView);
+			workoutViews.add(workoutView);
+		}
+		view.setWorkouts(workoutViews);
 		return view;
 	}
 
@@ -235,7 +254,15 @@ public class YogaService {
 			return null;
 		}
 		WorkoutView view = new WorkoutView();
-		BeanUtils.copyProperties(workout, view);
+		BeanUtils.copyProperties(workout, view, "routines");
+
+		List<RoutineView> routineViews = new ArrayList<>();
+		for (Routine r : workout.getRoutines()) {
+			RoutineView routineView = new RoutineView();
+			BeanUtils.copyProperties(r, routineView);
+			routineViews.add(routineView);
+		}
+		view.setRoutines(routineViews);
 		return view;
 	}
 
