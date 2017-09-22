@@ -252,6 +252,7 @@ public class YogaService {
 		view.setStatus(status);
 		view.setChallengeId(cid);
 		view.setCurrentRoutineId(lastRoutine == null ? null : lastRoutine.getId());
+		view.setAvail(lastRoutine == null ? false : lastRoutine.isAvail());
 		view.setSeconds(seconds);
 		return view;
 
