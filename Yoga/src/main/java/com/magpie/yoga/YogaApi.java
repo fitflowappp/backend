@@ -91,19 +91,14 @@ public class YogaApi {
 		return new BaseView<>(yogaService.skipWorkout(userRef.getId(), cid, wid));
 	}
 
-	// @RequestMapping(value =
-	// "/challenge/{cid}/workout/{wid}/routine/{rid}/stop/{seconds}", method =
-	// RequestMethod.PUT)
-	// @ResponseBody
-	// @ApiOperation(value = "skip watching routine")
-	// public BaseView<ActView> skipWatching(@ApiIgnore @ActiveUser UserRef
-	// userRef, @PathVariable String cid,
-	// @PathVariable String wid, @PathVariable String rid, @PathVariable int
-	// seconds) {
-	// return new BaseView<>(
-	// yogaService.watchingRoutine(userRef.getId(), cid, wid, rid,
-	// HistoryEvent.SKIPPED.getCode(), seconds));
-	// }
+	@RequestMapping(value = "/challenge/{cid}/workout/{wid}/routine/{rid}/stop/{seconds}", method = RequestMethod.PUT)
+	@ResponseBody
+	@ApiOperation(value = "skip watching routine")
+	public BaseView<ActView> skipWatching(@ApiIgnore @ActiveUser UserRef userRef, @PathVariable String cid,
+			@PathVariable String wid, @PathVariable String rid, @PathVariable int seconds) {
+		return new BaseView<>(
+				yogaService.watchingRoutine(userRef.getId(), cid, wid, rid, HistoryEvent.SKIPPED.getCode(), seconds));
+	}
 
 	@RequestMapping(value = "/challenge/{cid}/workout/{wid}/routine/{rid}/complete", method = RequestMethod.PUT)
 	@ResponseBody
