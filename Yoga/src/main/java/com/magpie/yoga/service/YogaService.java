@@ -361,14 +361,14 @@ public class YogaService {
 								: rid.equalsIgnoreCase(getLastRoutineIdOfWorkout(workout))
 										? HistoryDest.WORKOUT.getCode()
 										: HistoryDest.ROUTINE.getCode());
-			}
-
-			if (type == HistoryEvent.START.getCode()) {
+			} else if (type == HistoryEvent.START.getCode()) {
 				history.setDestType(
 						rid.equalsIgnoreCase(getFirstRoutineIdOfChallenge(challenge)) ? HistoryDest.CHALLENGE.getCode()
 								: rid.equalsIgnoreCase(getFirstRoutineIdOfWorkout(workout))
 										? HistoryDest.WORKOUT.getCode()
 										: HistoryDest.ROUTINE.getCode());
+			} else {
+				history.setDestType(HistoryDest.ROUTINE.getCode());
 			}
 
 			userWatchHistoryDao.save(history);
