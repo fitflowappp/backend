@@ -97,7 +97,7 @@ public class YogaApi {
 	public BaseView<ActView> skipWatching(@ApiIgnore @ActiveUser UserRef userRef, @PathVariable String cid,
 			@PathVariable String wid, @PathVariable String rid, @PathVariable int seconds) {
 		return new BaseView<>(
-				yogaService.watchingRoutine(userRef.getId(), cid, wid, rid, HistoryEvent.SKIPPED.getCode(), seconds));
+				yogaService.watchingRoutine(userRef.getId(), cid, wid, rid, HistoryEvent.STOP.getCode(), seconds));
 	}
 
 	@RequestMapping(value = "/challenge/{cid}/workout/{wid}/routine/{rid}/complete", method = RequestMethod.PUT)
