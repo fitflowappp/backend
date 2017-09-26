@@ -24,7 +24,7 @@ public class UserWatchHistory extends BaseModel {
 	public UserWatchHistory(String challengeId, String workoutId, String routineId) {
 		this.challengeId = challengeId;
 		this.workoutId = workoutId;
-		this.routineId = workoutId;
+		this.routineId = routineId;
 	}
 
 	public String getId() {
