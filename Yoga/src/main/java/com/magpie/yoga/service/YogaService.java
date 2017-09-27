@@ -64,7 +64,11 @@ public class YogaService {
 		ChallengeSet challengeSet = challengeSetDao.findOneByPrimary(true);
 		ChallengeSetView view = initialChallengeSetView(challengeSet);
 
-		// UserState userState = userStateDao.findUserState(uid);
+		UserState userState = userStateDao.findUserState(uid);
+		String currentChallengeId = null;
+		if (userState != null) {
+			currentChallengeId = userState.getCurrentChallengeId();
+		}
 
 		boolean unlocked = false;
 		boolean needUnlocked = false;
@@ -83,9 +87,16 @@ public class YogaService {
 			// c.setAvail(c.isAvail() &&
 			// c.getId().equals(userState.getCurrentChallengeId()));
 			// }
-			if (history != null) {
-				currentChallenge = c;
+			if (StringUtils.isEmpty(currentChallengeId)) {
+				if (history != null) {
+					currentChallenge = c;
+				}
+			} else {
+				if (c.getId().equals(currentChallengeId)) {
+					currentChallenge = c;
+				}
 			}
+
 		}
 		view.setCurrentChallengeId(currentChallenge == null ? null : currentChallenge.getId());
 		return view;
