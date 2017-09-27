@@ -64,7 +64,7 @@ public class YogaService {
 		ChallengeSet challengeSet = challengeSetDao.findOneByPrimary(true);
 		ChallengeSetView view = initialChallengeSetView(challengeSet);
 
-		UserState userState = userStateDao.findUserState(uid);
+		// UserState userState = userStateDao.findUserState(uid);
 
 		boolean unlocked = false;
 		boolean needUnlocked = false;
@@ -78,10 +78,11 @@ public class YogaService {
 				needUnlocked = true;
 			}
 			c.setAvail(needUnlocked ? unlocked ? true : false : true);
-			if (userState != null) {
-				// 只有当前的才能看
-				c.setAvail(c.isAvail() && c.getId().equals(userState.getCurrentChallengeId()));
-			}
+			// if (userState != null) {
+			// // 只有当前的才能看
+			// c.setAvail(c.isAvail() &&
+			// c.getId().equals(userState.getCurrentChallengeId()));
+			// }
 			if (history != null) {
 				currentChallenge = c;
 			}
