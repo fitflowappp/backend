@@ -70,18 +70,21 @@ public class YogaService {
 			currentChallengeId = userState.getCurrentChallengeId();
 		}
 
-		boolean unlocked = false;
 		boolean needUnlocked = false;
+		List<Boolean> completeList = new ArrayList<>();
 		ChallengeView currentChallenge = null;
 		for (ChallengeView c : view.getChallenges()) {
 			UserWatchHistory history = userWatchHistoryDao.findUserHistory(uid, c.getId(),
 					HistoryDest.CHALLENGE.getCode());
 			c.setStatus(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
+
+			c.setAvail(needUnlocked ? isAvail(completeList) : true);
 			if (c.isUnlocked()) {
-				unlocked = (history != null && history.getEvent() >= HistoryEvent.SKIPPED.getCode());
 				needUnlocked = true;
 			}
-			c.setAvail(needUnlocked ? unlocked ? true : false : true);
+
+			completeList.add(history != null && history.getEvent() >= HistoryEvent.SKIPPED.getCode());
+
 			// if (userState != null) {
 			// // 只有当前的才能看
 			// c.setAvail(c.isAvail() &&
@@ -100,6 +103,17 @@ public class YogaService {
 		}
 		view.setCurrentChallengeId(currentChallenge == null ? null : currentChallenge.getId());
 		return view;
+	}
+
+	private boolean isAvail(List<Boolean> completeList) {
+		if (completeList == null) {
+			return true;
+		}
+		boolean result = true;
+		for (Boolean boolean1 : completeList) {
+			result = result && boolean1;
+		}
+		return result;
 	}
 
 	private ChallengeSetView initialChallengeSetView(ChallengeSet challengeSet) {
