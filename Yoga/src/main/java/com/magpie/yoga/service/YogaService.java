@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.magpie.share.UserRef;
 import com.magpie.yoga.constant.DialogType;
 import com.magpie.yoga.constant.HistoryDest;
 import com.magpie.yoga.constant.HistoryEvent;
@@ -60,11 +61,11 @@ public class YogaService {
 	 * @param uid
 	 * @return
 	 */
-	public ChallengeSetView getDefaultChallengeSet(String uid) {
+	public ChallengeSetView getDefaultChallengeSet(UserRef userRef) {
 		ChallengeSet challengeSet = challengeSetDao.findOneByPrimary(true);
 		ChallengeSetView view = initialChallengeSetView(challengeSet);
 
-		UserState userState = userStateDao.findUserState(uid);
+		UserState userState = userStateDao.findUserState(userRef.getId());
 		String currentChallengeId = null;
 		if (userState != null) {
 			currentChallengeId = userState.getCurrentChallengeId();
@@ -74,7 +75,7 @@ public class YogaService {
 		List<Boolean> completeList = new ArrayList<>();
 		ChallengeView currentChallenge = null;
 		for (ChallengeView c : view.getChallenges()) {
-			UserWatchHistory history = userWatchHistoryDao.findUserHistory(uid, c.getId(),
+			UserWatchHistory history = userWatchHistoryDao.findUserHistory(userRef.getId(), c.getId(),
 					HistoryDest.CHALLENGE.getCode());
 			c.setStatus(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
 
@@ -98,6 +99,9 @@ public class YogaService {
 				if (c.getId().equals(currentChallengeId)) {
 					currentChallenge = c;
 				}
+			}
+			if (!StringUtils.isEmpty(userRef.getRole())) {// role不为空，则为超级用户
+				c.setAvail(true);
 			}
 
 		}
@@ -135,10 +139,10 @@ public class YogaService {
 	 * @param uid
 	 * @return
 	 */
-	public ChallengeView getCurrentChallenge(String uid) {
-		UserState userState = userStateDao.findUserState(uid);
+	public ChallengeView getCurrentChallenge(UserRef userRef) {
+		UserState userState = userStateDao.findUserState(userRef.getId());
 		if (userState != null && !StringUtils.isEmpty(userState.getCurrentChallengeId())) {
-			return getChallenge(userState, userState.getCurrentChallengeId());
+			return getChallenge(userRef, userState, userState.getCurrentChallengeId());
 		} else {
 			return getDefaultChallenge();
 		}
@@ -153,9 +157,9 @@ public class YogaService {
 		return view;
 	}
 
-	public ChallengeView chooseChallenge(String uid, String cid) {
-		userStateDao.updateCurrentState(uid, cid, null, null);
-		return getChallenge(uid, cid);
+	public ChallengeView chooseChallenge(UserRef userRef, String cid) {
+		userStateDao.updateCurrentState(userRef.getId(), cid, null, null);
+		return getChallenge(userRef, cid);
 	}
 
 	/**
@@ -164,16 +168,16 @@ public class YogaService {
 	 * @param uid
 	 * @return
 	 */
-	public ChallengeView getChallenge(String uid, String cid) {
-		UserState userState = userStateDao.findUserState(uid);
+	public ChallengeView getChallenge(UserRef userRef, String cid) {
+		UserState userState = userStateDao.findUserState(userRef.getId());
 		if (userState == null) {
 			userState = new UserState();
-			userState.setUid(uid);
+			userState.setUid(userRef.getId());
 		}
-		return getChallenge(userState, cid);
+		return getChallenge(userRef, userState, cid);
 	}
 
-	private ChallengeView getChallenge(UserState userState, String cid) {
+	private ChallengeView getChallenge(UserRef userRef, UserState userState, String cid) {
 		ChallengeView view = initialChallengeView(challengeDao.findOne(cid));
 
 		int status = HistoryEvent.UNWATCH.getCode();
@@ -207,6 +211,9 @@ public class YogaService {
 				first = status;
 			}
 			last = status;
+			if (!StringUtils.isEmpty(userRef.getRole())) {// role不为空，则为超级用户
+				w.setAvail(true);
+			}
 
 		}
 
@@ -251,7 +258,7 @@ public class YogaService {
 	 * @param workoutId
 	 * @return
 	 */
-	public WorkoutView getWorkout(String uid, String cid, String workoutId) {
+	public WorkoutView getWorkout(UserRef userRef, String cid, String workoutId) {
 		WorkoutView view = initialWorkoutView(workoutDao.findOne(workoutId));
 
 		int status = HistoryEvent.UNWATCH.getCode();
@@ -260,7 +267,8 @@ public class YogaService {
 		int last = -1;
 		RoutineView lastRoutine = null;
 		for (RoutineView r : view.getRoutines()) {
-			UserWatchHistory history = userWatchHistoryDao.findUserHistory(uid, cid, view.getId(), r.getId());
+			UserWatchHistory history = userWatchHistoryDao.findUserHistory(userRef.getId(), cid, view.getId(),
+					r.getId());
 			r.setStatus(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
 
 			if (r.isDisplay()) {
@@ -290,6 +298,11 @@ public class YogaService {
 			} else {
 				r.setAvail(false);
 			}
+
+			if (!StringUtils.isEmpty(userRef.getRole())) {// role不为空，则为超级用户
+				r.setAvail(true);
+			}
+
 		}
 
 		// the status of last watched routine

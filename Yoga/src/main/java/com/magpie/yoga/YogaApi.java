@@ -31,28 +31,28 @@ public class YogaApi {
 	@ResponseBody
 	@ApiOperation(value = "get primary challenge set of homepage")
 	public BaseView<ChallengeSetView> getChallengeSet(@ActiveUser UserRef userRef) {
-		return new BaseView<ChallengeSetView>(yogaService.getDefaultChallengeSet(userRef.getId()));
+		return new BaseView<ChallengeSetView>(yogaService.getDefaultChallengeSet(userRef));
 	}
 
 	@RequestMapping(value = "/challenge/mine", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "get my previous challenge")
 	public BaseView<ChallengeView> getMyChallenge(@ApiIgnore @ActiveUser UserRef userRef) {
-		return new BaseView<ChallengeView>(yogaService.getCurrentChallenge(userRef.getId()));
+		return new BaseView<ChallengeView>(yogaService.getCurrentChallenge(userRef));
 	}
 
 	@RequestMapping(value = "/challenge/{cid}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "get challenge")
 	public BaseView<ChallengeView> getChallenge(@ApiIgnore @ActiveUser UserRef userRef, @PathVariable String cid) {
-		return new BaseView<ChallengeView>(yogaService.getChallenge(userRef.getId(), cid));
+		return new BaseView<ChallengeView>(yogaService.getChallenge(userRef, cid));
 	}
 
 	@RequestMapping(value = "/challenge/{cid}/change", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "unlock challenge")
 	public BaseView<ChallengeView> changeChallenge(@ApiIgnore @ActiveUser UserRef userRef, @PathVariable String cid) {
-		return new BaseView<ChallengeView>(yogaService.chooseChallenge(userRef.getId(), cid));
+		return new BaseView<ChallengeView>(yogaService.chooseChallenge(userRef, cid));
 	}
 
 	@RequestMapping(value = "/challenge/{cid}/workout/{wid}", method = RequestMethod.GET)
@@ -60,7 +60,7 @@ public class YogaApi {
 	@ApiOperation(value = "get workout")
 	public BaseView<WorkoutView> getWorkout(@ApiIgnore @ActiveUser UserRef userRef, @PathVariable String cid,
 			@PathVariable String wid) {
-		WorkoutView workoutView = yogaService.getWorkout(userRef.getId(), cid, wid);
+		WorkoutView workoutView = yogaService.getWorkout(userRef, cid, wid);
 		return new BaseView<WorkoutView>(workoutView);
 	}
 
