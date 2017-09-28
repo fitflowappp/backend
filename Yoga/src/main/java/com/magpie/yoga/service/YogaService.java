@@ -1,6 +1,7 @@
 package com.magpie.yoga.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -322,10 +323,15 @@ public class YogaService {
 		WorkoutView view = new WorkoutView();
 		BeanUtils.copyProperties(workout, view, "routines");
 
+		HashMap<String, Routine> routineMap = new HashMap<>();
+		for (Routine routine : routineDao.findRoutines(workout.getRoutines())) {
+			routineMap.put(routine.getId(), routine);
+		}
+
 		List<RoutineView> routineViews = new ArrayList<>();
 		for (Routine r : workout.getRoutines()) {
 			RoutineView routineView = new RoutineView();
-			BeanUtils.copyProperties(r, routineView);
+			BeanUtils.copyProperties(routineMap.get(r.getId()), routineView);
 			routineViews.add(routineView);
 		}
 		view.setRoutines(routineViews);
