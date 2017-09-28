@@ -81,11 +81,12 @@ public class YogaService {
 			c.setStatus(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
 
 			c.setAvail(needUnlocked ? isAvail(completeList) : true);
-			if (c.isUnlocked() && !c.isAvail()) {
+			boolean completed = history != null && history.getEvent() >= HistoryEvent.SKIPPED.getCode();
+			if (c.isUnlocked() && completed) {
 				needUnlocked = true;
 			}
 
-			completeList.add(history != null && history.getEvent() >= HistoryEvent.SKIPPED.getCode());
+			completeList.add(completed);
 
 			// if (userState != null) {
 			// // 只有当前的才能看
