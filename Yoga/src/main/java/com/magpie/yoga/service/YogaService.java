@@ -81,8 +81,8 @@ public class YogaService {
 			c.setStatus(history == null ? HistoryEvent.UNWATCH.getCode() : history.getEvent());
 
 			c.setAvail(needUnlocked ? isAvail(completeList) : true);
-			boolean completed = history != null && history.getEvent() >= HistoryEvent.SKIPPED.getCode();
-			if (c.isUnlocked() && completed) {
+			boolean completed = (history != null && history.getEvent() >= HistoryEvent.SKIPPED.getCode());
+			if (c.isUnlocked() && !completed) {
 				needUnlocked = true;
 			}
 
