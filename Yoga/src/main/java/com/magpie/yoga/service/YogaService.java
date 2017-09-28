@@ -434,6 +434,10 @@ public class YogaService {
 
 		Milestone milestone = milestoneDao.findOne();
 
+		if (milestone == null) {
+			return null;
+		}
+
 		int totalDuration = 0;
 		int countOfWorkouts = 0;
 		for (UserWatchHistoryStat stat : userWatchHistoryDao.aggregateUserWatchHistory(uid,
