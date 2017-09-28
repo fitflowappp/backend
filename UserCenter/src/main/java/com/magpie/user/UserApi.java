@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.magpie.base.view.BaseView;
+import com.magpie.user.constant.RoleType;
 import com.magpie.user.model.User;
 import com.magpie.user.req.SimpleRegUser;
 import com.magpie.user.view.UserView;
@@ -30,6 +31,9 @@ public class UserApi {
 	public BaseView<UserView> anonymousLogin(@ModelAttribute SimpleRegUser simpleRegUser) {
 		User user = new User();
 		BeanUtils.copyProperties(simpleRegUser, user);
+		if ("admin".equals(user.getFrom())) {
+			user.setRole(RoleType.ADMIN.getCode());
+		}
 		return userService.registerAnonymous(user);
 	}
 
