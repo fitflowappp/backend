@@ -2,6 +2,7 @@ package com.magpie.user;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,7 @@ public class UserApi {
 	@ApiOperation(value = "匿名登录")
 	public BaseView<UserView> anonymousLogin(@ModelAttribute SimpleRegUser simpleRegUser) {
 		User user = new User();
+		BeanUtils.copyProperties(simpleRegUser, user);
 		return userService.registerAnonymous(user);
 	}
 
