@@ -480,10 +480,15 @@ public class YogaService {
 
 	private String getFirstRoutineIdOfChallenge(Challenge challenge) {
 		if (challenge.getWorkouts() != null && !challenge.getWorkouts().isEmpty()) {
-			return getFirstRoutineIdOfWorkout(challenge.getWorkouts().get(0));
+			return getFirstRoutineIdOfWorkout(challenge.getWorkouts().get(0).getId());
 		} else {
 			return null;
 		}
+	}
+
+	private String getFirstRoutineIdOfWorkout(String workoutId) {
+		Workout workout = workoutDao.findOne(workoutId);
+		return getFirstRoutineIdOfWorkout(workout);
 	}
 
 	private String getFirstRoutineIdOfWorkout(Workout workout) {
@@ -503,6 +508,11 @@ public class YogaService {
 		}
 	}
 
+	private String getLastRoutineIdOfWorkout(String workoutId) {
+		Workout workout = workoutDao.findOne(workoutId);
+		return getLastRoutineIdOfWorkout(workout);
+	}
+
 	private String getLastRoutineIdOfWorkout(Workout workout) {
 		if (workout.getRoutines() != null && !workout.getRoutines().isEmpty()) {
 			Routine lastRoutine = null;
@@ -519,7 +529,7 @@ public class YogaService {
 
 	private String getLastRoutineIdOfChallenge(Challenge challenge) {
 		if (challenge.getWorkouts() != null && !challenge.getWorkouts().isEmpty()) {
-			return getLastRoutineIdOfWorkout(challenge.getWorkouts().get(0));
+			return getLastRoutineIdOfWorkout(challenge.getWorkouts().get(0).getId());
 		} else {
 			return null;
 		}
