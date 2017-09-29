@@ -151,7 +151,9 @@ public class YogaService {
 	}
 
 	private ChallengeView getDefaultChallenge() {
-		ChallengeView view = initialChallengeView(challengeDao.findRandomOne());
+		ChallengeSet challengeSet = challengeSetDao.findOneByPrimary(true);
+		ChallengeView view = initialChallengeView(challengeSet.getChallenges().get(0));
+
 		for (WorkoutView w : view.getWorkouts()) {
 			w.setAvail(true);
 			break;
