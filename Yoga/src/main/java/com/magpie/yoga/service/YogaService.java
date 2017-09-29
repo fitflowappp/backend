@@ -529,7 +529,7 @@ public class YogaService {
 
 	private String getLastRoutineIdOfChallenge(Challenge challenge) {
 		if (challenge.getWorkouts() != null && !challenge.getWorkouts().isEmpty()) {
-			return getLastRoutineIdOfWorkout(challenge.getWorkouts().get(0).getId());
+			return getLastRoutineIdOfWorkout(challenge.getWorkouts().get(challenge.getWorkouts().size() - 1).getId());
 		} else {
 			return null;
 		}
