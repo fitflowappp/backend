@@ -309,8 +309,13 @@ public class YogaService {
 
 		}
 
+		// UserWatchHistory wh =
+		// userWatchHistoryDao.findUserHistory(userRef.getId(), cid,
+		// view.getId(),
+		// HistoryDest.WORKOUT.getCode());
+
 		// the status of last watched routine
-		view.setStatus(status);
+		view.setStatus(last);
 		view.setChallengeId(cid);
 		view.setCurrentRoutineId(lastRoutine == null ? null : lastRoutine.getId());
 		view.setAvail(lastRoutine == null ? false : lastRoutine.isAvail());
