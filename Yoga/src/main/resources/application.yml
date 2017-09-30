@@ -1,5 +1,12 @@
 server:
   port: 11000
+  tomcat: 
+    basedir: /usr/local/yogaserver/yoga
+    accesslog: 
+      enabled: true
+logging: 
+  path: /usr/local/yogaserver/yoga/log
+  file:  yoga.log
 spring:
   data:
     mongodb:
