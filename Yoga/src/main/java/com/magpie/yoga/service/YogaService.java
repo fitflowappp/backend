@@ -251,9 +251,7 @@ public class YogaService {
 
 		List<WorkoutView> workoutViews = new ArrayList<>();
 		for (Workout workout : challenge.getWorkouts()) {
-			WorkoutView workoutView = new WorkoutView();
-			BeanUtils.copyProperties(workoutMap.get(workout.getId()), workoutView);
-			workoutViews.add(workoutView);
+			workoutViews.add(initialWorkoutView(workoutMap.get(workout.getId())));
 		}
 		view.setWorkouts(workoutViews);
 		return view;
