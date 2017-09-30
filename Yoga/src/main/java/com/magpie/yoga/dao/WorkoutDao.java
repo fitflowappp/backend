@@ -1,9 +1,14 @@
 package com.magpie.yoga.dao;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.repository.support.MongoRepositoryFactory;
 import org.springframework.stereotype.Repository;
 
@@ -16,5 +21,16 @@ public class WorkoutDao extends BaseMongoRepository<Workout, Serializable> {
 	@Autowired
 	public WorkoutDao(MongoRepositoryFactory mongoRepositoryFactory, MongoOperations mongoOps) {
 		super(mongoRepositoryFactory.getEntityInformation(Workout.class), mongoOps);
+	}
+
+	public List<Workout> findWorkouts(List<Workout> workouts) {
+
+		List<ObjectId> oRids = new ArrayList<>();
+		for (Workout w : workouts) {
+			oRids.add(new ObjectId(w.getId()));
+		}
+		Query query = new Query();
+		query.addCriteria(Criteria.where("id").in(oRids));
+		return findByQuery(query);
 	}
 }
