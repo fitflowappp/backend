@@ -214,7 +214,7 @@ public class YogaService {
 			if (first == -1) {
 				first = status;
 			}
-			last = status;
+			last = w.getStatus();
 			if (!StringUtils.isEmpty(userRef.getRole())) {// role不为空，则为超级用户
 				w.setAvail(true);
 			}
@@ -222,7 +222,7 @@ public class YogaService {
 		}
 
 		// the status of last watched workout
-		view.setStatus(status);
+		view.setStatus(last);
 
 		// current workout in current challenge
 		if (cid.equals(userState.getCurrentChallengeId())) {
