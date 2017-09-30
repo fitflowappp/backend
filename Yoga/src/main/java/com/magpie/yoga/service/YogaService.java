@@ -245,10 +245,16 @@ public class YogaService {
 		}
 		ChallengeView view = new ChallengeView();
 		BeanUtils.copyProperties(challenge, view, "workouts");
+
+		HashMap<String, Workout> workoutMap = new HashMap<>();
+		for (Workout workout : workoutDao.findWorkouts(challenge.getWorkouts())) {
+			workoutMap.put(workout.getId(), workout);
+		}
+
 		List<WorkoutView> workoutViews = new ArrayList<>();
 		for (Workout workout : challenge.getWorkouts()) {
 			WorkoutView workoutView = new WorkoutView();
-			BeanUtils.copyProperties(workout, workoutView);
+			BeanUtils.copyProperties(workoutMap.get(workout.getId()), workoutView);
 			workoutViews.add(workoutView);
 		}
 		view.setWorkouts(workoutViews);
