@@ -127,7 +127,9 @@ public class YogaService {
 		BeanUtils.copyProperties(challengeSet, view, "challenges");
 		List<ChallengeView> challengeViews = new ArrayList<>();
 		for (Challenge challenge : challengeSet.getChallenges()) {
-			challengeViews.add(initialChallengeView(challengeDao.findOne(challenge.getId())));
+			ChallengeView cView = initialChallengeView(challengeDao.findOne(challenge.getId()));
+			cView.setUnlocked(challenge.isUnlocked());
+			challengeViews.add(cView);
 		}
 		view.setChallenges(challengeViews);
 		return view;
