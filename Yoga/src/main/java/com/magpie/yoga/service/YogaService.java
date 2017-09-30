@@ -150,7 +150,7 @@ public class YogaService {
 
 	private ChallengeView getDefaultChallenge() {
 		ChallengeSet challengeSet = challengeSetDao.findOneByPrimary(true);
-		ChallengeView view = initialChallengeView(challengeSet.getChallenges().get(0));
+		ChallengeView view = initialChallengeView(challengeDao.findOne(challengeSet.getChallenges().get(0).getId()));
 
 		for (WorkoutView w : view.getWorkouts()) {
 			w.setAvail(true);
