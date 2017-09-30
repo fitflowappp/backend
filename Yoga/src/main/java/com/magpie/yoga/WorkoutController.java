@@ -55,6 +55,17 @@ public class WorkoutController {
 		return new BaseView<Workout>(workout);
 	}
 
+	@RequestMapping(value = "/{id}/copy/{title}", method = RequestMethod.PUT)
+	@ResponseBody
+	@ApiOperation(value = "edit one Workout")
+	public BaseView<Workout> copyWorkout(@PathVariable String id, @PathVariable String title) {
+		Workout copyWorkout = workoutDao.findOne(id);
+		copyWorkout.setId(null);
+		copyWorkout.setTitle(title);
+		workoutDao.save(copyWorkout);
+		return new BaseView<Workout>(copyWorkout);
+	}
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "delete one Workout")
