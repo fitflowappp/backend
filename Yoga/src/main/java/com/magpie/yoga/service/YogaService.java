@@ -402,7 +402,7 @@ public class YogaService {
 			history.setUid(uid);
 			history.setEvent(type);
 			history.setSeconds(seconds);
-			if (type == HistoryEvent.COMPLETE.getCode()) {
+			if (type == HistoryEvent.COMPLETE.getCode() || type == HistoryEvent.SKIPPED.getCode()) {
 				history.setDuration(routine == null ? 0 : routine.getDuration());
 				history.setDestType(
 						rid.equalsIgnoreCase(getLastRoutineIdOfChallenge(challenge)) ? HistoryDest.CHALLENGE.getCode()
