@@ -356,6 +356,7 @@ public class YogaService {
 		Workout workout = workoutDao.findOne(wid);
 
 		String lastRoutineIdOfChallenge = getLastRoutineIdOfChallenge(challenge);
+		String lastRoutineIdOfWorkout = getLastRoutineIdOfWorkout(workout);
 
 		Routine lastRoutine = null;
 		Routine firstRoutine = null;
@@ -371,7 +372,8 @@ public class YogaService {
 				history.setEvent(HistoryEvent.SKIPPED.getCode());
 				history.setDestType(
 						routine.getId().equalsIgnoreCase(lastRoutineIdOfChallenge) ? HistoryDest.CHALLENGE.getCode()
-								: HistoryDest.ROUTINE.getCode());
+								: routine.getId().equals(lastRoutineIdOfWorkout) ? HistoryDest.WORKOUT.getCode()
+										: HistoryDest.ROUTINE.getCode());
 				histories.add(history);
 			}
 
