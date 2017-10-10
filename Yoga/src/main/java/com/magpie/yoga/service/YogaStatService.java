@@ -105,7 +105,7 @@ public class YogaStatService {
 	@Scheduled(cron = "0 0 1 ? * *")
 	public void generatePrevDayDashboard() {
 
-		Dashboard dashboard = generateDashboard(DateUtil.getPrevDayStartTime(), DateUtil.getTodayStartTime());
+		Dashboard dashboard = generateDashboard(DateUtil.getPrevDayStartTime(), DateUtil.getStartTime());
 		dashboard.setDate(DateUtil.getPrevDayStartTime());
 
 		dashboardDao.save(dashboard);
@@ -119,7 +119,7 @@ public class YogaStatService {
 	 */
 	public Dashboard generateTodayDashboard() {
 
-		Dashboard dashboard = generateDashboard(DateUtil.getTodayStartTime(), DateUtil.getCurrentDate());
+		Dashboard dashboard = generateDashboard(DateUtil.getStartTime(), DateUtil.getCurrentDate());
 		dashboard.setDate(DateUtil.getPrevDayStartTime());
 
 		return dashboard;
