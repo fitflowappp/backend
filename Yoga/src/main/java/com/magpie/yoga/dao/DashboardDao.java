@@ -36,4 +36,10 @@ public class DashboardDao extends BaseMongoRepository<Dashboard, Serializable> {
 			criteria.and("crDate").lt(end);
 		}
 	}
+
+	public Dashboard findDashboard(Date date) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("date").is(date));
+		return findOneByQuery(query);
+	}
 }

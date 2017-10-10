@@ -1,12 +1,12 @@
 package com.magpie.yoga.service;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.magpie.base.utils.DateUtil;
@@ -40,7 +40,7 @@ public class YogaStatService {
 	 * @return
 	 */
 	public List<Dashboard> getDashboard() {
-		return dashboardDao.findAll(new Sort(Direction.DESC, "crDate"));
+		return dashboardDao.findAll(new Sort(Direction.DESC, "date"));
 	}
 
 	/**
@@ -102,13 +102,10 @@ public class YogaStatService {
 	 * 
 	 * @return
 	 */
-	@Scheduled(cron = "0 0 1 ? * *")
-	public void generatePrevDayDashboard() {
+	public Dashboard generatePrevDayDashboard() {
 
-		Dashboard dashboard = generateDashboard(DateUtil.getPrevDayStartTime(), DateUtil.getStartTime());
-		dashboard.setDate(DateUtil.getPrevDayStartTime());
-
-		dashboardDao.save(dashboard);
+		Date date = DateUtil.getPrevDayStartTime();
+		return generateDashboard(date);
 
 	}
 
@@ -119,10 +116,9 @@ public class YogaStatService {
 	 */
 	public Dashboard generateTodayDashboard() {
 
-		Dashboard dashboard = generateDashboard(DateUtil.getStartTime(), DateUtil.getCurrentDate());
-		dashboard.setDate(DateUtil.getPrevDayStartTime());
+		Date current = Calendar.getInstance().getTime();
+		return generateDashboard(current);
 
-		return dashboard;
 	}
 
 	/**
@@ -130,9 +126,12 @@ public class YogaStatService {
 	 * 
 	 * @return
 	 */
-	public Dashboard generateDashboard(Date start, Date end) {
+	public Dashboard generateDashboard(Date date) {
 
+		Date start = DateUtil.getStartTime(date);
+		Date end = DateUtil.getEndTime(date);
 		Dashboard dashboard = new Dashboard();
+		dashboard.setDate(start);
 
 		int challengeCompleteNum = 0;
 		int workoutCompleteNum = 0;
@@ -174,6 +173,12 @@ public class YogaStatService {
 		dashboard.setCalReminderOnNum(userStateDao.countReminder(start, end));
 
 		dashboard.setShareNum(shareRecordDao.count(start, end));
+
+		Dashboard dashboardOld = dashboardDao.findDashboard(date);
+		if (dashboardOld != null) {
+			dashboard.setId(dashboardOld.getId());
+		}
+		dashboardDao.save(dashboard);
 
 		return dashboard;
 
