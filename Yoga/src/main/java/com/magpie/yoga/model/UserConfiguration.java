@@ -11,7 +11,7 @@ public class UserConfiguration extends BaseModel {
 	private boolean remider;
 
 	// Scheduling days Collected Text
-	private String schedulingDays;
+	private int[] schedulingDays = new int[] { 1, 1, 1, 1, 1, 1, 1 };
 	// Scheduling time of day Collected HHMM Time
 	private String schedulingTime;
 
