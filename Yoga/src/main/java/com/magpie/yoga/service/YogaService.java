@@ -30,6 +30,7 @@ import com.magpie.yoga.model.UserState;
 import com.magpie.yoga.model.UserWatchHistory;
 import com.magpie.yoga.model.Workout;
 import com.magpie.yoga.stat.UserWatchHistoryStat;
+import com.magpie.yoga.view.Achievement;
 import com.magpie.yoga.view.ActView;
 import com.magpie.yoga.view.ChallengeSetView;
 import com.magpie.yoga.view.ChallengeView;
@@ -55,6 +56,19 @@ public class YogaService {
 	private MilestoneDao milestoneDao;
 	@Autowired
 	private AchievementRecordDao achievementRecordDao;
+
+	public Achievement getUserAchievments(String uid) {
+		Achievement achievement = new Achievement();
+		for (UserWatchHistoryStat stat : userWatchHistoryDao.aggregateUserWatchHistory(uid,
+				HistoryEvent.COMPLETE.getCode())) {
+			if (stat.getDestType() == HistoryDest.CHALLENGE.getCode()) {
+				achievement.setCompletedChallengeCount(stat.getCount());
+			} else if (stat.getDestType() == HistoryDest.WORKOUT.getCode()) {
+				achievement.setCompletedWorkoutCount(stat.getCount());
+			}
+		}
+		return achievement;
+	}
 
 	/**
 	 * get default challenge set

@@ -12,6 +12,7 @@ import com.magpie.session.ActiveUser;
 import com.magpie.share.UserRef;
 import com.magpie.yoga.constant.HistoryEvent;
 import com.magpie.yoga.service.YogaService;
+import com.magpie.yoga.view.Achievement;
 import com.magpie.yoga.view.ActView;
 import com.magpie.yoga.view.ChallengeSetView;
 import com.magpie.yoga.view.ChallengeView;
@@ -26,6 +27,13 @@ public class YogaApi {
 
 	@Autowired
 	private YogaService yogaService;
+
+	@RequestMapping(value = "/my/achievements", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "get my achievements")
+	public BaseView<Achievement> getMyAchievements(@ActiveUser UserRef userRef) {
+		return new BaseView<Achievement>(yogaService.getUserAchievments(userRef.getId()));
+	}
 
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	@ResponseBody
