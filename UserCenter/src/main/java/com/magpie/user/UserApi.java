@@ -91,4 +91,19 @@ public class UserApi {
 
 	}
 
+	/**
+	 * 功能：获取用户信息<br>
+	 * 
+	 */
+	@RequestMapping(method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "获取用户信息")
+	public BaseView<UserView> getUserInfo(@ActiveUser UserRef userRef) {
+		if (StringUtils.isEmpty(userRef.getId())) {
+			return new BaseView<>(Result.FAILURE);
+		} else {
+			return new BaseView<>(userService.getUserView(userRef.getId()));
+		}
+	}
+
 }

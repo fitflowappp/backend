@@ -118,6 +118,12 @@ public class UserService {
 		return view;
 	}
 
+	public UserView getUserView(String uid) {
+
+		UserView view = initialUserView(userDao.findOne(uid));
+		return view;
+	}
+
 	public BaseView<UserView> registerAnonymous(User user) {
 
 		user.setUnRegistered(true);// 匿名注册，未注册
@@ -218,6 +224,8 @@ public class UserService {
 			if (user.getHeaderImg() != null) {
 				userView.setHeaderImgUrl(user.getHeaderImg().getContentUri());
 			}
+
+			userView.setRegisterDays(DateUtil.daysBetween(userView.getRegisterDate(), DateUtil.getCurrentDate()));
 
 		}
 
