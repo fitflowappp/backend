@@ -5,8 +5,8 @@ public class Result {
 	public static final String CODE_SUCCESS = "1";
 	public static final String CODE_FAILURE = "0";
 
-	public static final Result SUCCESS = new Result(CODE_SUCCESS, "操作成功");
-	public static final Result FAILURE = new Result(CODE_FAILURE, "操作失败");
+	public static final Result SUCCESS = new Result(CODE_SUCCESS, "success");
+	public static final Result FAILURE = new Result(CODE_FAILURE, "failed");
 
 	private String code;
 	private String msg;
@@ -40,4 +40,3 @@ public class Result {
 	}
 
 }
-
