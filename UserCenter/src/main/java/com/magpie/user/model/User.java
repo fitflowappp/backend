@@ -9,14 +9,12 @@ public class User extends BaseModel {
 
 	private String id;
 
-	private String faceBookUid;
-
 	private String name;
 	private String phone;
 	private String password;
 	private Date birthday;
 	private int age;
-	private int gender;
+	private String gender;
 
 	private boolean unRegistered;
 
@@ -30,6 +28,7 @@ public class User extends BaseModel {
 
 	private Date lastLoginDate;// 上次登录时间
 	private Date registerDate;// 注册时间
+	private String registerType;// 注册类型
 	private Date latestMsgDate;// 最后发送消息的时间
 
 	private String from;// 来源
@@ -88,11 +87,11 @@ public class User extends BaseModel {
 		this.age = age;
 	}
 
-	public int getGender() {
+	public String getGender() {
 		return gender;
 	}
 
-	public void setGender(int gender) {
+	public void setGender(String gender) {
 		this.gender = gender;
 	}
 
@@ -200,21 +199,6 @@ public class User extends BaseModel {
 	}
 
 	/**
-	 * @return the faceBookUid
-	 */
-	public String getFaceBookUid() {
-		return faceBookUid;
-	}
-
-	/**
-	 * @param faceBookUid
-	 *            the faceBookUid to set
-	 */
-	public void setFaceBookUid(String faceBookUid) {
-		this.faceBookUid = faceBookUid;
-	}
-
-	/**
 	 * @return the headerImgUrl
 	 */
 	public String getHeaderImgUrl() {
@@ -237,10 +221,26 @@ public class User extends BaseModel {
 	}
 
 	/**
-	 * @param client the client to set
+	 * @param client
+	 *            the client to set
 	 */
 	public void setClient(String client) {
 		this.client = client;
+	}
+
+	/**
+	 * @return the registerType
+	 */
+	public String getRegisterType() {
+		return registerType;
+	}
+
+	/**
+	 * @param registerType
+	 *            the registerType to set
+	 */
+	public void setRegisterType(String registerType) {
+		this.registerType = registerType;
 	}
 
 }

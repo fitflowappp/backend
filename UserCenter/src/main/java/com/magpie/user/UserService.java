@@ -14,7 +14,9 @@ import com.magpie.base.view.BaseView;
 import com.magpie.base.view.Result;
 import com.magpie.cache.UserCacheService;
 import com.magpie.share.UserRef;
+import com.magpie.user.dao.FacebookDao;
 import com.magpie.user.dao.UserDao;
+import com.magpie.user.model.FaceBookUser;
 import com.magpie.user.model.User;
 import com.magpie.user.req.SimpleRegUser;
 import com.magpie.user.view.UserView;
@@ -24,7 +26,10 @@ public class UserService {
 
 	@Autowired
 	private UserDao userDao;
-	
+
+	@Autowired
+	private FacebookDao FacebookDao;
+
 	@Autowired
 	private UserCacheService userCacheService;
 
@@ -123,6 +128,68 @@ public class UserService {
 		return new BaseView<>(getLoginUserView(user));
 	}
 
+	public UserView register(String uid, org.springframework.social.facebook.api.User fbUser) {
+
+		FaceBookUser faceBookUser = FacebookDao.findByFacebookUid(fbUser.getId());
+		if (faceBookUser == null) {
+
+			faceBookUser = new FaceBookUser();
+			saveFacebookUser(uid, fbUser, faceBookUser);
+
+			User user = new User();
+			user.setId(uid);
+			user.setUnRegistered(false);
+			user.setRegisterType("facebook");// facebook
+			user.setRegisterDate(DateUtil.getCurrentDate());
+
+			return register(user);
+		} else {
+			saveFacebookUser(uid, fbUser, faceBookUser);
+			return getLoginUserView(userDao.findOne(uid));
+		}
+	}
+
+	public UserView loginIfRegistered(org.springframework.social.facebook.api.User fbUser) {
+
+		FaceBookUser faceBookUser = FacebookDao.findByFacebookUid(fbUser.getId());
+		if (faceBookUser == null) {
+
+			User user = new User();
+			user.setUnRegistered(false);
+			user.setRegisterType("facebook");// facebook
+			user.setRegisterDate(DateUtil.getCurrentDate());
+			userDao.save(user);
+
+			faceBookUser = new FaceBookUser();
+			saveFacebookUser(user.getId(), fbUser, faceBookUser);
+
+			return getLoginUserView(user);
+		} else {
+			saveFacebookUser(faceBookUser.getUid(), fbUser, faceBookUser);
+			return getLoginUserView(userDao.findOne(faceBookUser.getUid()));
+		}
+	}
+
+	private void saveFacebookUser(String uid, org.springframework.social.facebook.api.User fbUser,
+			FaceBookUser faceBookUser) {
+		BeanUtils.copyProperties(fbUser, faceBookUser, "id");
+		faceBookUser.setFacebookUid(fbUser.getId());
+		faceBookUser.setUid(uid);
+		FacebookDao.save(faceBookUser);
+	}
+
+	public UserView register(User user) {
+
+		User exist = userDao.findOne(user.getId());
+
+		BeanUtils.copyProperties(user, exist);
+
+		user.setLastLoginDate(DateUtil.getCurrentDate());
+		userDao.save(exist);
+
+		return getLoginUserView(exist);
+	}
+
 	private UserRef saveCacheBySessionId(User user) {
 		UserRef userRef = new UserRef();
 		BeanUtils.copyProperties(user, userRef);
@@ -142,6 +209,12 @@ public class UserService {
 		if (user != null) {
 			BeanUtils.copyProperties(user, userView);
 
+			if ("facebook".equals(user.getRegisterType())) {
+				FaceBookUser faceBookUser = FacebookDao.findByUid(user.getId());
+				userView.setHeaderImgUrl(faceBookUser.getCover().getSource());
+				userView.setName(faceBookUser.getName());
+				userView.setGender(faceBookUser.getGender());
+			}
 			if (user.getHeaderImg() != null) {
 				userView.setHeaderImgUrl(user.getHeaderImg().getContentUri());
 			}
@@ -196,9 +269,9 @@ public class UserService {
 		}
 
 		// 发送验证短信
-		//TODO
-		String checkCode="";
-//		String checkCode = messageService.sendPhoneCode(null, phone);
+		// TODO
+		String checkCode = "";
+		// String checkCode = messageService.sendPhoneCode(null, phone);
 		// String checkCode = smsService.sendTemplateSMSService(phone);
 
 		if (checkCode != null) {
@@ -207,7 +280,7 @@ public class UserService {
 			userCacheService.addVerifyCodeCount(phone, 24 * 3600);// 24小时内不能发送超过3次
 			userCacheService.addVerifyCodeCount(phone + "_1", 60);// 60秒内不能重复发送
 			userCacheService.saveToken(token, checkCode + phone, 300);
-			
+
 			return new BaseView<String>(token);
 		} else {
 			return new BaseView<String>(Result.FAILURE);

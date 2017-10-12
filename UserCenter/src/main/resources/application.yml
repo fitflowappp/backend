@@ -15,3 +15,7 @@ spring:
       min-idle: 1
       max-active: 1000
       max-wait: -1
+  social:
+    facebook:
+      app-id: # your application's Facebook App ID
+      app-secret: # your application's Facebook App Secret
