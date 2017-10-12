@@ -36,4 +36,15 @@ public class UserConfigApi {
 		return new BaseView<>(repository);
 	}
 
+	@RequestMapping(method = RequestMethod.GET)
+	@ResponseBody
+	public BaseView<UserConfiguration> getConfig(@ActiveUser UserRef userRef) {
+
+		UserConfiguration repository = userConfigurationDao.findOneByUid(userRef.getId());
+		if (repository == null) {
+			repository = new UserConfiguration();
+		}
+		return new BaseView<>(repository);
+	}
+
 }
