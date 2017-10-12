@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.User;
+import org.springframework.social.facebook.api.impl.FacebookTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,7 +54,7 @@ public class FacebookApi {
 			HttpServletRequest request) {
 		String[] fields = { "id", "name", "birthday", "email", "location", "cover", "hometown", "gender", "first_name",
 				"last_name" };
-		User fbUser = facebook.fetchObject("me", User.class, fields);
+		User fbUser = new FacebookTemplate(facebookReq.getToken()).fetchObject("me", User.class, fields);
 		logger.info("get facebook user info: {}", JSON.toJSONString(fbUser));
 
 		if (fbUser == null || StringUtils.isEmpty(fbUser.getId())) {
