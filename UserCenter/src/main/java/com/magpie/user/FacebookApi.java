@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.facebook.api.Facebook;
-import org.springframework.social.facebook.api.impl.FacebookTemplate;
+import org.springframework.social.facebook.api.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,8 +51,9 @@ public class FacebookApi {
 	@ApiOperation(value = "用户facebook登录")
 	public BaseView<UserView> login(@RequestBody FacebookReq facebookReq, @ActiveUser UserRef userRef,
 			HttpServletRequest request) {
-		org.springframework.social.facebook.api.User fbUser = new FacebookTemplate(facebookReq.getToken())
-				.userOperations().getUserProfile();
+		String[] fields = { "id", "name", "birthday", "email", "location", "cover", "hometown", "gender", "first_name",
+				"last_name" };
+		User fbUser = facebook.fetchObject("me", User.class, fields);
 		logger.info("get facebook user info: {}", JSON.toJSONString(fbUser));
 
 		if (fbUser == null || StringUtils.isEmpty(fbUser.getId())) {
