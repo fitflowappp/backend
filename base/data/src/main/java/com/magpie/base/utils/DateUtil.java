@@ -9,6 +9,25 @@ public class DateUtil {
 		return Calendar.getInstance().getTime();
 	}
 
+	/**
+	 * 计算两个日期之间相差的天数
+	 * 
+	 * @param date1
+	 * @param date2
+	 * @return
+	 */
+	public static int daysBetween(Date from, Date end) {
+		from = from == null ? Calendar.getInstance().getTime() : from;
+		end = end == null ? Calendar.getInstance().getTime() : end;
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(getStartTime(from));
+		long time1 = cal.getTimeInMillis() / (3600 * 24 * 1000);
+		cal.setTime(getStartTime(end));
+		long time2 = cal.getTimeInMillis() / (3600 * 24 * 1000);
+
+		return (int) (time2 - time1);
+	}
+
 	public static Date getStartTime() {
 		Calendar calendar = Calendar.getInstance();
 		// 将时间设置为今天的0点 xx年xx月xx日 00:00:00
