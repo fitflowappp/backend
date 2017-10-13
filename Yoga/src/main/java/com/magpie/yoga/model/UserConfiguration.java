@@ -47,20 +47,26 @@ public class UserConfiguration extends BaseModel {
 		this.remider = remider;
 	}
 
-	public String getSchedulingDays() {
-		return schedulingDays;
-	}
-
-	public void setSchedulingDays(String schedulingDays) {
-		this.schedulingDays = schedulingDays;
-	}
-
 	public String getSchedulingTime() {
 		return schedulingTime;
 	}
 
 	public void setSchedulingTime(String schedulingTime) {
 		this.schedulingTime = schedulingTime;
+	}
+
+	/**
+	 * @return the schedulingDays
+	 */
+	public int[] getSchedulingDays() {
+		return schedulingDays;
+	}
+
+	/**
+	 * @param schedulingDays the schedulingDays to set
+	 */
+	public void setSchedulingDays(int[] schedulingDays) {
+		this.schedulingDays = schedulingDays;
 	}
 
 }

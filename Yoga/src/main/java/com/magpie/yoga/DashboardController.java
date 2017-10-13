@@ -48,7 +48,7 @@ public class DashboardController {
 	@ResponseBody
 	public void generateAllDashboard() {
 		Calendar calendar = Calendar.getInstance();
-		for (int i = 1; i <= 10; i++) {
+		for (int i = 1; i <= 13; i++) {
 			calendar.set(2017, 9, i);
 			yogaStatService.generateDashboard(calendar.getTime());
 		}
