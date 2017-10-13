@@ -17,8 +17,8 @@ import com.magpie.yoga.dao.DashboardDao;
 import com.magpie.yoga.dao.ShareRecordDao;
 import com.magpie.yoga.dao.UserConfigurationDao;
 import com.magpie.yoga.dao.UserWatchHistoryDao;
+import com.magpie.yoga.model.AchievementRecord;
 import com.magpie.yoga.model.Dashboard;
-import com.magpie.yoga.stat.AchievementStat;
 import com.magpie.yoga.stat.UserWatchHistoryStat;
 
 @Service
@@ -185,12 +185,10 @@ public class YogaStatService {
 
 	}
 
-	private long getAchievementCount(List<AchievementStat> achievementStats) {
+	private long getAchievementCount(List<AchievementRecord> achievementStats) {
 		long count = 0;
 		if (achievementStats != null) {
-			for (AchievementStat stat : achievementStats) {
-				count += stat.getCount();
-			}
+			count = achievementStats.size();
 		}
 		return count;
 	}
