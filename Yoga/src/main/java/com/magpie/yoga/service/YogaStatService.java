@@ -15,6 +15,7 @@ import com.magpie.yoga.constant.HistoryEvent;
 import com.magpie.yoga.dao.AchievementRecordDao;
 import com.magpie.yoga.dao.DashboardDao;
 import com.magpie.yoga.dao.ShareRecordDao;
+import com.magpie.yoga.dao.UserConfigurationDao;
 import com.magpie.yoga.dao.UserStateDao;
 import com.magpie.yoga.dao.UserWatchHistoryDao;
 import com.magpie.yoga.model.Dashboard;
@@ -33,6 +34,8 @@ public class YogaStatService {
 	private ShareRecordDao shareRecordDao;
 	@Autowired
 	private DashboardDao dashboardDao;
+	@Autowired
+	private UserConfigurationDao userConfigurationDao;
 
 	/**
 	 * get dashboard list
@@ -88,8 +91,8 @@ public class YogaStatService {
 		dashboard.setTotalDuration(
 				userWatchHistoryDao.aggregateTotalDuration(HistoryEvent.COMPLETE.getCode(), null, null).getDuration());
 
-		dashboard.setNotificationOnNum(userStateDao.countNotification(null, null));
-		dashboard.setCalReminderOnNum(userStateDao.countReminder(null, null));
+		dashboard.setNotificationOnNum(userConfigurationDao.countNotification(null, null));
+		dashboard.setCalReminderOnNum(userConfigurationDao.countReminder(null, null));
 
 		dashboard.setShareNum(shareRecordDao.count());
 
@@ -169,8 +172,8 @@ public class YogaStatService {
 		dashboard.setTotalDuration(
 				userWatchHistoryDao.aggregateTotalDuration(HistoryEvent.COMPLETE.getCode(), start, end).getDuration());
 
-		dashboard.setNotificationOnNum(userStateDao.countNotification(start, end));
-		dashboard.setCalReminderOnNum(userStateDao.countReminder(start, end));
+		dashboard.setNotificationOnNum(userConfigurationDao.countNotification(start, end));
+		dashboard.setCalReminderOnNum(userConfigurationDao.countReminder(start, end));
 
 		dashboard.setShareNum(shareRecordDao.count(start, end));
 
