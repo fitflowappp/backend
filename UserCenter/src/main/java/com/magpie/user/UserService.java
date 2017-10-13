@@ -150,8 +150,8 @@ public class UserService {
 
 			return register(user);
 		} else {
-			saveFacebookUser(uid, fbUser, faceBookUser);
-			return getLoginUserView(userDao.findOne(uid));
+			saveFacebookUser(faceBookUser.getUid(), fbUser, faceBookUser);
+			return getLoginUserView(userDao.findOne(faceBookUser.getUid()));
 		}
 	}
 
