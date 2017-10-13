@@ -41,6 +41,7 @@ public class YogaStatService {
 	 * @return
 	 */
 	public List<Dashboard> getDashboard() {
+		this.generateTodayDashboard();
 		return dashboardDao.findAll(new Sort(Direction.DESC, "date"));
 	}
 
@@ -131,6 +132,7 @@ public class YogaStatService {
 
 		Date start = DateUtil.getStartTime(date);
 		Date end = DateUtil.getEndTime(date);
+
 		Dashboard dashboard = new Dashboard();
 		dashboard.setDate(start);
 
@@ -175,7 +177,7 @@ public class YogaStatService {
 
 		dashboard.setShareNum(shareRecordDao.count(start, end));
 
-		Dashboard dashboardOld = dashboardDao.findDashboard(date);
+		Dashboard dashboardOld = dashboardDao.findDashboard(start);
 		if (dashboardOld != null) {
 			dashboard.setId(dashboardOld.getId());
 		}
