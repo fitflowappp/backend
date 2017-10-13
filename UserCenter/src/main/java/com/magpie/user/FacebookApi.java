@@ -52,8 +52,8 @@ public class FacebookApi {
 	@ApiOperation(value = "用户facebook登录")
 	public BaseView<UserView> login(@RequestBody FacebookReq facebookReq, @ActiveUser UserRef userRef,
 			HttpServletRequest request) {
-		String[] fields = { "id", "name", "birthday", "email", "location", "cover", "hometown", "gender", "first_name",
-				"last_name" };
+		String[] fields = { "id", "name", "birthday", "email", "location", "link", "cover", "hometown", "gender",
+				"first_name", "last_name" };
 		User fbUser = new FacebookTemplate(facebookReq.getToken()).fetchObject("me", User.class, fields);
 		logger.info("get facebook user info: {}", JSON.toJSONString(fbUser));
 
