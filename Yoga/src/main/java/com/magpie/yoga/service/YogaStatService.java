@@ -16,9 +16,9 @@ import com.magpie.yoga.dao.AchievementRecordDao;
 import com.magpie.yoga.dao.DashboardDao;
 import com.magpie.yoga.dao.ShareRecordDao;
 import com.magpie.yoga.dao.UserConfigurationDao;
-import com.magpie.yoga.dao.UserStateDao;
 import com.magpie.yoga.dao.UserWatchHistoryDao;
 import com.magpie.yoga.model.Dashboard;
+import com.magpie.yoga.stat.AchievementStat;
 import com.magpie.yoga.stat.UserWatchHistoryStat;
 
 @Service
@@ -28,8 +28,6 @@ public class YogaStatService {
 	private UserWatchHistoryDao userWatchHistoryDao;
 	@Autowired
 	private AchievementRecordDao achievementRecordDao;
-	@Autowired
-	private UserStateDao userStateDao;
 	@Autowired
 	private ShareRecordDao shareRecordDao;
 	@Autowired
@@ -82,7 +80,7 @@ public class YogaStatService {
 		dashboard.setWorkoutCompleteNum(workoutCompleteNum + challengeCompleteNum);
 		dashboard.setWorkoutStartNum(workoutStartNum + challengeStartNum);
 
-		dashboard.setAchievementNum(achievementRecordDao.count());
+		dashboard.setAchievementNum(getAchievementCount(achievementRecordDao.aggregateCount(null, null)));
 
 		List<UserWatchHistoryStat> temp = userWatchHistoryDao.aggregateWorkoutCompleteUsers(
 				HistoryDest.WORKOUT.getCode(), HistoryEvent.COMPLETE.getCode(), null, null);
@@ -163,7 +161,7 @@ public class YogaStatService {
 		dashboard.setWorkoutCompleteNum(workoutCompleteNum + challengeCompleteNum);
 		dashboard.setWorkoutStartNum(workoutStartNum + challengeStartNum);
 
-		dashboard.setAchievementNum(achievementRecordDao.count(start, end));
+		dashboard.setAchievementNum(getAchievementCount(achievementRecordDao.aggregateCount(start, end)));
 
 		List<UserWatchHistoryStat> temp = userWatchHistoryDao.aggregateWorkoutCompleteUsers(
 				HistoryDest.WORKOUT.getCode(), HistoryEvent.COMPLETE.getCode(), start, end);
@@ -185,5 +183,15 @@ public class YogaStatService {
 
 		return dashboard;
 
+	}
+
+	private long getAchievementCount(List<AchievementStat> achievementStats) {
+		long count = 0;
+		if (achievementStats != null) {
+			for (AchievementStat stat : achievementStats) {
+				count += stat.getCount();
+			}
+		}
+		return count;
 	}
 }
