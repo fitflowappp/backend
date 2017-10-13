@@ -1,17 +1,25 @@
 package com.magpie.yoga.dao;
 
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
+
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.repository.support.MongoRepositoryFactory;
 import org.springframework.stereotype.Repository;
 
 import com.magpie.base.dao.BaseMongoRepository;
 import com.magpie.yoga.model.AchievementRecord;
+import com.magpie.yoga.stat.AchievementStat;
 
 @Repository
 public class AchievementRecordDao extends BaseMongoRepository<AchievementRecord, Serializable> {
@@ -21,10 +29,14 @@ public class AchievementRecordDao extends BaseMongoRepository<AchievementRecord,
 		super(mongoRepositoryFactory.getEntityInformation(AchievementRecord.class), mongoOps);
 	}
 
-	public long count(Date start, Date end) {
+	public List<AchievementStat> aggregateCount(Date start, Date end) {
 		Criteria criteria = new Criteria();
 		addDateCriteria(start, end, criteria);
-		return count(new Query().addCriteria(criteria));
+
+		TypedAggregation<AchievementRecord> aggregation = newAggregation(AchievementRecord.class, match(criteria),
+				group("type").first("type").as("type").count().as("count"), project("count", "type"));
+		AggregationResults<AchievementStat> result = getMongoOperations().aggregate(aggregation, AchievementStat.class);
+		return result.getMappedResults();
 	}
 
 	private void addDateCriteria(Date start, Date end, Criteria criteria) {
