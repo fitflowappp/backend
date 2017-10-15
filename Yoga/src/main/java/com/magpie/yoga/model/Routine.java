@@ -19,9 +19,25 @@ public class Routine extends BaseModel {
 
 	// for statistic
 	// Number of times started Collected Integer
-	private int startTimes;
+	private int startedTimes;
 	// Number of times skipped Collected Integer
-	private int skipTimes;
+	private int skippedTimes;
+
+	public int getStartedTimes() {
+		return startedTimes;
+	}
+
+	public void setStartedTimes(int startedTimes) {
+		this.startedTimes = startedTimes;
+	}
+
+	public int getSkippedTimes() {
+		return skippedTimes;
+	}
+
+	public void setSkippedTimes(int skippedTimes) {
+		this.skippedTimes = skippedTimes;
+	}
 
 	public String getId() {
 		return id;
@@ -69,22 +85,6 @@ public class Routine extends BaseModel {
 
 	public void setDisplay(boolean display) {
 		this.display = display;
-	}
-
-	public int getStartTimes() {
-		return startTimes;
-	}
-
-	public void setStartTimes(int startTimes) {
-		this.startTimes = startTimes;
-	}
-
-	public int getSkipTimes() {
-		return skipTimes;
-	}
-
-	public void setSkipTimes(int skipTimes) {
-		this.skipTimes = skipTimes;
 	}
 
 }

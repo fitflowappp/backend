@@ -18,4 +18,10 @@ public class TaskComponent {
 		yogaStatService.generatePrevDayDashboard();
 	}
 
+	@Scheduled(cron = "0 0 0/4 * * *")
+	// Challenge,Workout,Routine统计数据
+	public void generateCWRStatistics() {
+		yogaStatService.updateCount();
+	}
+
 }

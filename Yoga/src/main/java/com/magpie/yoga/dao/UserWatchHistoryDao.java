@@ -22,6 +22,7 @@ import org.springframework.data.mongodb.repository.support.MongoRepositoryFactor
 import org.springframework.stereotype.Repository;
 
 import com.magpie.base.dao.BaseMongoRepository;
+import com.magpie.yoga.constant.HistoryDest;
 import com.magpie.yoga.model.UserWatchHistory;
 import com.magpie.yoga.stat.UserWatchHistoryStat;
 
@@ -88,12 +89,80 @@ public class UserWatchHistoryDao extends BaseMongoRepository<UserWatchHistory, S
 		return result.getMappedResults();
 	}
 
-	public List<UserWatchHistoryStat> aggregateWorkoutCompleteUsers(int destType, int event, Date start, Date end) {
-		Criteria criteria = Criteria.where("event").is(event).and("destType").lte(destType);
+	public List<UserWatchHistoryStat> aggregateWorkoutUsers(int event, Date start, Date end) {
+		Criteria criteria = Criteria.where("event").is(event).and("destType").lte(HistoryDest.WORKOUT.getCode());
 		addDateCriteria(start, end, criteria);
 
 		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class, match(criteria),
 				group("uid").count().as("count"), project("count"));
+		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
+				UserWatchHistoryStat.class);
+		return result.getMappedResults();
+	}
+
+	public List<UserWatchHistoryStat> aggregateChallengeCount(Date start, Date end) {
+
+		Criteria criteria = Criteria.where("destType").is(HistoryDest.CHALLENGE.getCode());
+		addDateCriteria(start, end, criteria);
+
+		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class, match(criteria),
+				group("event", "challengeId").sum("duration").as("duration").count().as("count").first("challengeId")
+						.as("challengeId").first("destType").as("destType").first("event").as("event"),
+				project("duration", "count", "challengeId", "destType", "event"));
+		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
+				UserWatchHistoryStat.class);
+		return result.getMappedResults();
+	}
+
+	public List<UserWatchHistoryStat> aggregateWorkoutCount(Date start, Date end) {
+
+		Criteria criteria = Criteria.where("destType").lte(HistoryDest.WORKOUT.getCode());
+		addDateCriteria(start, end, criteria);
+
+		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class, match(criteria),
+				group("event", "workoutId").sum("duration").as("duration").count().as("count").first("workoutId")
+						.as("workoutId").first("destType").as("destType").first("event").as("event"),
+				project("duration", "count", "workoutId", "destType", "event"));
+		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
+				UserWatchHistoryStat.class);
+		return result.getMappedResults();
+	}
+
+	public List<UserWatchHistoryStat> aggregateRoutineCount(Date start, Date end) {
+
+		Criteria criteria = new Criteria();
+		addDateCriteria(start, end, criteria);
+
+		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class, match(criteria),
+				group("event", "routineId").sum("duration").as("duration").count().as("count").first("routineId")
+						.as("routineId").first("destType").as("destType").first("event").as("event"),
+				project("duration", "routineId", "count", "destType", "event"));
+		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
+				UserWatchHistoryStat.class);
+		return result.getMappedResults();
+	}
+
+	public List<UserWatchHistoryStat> aggregateChallengeUsers(Date start, Date end) {
+		Criteria criteria = Criteria.where("destType").is(HistoryDest.CHALLENGE.getCode());
+		addDateCriteria(start, end, criteria);
+
+		TypedAggregation<UserWatchHistory> aggregation = newAggregation(
+				UserWatchHistory.class, match(criteria), group("uid", "challengeId").first("challengeId")
+						.as("challengeId").first("uid").as("uid").count().as("count").max("event").as("event"),
+				project("count", "uid", "challengeId", "event"));
+		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
+				UserWatchHistoryStat.class);
+		return result.getMappedResults();
+	}
+
+	public List<UserWatchHistoryStat> aggregateWorkoutUsers(Date start, Date end) {
+		Criteria criteria = Criteria.where("destType").lte(HistoryDest.WORKOUT.getCode());
+		addDateCriteria(start, end, criteria);
+
+		TypedAggregation<UserWatchHistory> aggregation = newAggregation(
+				UserWatchHistory.class, match(criteria), group("uid", "workoutId").first("workoutId").as("workoutId")
+						.first("uid").as("uid").count().as("count").max("event").as("event"),
+				project("count", "uid", "workoutId", "event"));
 		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
 				UserWatchHistoryStat.class);
 		return result.getMappedResults();

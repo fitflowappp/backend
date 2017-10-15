@@ -3,6 +3,7 @@ package com.magpie.yoga;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.magpie.base.query.PageQuery;
 import com.magpie.base.view.BaseView;
 import com.magpie.base.view.Result;
 import com.magpie.yoga.dao.WorkoutDao;
@@ -27,8 +29,8 @@ public class WorkoutController {
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "get all workouts", response = Workout.class, responseContainer = "List")
-	public List<Workout> getWorkout() {
-		return workoutDao.findAll();
+	public List<Workout> getWorkout(@ModelAttribute PageQuery pageQuery) {
+		return workoutDao.findBySort(pageQuery);
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
