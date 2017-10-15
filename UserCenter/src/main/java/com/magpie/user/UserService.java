@@ -134,12 +134,13 @@ public class UserService {
 		return new BaseView<>(getLoginUserView(user));
 	}
 
-	public UserView register(String uid, org.springframework.social.facebook.api.User fbUser) {
+	public UserView register(String uid, org.springframework.social.facebook.api.User fbUser, byte[] imgBytes) {
 
 		FaceBookUser faceBookUser = FacebookDao.findByFacebookUid(fbUser.getId());
 		if (faceBookUser == null) {
 
 			faceBookUser = new FaceBookUser();
+			faceBookUser.setHeaderImgContent(imgBytes);
 			saveFacebookUser(uid, fbUser, faceBookUser);
 
 			User user = new User();
@@ -150,12 +151,13 @@ public class UserService {
 
 			return register(user);
 		} else {
+			faceBookUser.setHeaderImgContent(imgBytes);
 			saveFacebookUser(faceBookUser.getUid(), fbUser, faceBookUser);
 			return getLoginUserView(userDao.findOne(faceBookUser.getUid()));
 		}
 	}
 
-	public UserView loginIfRegistered(org.springframework.social.facebook.api.User fbUser) {
+	public UserView loginIfRegistered(org.springframework.social.facebook.api.User fbUser, byte[] imgBytes) {
 
 		FaceBookUser faceBookUser = FacebookDao.findByFacebookUid(fbUser.getId());
 		if (faceBookUser == null) {
@@ -167,10 +169,12 @@ public class UserService {
 			userDao.save(user);
 
 			faceBookUser = new FaceBookUser();
+			faceBookUser.setHeaderImgContent(imgBytes);
 			saveFacebookUser(user.getId(), fbUser, faceBookUser);
 
 			return getLoginUserView(user);
 		} else {
+			faceBookUser.setHeaderImgContent(imgBytes);
 			saveFacebookUser(faceBookUser.getUid(), fbUser, faceBookUser);
 			return getLoginUserView(userDao.findOne(faceBookUser.getUid()));
 		}
@@ -217,9 +221,9 @@ public class UserService {
 
 			if ("facebook".equals(user.getRegisterType())) {
 				FaceBookUser faceBookUser = FacebookDao.findByUid(user.getId());
-				userView.setHeaderImgUrl(faceBookUser.getCover().getSource());
 				userView.setName(faceBookUser.getName());
 				userView.setGender(faceBookUser.getGender());
+				userView.setHeaderImgContent(faceBookUser.getHeaderImgContent());
 			}
 			if (user.getHeaderImg() != null) {
 				userView.setHeaderImgUrl(user.getHeaderImg().getContentUri());

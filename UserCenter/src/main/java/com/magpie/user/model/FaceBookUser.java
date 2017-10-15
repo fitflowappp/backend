@@ -24,6 +24,8 @@ public class FaceBookUser {
 	// Facebook ID Facebook API Integer
 	private String facebookUid;//
 
+	private byte[] headerImgContent;
+
 	private String about;
 
 	private Location address;
@@ -565,6 +567,20 @@ public class FaceBookUser {
 
 	public void setVideoUploadLimits(VideoUploadLimits videoUploadLimits) {
 		this.videoUploadLimits = videoUploadLimits;
+	}
+
+	/**
+	 * @return the headerImgContent
+	 */
+	public byte[] getHeaderImgContent() {
+		return headerImgContent;
+	}
+
+	/**
+	 * @param headerImgContent the headerImgContent to set
+	 */
+	public void setHeaderImgContent(byte[] headerImgContent) {
+		this.headerImgContent = headerImgContent;
 	}
 
 }

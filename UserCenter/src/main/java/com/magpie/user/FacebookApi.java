@@ -54,17 +54,21 @@ public class FacebookApi {
 			HttpServletRequest request) {
 		String[] fields = { "id", "name", "birthday", "email", "location", "link", "cover", "hometown", "gender",
 				"first_name", "last_name" };
-		User fbUser = new FacebookTemplate(facebookReq.getToken()).fetchObject("me", User.class, fields);
+
+		FacebookTemplate template = new FacebookTemplate(facebookReq.getToken());
+		User fbUser = template.fetchObject("me", User.class, fields);
+
 		logger.info("get facebook user info: {}", JSON.toJSONString(fbUser));
 
 		if (fbUser == null || StringUtils.isEmpty(fbUser.getId())) {
 			return new BaseView<>(Result.FAILURE);
 		}
+		byte[] imgBytes = template.userOperations().getUserProfileImage(fbUser.getId());
 		if (StringUtils.isEmpty(userRef.getId())) {
 			// 无session，重新注册/登录
-			return new BaseView<>(userService.loginIfRegistered(fbUser));
+			return new BaseView<>(userService.loginIfRegistered(fbUser, imgBytes));
 		} else {
-			return new BaseView<>(userService.register(userRef.getId(), fbUser));
+			return new BaseView<>(userService.register(userRef.getId(), fbUser, imgBytes));
 		}
 
 	}

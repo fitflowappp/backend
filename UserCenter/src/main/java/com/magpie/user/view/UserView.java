@@ -8,6 +8,8 @@ public class UserView extends User {
 
 	private int registerDays;
 
+	private byte[] headerImgContent;
+
 	public String getSessionId() {
 		return sessionId;
 	}
@@ -24,10 +26,25 @@ public class UserView extends User {
 	}
 
 	/**
-	 * @param registerDays the registerDays to set
+	 * @param registerDays
+	 *            the registerDays to set
 	 */
 	public void setRegisterDays(int registerDays) {
 		this.registerDays = registerDays;
+	}
+
+	/**
+	 * @return the headerImgContent
+	 */
+	public byte[] getHeaderImgContent() {
+		return headerImgContent;
+	}
+
+	/**
+	 * @param headerImgContent the headerImgContent to set
+	 */
+	public void setHeaderImgContent(byte[] headerImgContent) {
+		this.headerImgContent = headerImgContent;
 	}
 
 }
