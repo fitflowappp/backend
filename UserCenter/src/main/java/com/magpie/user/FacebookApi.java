@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.facebook.api.Facebook;
+import org.springframework.social.facebook.api.ImageType;
 import org.springframework.social.facebook.api.User;
 import org.springframework.social.facebook.api.impl.FacebookTemplate;
 import org.springframework.stereotype.Controller;
@@ -63,7 +64,7 @@ public class FacebookApi {
 		if (fbUser == null || StringUtils.isEmpty(fbUser.getId())) {
 			return new BaseView<>(Result.FAILURE);
 		}
-		byte[] imgBytes = template.userOperations().getUserProfileImage(fbUser.getId());
+		byte[] imgBytes = template.userOperations().getUserProfileImage(fbUser.getId(), ImageType.LARGE);
 		if (StringUtils.isEmpty(userRef.getId())) {
 			// 无session，重新注册/登录
 			return new BaseView<>(userService.loginIfRegistered(fbUser, imgBytes));
