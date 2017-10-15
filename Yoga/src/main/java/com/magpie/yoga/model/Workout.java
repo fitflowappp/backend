@@ -30,6 +30,44 @@ public class Workout extends BaseModel {
 	// Number of unique users completed Derived, from individual user's
 	// completed routine ID Integer
 	// Total duration of being watched Collected HHMMSS
+	private long startedTimes;
+	private long completedTimes;
+	private long startedUserCount;
+	private long completedUserCount;
+	private long totalDuration;
+
+	public long getStartedTimes() {
+		return startedTimes;
+	}
+
+	public void setStartedTimes(long startedTimes) {
+		this.startedTimes = startedTimes;
+	}
+
+	public long getCompletedTimes() {
+		return completedTimes;
+	}
+
+	public void setCompletedTimes(long completedTimes) {
+		this.completedTimes = completedTimes;
+	}
+
+	public long getStartedUserCount() {
+		return startedUserCount;
+	}
+
+	public void setStartedUserCount(long startedUserCount) {
+		this.startedUserCount = startedUserCount;
+	}
+
+	public long getCompletedUserCount() {
+		return completedUserCount;
+	}
+
+	public void setCompletedUserCount(long completedUserCount) {
+		this.completedUserCount = completedUserCount;
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -92,6 +130,20 @@ public class Workout extends BaseModel {
 
 	public void setRoutines(List<Routine> routines) {
 		this.routines = routines;
+	}
+
+	/**
+	 * @return the totalDuration
+	 */
+	public long getTotalDuration() {
+		return totalDuration;
+	}
+
+	/**
+	 * @param totalDuration the totalDuration to set
+	 */
+	public void setTotalDuration(long totalDuration) {
+		this.totalDuration = totalDuration;
 	}
 
 }

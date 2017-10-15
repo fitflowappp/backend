@@ -25,12 +25,17 @@ public class Challenge extends BaseModel {
 	private boolean unlocked;
 	// Associated Workout IDs, in sequence Admin create new or edit Custom
 	private List<Workout> workouts;
+
 	// Number of times started Collected Integer
+	private long startedTimes;
 	// Number of times completed Collected Integer
+	private long completedTimes;
 	// Number of unique users started Derived, from individual user's started
 	// challenge ID Integer
+	private long startedUserCount;
 	// Number of unique users completed Derived, from individual user's
 	// completed challenge ID Integer
+	private long completedUserCount;
 
 	public String getId() {
 		return id;
@@ -101,6 +106,38 @@ public class Challenge extends BaseModel {
 	 */
 	public void setUnlocked(boolean unlocked) {
 		this.unlocked = unlocked;
+	}
+
+	public long getStartedTimes() {
+		return startedTimes;
+	}
+
+	public void setStartedTimes(long startedTimes) {
+		this.startedTimes = startedTimes;
+	}
+
+	public long getCompletedTimes() {
+		return completedTimes;
+	}
+
+	public void setCompletedTimes(long completedTimes) {
+		this.completedTimes = completedTimes;
+	}
+
+	public long getStartedUserCount() {
+		return startedUserCount;
+	}
+
+	public void setStartedUserCount(long startedUserCount) {
+		this.startedUserCount = startedUserCount;
+	}
+
+	public long getCompletedUserCount() {
+		return completedUserCount;
+	}
+
+	public void setCompletedUserCount(long completedUserCount) {
+		this.completedUserCount = completedUserCount;
 	}
 
 }

@@ -16,10 +16,12 @@ public class Routine extends BaseModel {
 	private ResourceRef video;
 	// Display in Workout detail page? Admin create new or edit Boolean
 	private boolean display;
+
+	// for statistic
 	// Number of times started Collected Integer
-	// private int startTimes;
+	private int startTimes;
 	// Number of times skipped Collected Integer
-	// private int skipTimes;
+	private int skipTimes;
 
 	public String getId() {
 		return id;
@@ -67,6 +69,22 @@ public class Routine extends BaseModel {
 
 	public void setDisplay(boolean display) {
 		this.display = display;
+	}
+
+	public int getStartTimes() {
+		return startTimes;
+	}
+
+	public void setStartTimes(int startTimes) {
+		this.startTimes = startTimes;
+	}
+
+	public int getSkipTimes() {
+		return skipTimes;
+	}
+
+	public void setSkipTimes(int skipTimes) {
+		this.skipTimes = skipTimes;
 	}
 
 }
