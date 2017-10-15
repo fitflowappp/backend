@@ -318,8 +318,12 @@ public class YogaStatService {
 
 	private long getAchievementCount(List<AchievementRecord> achievementStats) {
 		long count = 0;
+		Map<String, AchievementRecord> aMap = new HashMap<>();
 		if (achievementStats != null) {
-			count = achievementStats.size();
+			for (AchievementRecord achievementRecord : achievementStats) {
+				aMap.put(achievementRecord.getUid(), achievementRecord);
+			}
+			return aMap.values().size();
 		}
 		return count;
 	}

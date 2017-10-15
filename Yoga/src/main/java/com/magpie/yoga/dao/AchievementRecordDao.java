@@ -33,7 +33,7 @@ public class AchievementRecordDao extends BaseMongoRepository<AchievementRecord,
 		addDateCriteria(start, end, criteria);
 
 		TypedAggregation<AchievementRecord> aggregation = newAggregation(AchievementRecord.class, match(criteria),
-				group("uid").first("type").as("type").first("uid").as("uid"), project("uid", "type"));
+				group("uid", "type").first("type").as("type").first("uid").as("uid"), project("uid", "type"));
 		AggregationResults<AchievementRecord> result = getMongoOperations().aggregate(aggregation,
 				AchievementRecord.class);
 		return result.getMappedResults();
