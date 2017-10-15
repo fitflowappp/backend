@@ -63,7 +63,8 @@ public class UserConfiguration extends BaseModel {
 	}
 
 	/**
-	 * @param schedulingDays the schedulingDays to set
+	 * @param schedulingDays
+	 *            the schedulingDays to set
 	 */
 	public void setSchedulingDays(int[] schedulingDays) {
 		this.schedulingDays = schedulingDays;

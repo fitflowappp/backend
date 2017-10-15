@@ -10,7 +10,7 @@ logging:
 spring:
   data:
     mongodb:
-      host: 127.0.0.1
+      host: 192.168.1.2
       port: 27017
       database: yoga
   redis:

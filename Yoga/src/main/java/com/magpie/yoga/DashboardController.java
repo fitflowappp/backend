@@ -4,7 +4,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,16 +38,11 @@ public class DashboardController {
 		return new BaseView<>(yogaStatService.generateDashboard(dashboardGenReq.getDate()));
 	}
 
-	@Scheduled(cron = "0 30 0 ? * *")
-	public void generateDashboard() {
-		yogaStatService.generatePrevDayDashboard();
-	}
-
 	@RequestMapping(value = "/allday", method = RequestMethod.POST)
 	@ResponseBody
 	public void generateAllDashboard() {
 		Calendar calendar = Calendar.getInstance();
-		for (int i = 1; i <= 13; i++) {
+		for (int i = 1; i <= 15; i++) {
 			calendar.set(2017, 9, i);
 			yogaStatService.generateDashboard(calendar.getTime());
 		}
