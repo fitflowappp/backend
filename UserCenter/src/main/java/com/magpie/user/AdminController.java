@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -42,11 +43,18 @@ public class AdminController {
 		return adminService.login(admin.getName(), admin.getPassword());
 	}
 
-	@RequestMapping(value = "/users", method = RequestMethod.GET)
+	@RequestMapping(value = "/user", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "获取所有用户（有分页）")
 	public PageView<FacebookUserView> getUsers(@ModelAttribute PageQuery pageQuery) {
 		return userService.getPageView(pageQuery);
+	}
+
+	@RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "获取用户详细信息")
+	public FacebookUserView getUser(@PathVariable String id) {
+		return userService.getFacebookUserView(id);
 	}
 
 }
