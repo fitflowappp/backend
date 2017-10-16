@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.magpie.base.utils.DateUtil;
 import com.magpie.base.view.BaseView;
 import com.magpie.base.view.Result;
 import com.magpie.session.ActiveUser;
 import com.magpie.share.UserRef;
 import com.magpie.user.constant.RoleType;
+import com.magpie.user.dao.UserDao;
 import com.magpie.user.model.User;
 import com.magpie.user.req.SimpleRegUser;
 import com.magpie.user.view.UserView;
@@ -30,8 +32,17 @@ import io.swagger.annotations.ApiOperation;
 public class UserApi {
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private UserDao userDao;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
+
+	@RequestMapping(value = "/fblogin/wish", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "想用facebook登录")
+	public void wishFbLogin(@ActiveUser UserRef userRef) {
+		userDao.updateFacebookRegSubmit(userRef.getId(), true, DateUtil.getCurrentDate());
+	}
 
 	@RequestMapping(value = "/login/anonymous", method = RequestMethod.POST)
 	@ResponseBody

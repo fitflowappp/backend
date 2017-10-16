@@ -17,7 +17,9 @@ import org.springframework.social.facebook.api.SecuritySettings;
 import org.springframework.social.facebook.api.VideoUploadLimits;
 import org.springframework.social.facebook.api.WorkEntry;
 
-public class FaceBookUser {
+import com.magpie.base.model.BaseModel;
+
+public class FaceBookUser extends BaseModel {
 
 	private String id;//
 	private String uid;
@@ -577,7 +579,8 @@ public class FaceBookUser {
 	}
 
 	/**
-	 * @param headerImgContent the headerImgContent to set
+	 * @param headerImgContent
+	 *            the headerImgContent to set
 	 */
 	public void setHeaderImgContent(byte[] headerImgContent) {
 		this.headerImgContent = headerImgContent;

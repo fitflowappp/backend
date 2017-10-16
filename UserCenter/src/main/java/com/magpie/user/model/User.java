@@ -39,6 +39,9 @@ public class User extends BaseModel {
 
 	private boolean specialLogin;
 
+	private boolean facebookRegistrationSumbmitted;
+	private Date facebookRegistrationSumbmittedDate;
+
 	public String getId() {
 		return id;
 	}
@@ -241,6 +244,35 @@ public class User extends BaseModel {
 	 */
 	public void setRegisterType(String registerType) {
 		this.registerType = registerType;
+	}
+
+	/**
+	 * @return the facebookRegistrationSumbmitted
+	 */
+	public boolean isFacebookRegistrationSumbmitted() {
+		return facebookRegistrationSumbmitted;
+	}
+
+	/**
+	 * @param facebookRegistrationSumbmitted
+	 *            the facebookRegistrationSumbmitted to set
+	 */
+	public void setFacebookRegistrationSumbmitted(boolean facebookRegistrationSumbmitted) {
+		this.facebookRegistrationSumbmitted = facebookRegistrationSumbmitted;
+	}
+
+	/**
+	 * @return the facebookRegistrationSumbmittedDate
+	 */
+	public Date getFacebookRegistrationSumbmittedDate() {
+		return facebookRegistrationSumbmittedDate;
+	}
+
+	/**
+	 * @param facebookRegistrationSumbmittedDate the facebookRegistrationSumbmittedDate to set
+	 */
+	public void setFacebookRegistrationSumbmittedDate(Date facebookRegistrationSumbmittedDate) {
+		this.facebookRegistrationSumbmittedDate = facebookRegistrationSumbmittedDate;
 	}
 
 }

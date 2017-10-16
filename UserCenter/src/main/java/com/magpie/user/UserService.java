@@ -1,16 +1,21 @@
 package com.magpie.user;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.magpie.base.query.PageQuery;
 import com.magpie.base.utils.DateUtil;
 import com.magpie.base.view.BaseView;
+import com.magpie.base.view.PageView;
 import com.magpie.base.view.Result;
 import com.magpie.cache.UserCacheService;
 import com.magpie.share.UserRef;
@@ -19,6 +24,7 @@ import com.magpie.user.dao.UserDao;
 import com.magpie.user.model.FaceBookUser;
 import com.magpie.user.model.User;
 import com.magpie.user.req.SimpleRegUser;
+import com.magpie.user.view.FacebookUserView;
 import com.magpie.user.view.UserView;
 
 @Service
@@ -241,6 +247,28 @@ public class UserService {
 		}
 
 		return userView;
+	}
+
+	public PageView<FacebookUserView> getPageView(PageQuery pageQuery) {
+		Page<User> userPage = userDao.findPage(pageQuery);
+		PageView<FacebookUserView> pageView = new PageView<>();
+
+		BeanUtils.copyProperties(userPage, pageView, "content");
+
+		List<FacebookUserView> facebookUserViews = new ArrayList<>();
+		for (User user : userPage.getContent()) {
+			FacebookUserView view = new FacebookUserView();
+			FaceBookUser fbUser = FacebookDao.findByUid(user.getId());
+			if (fbUser != null) {
+				BeanUtils.copyProperties(fbUser, view);
+			}
+			view.setUser(user);
+			facebookUserViews.add(view);
+		}
+
+		pageView.setContent(facebookUserViews);
+
+		return pageView;
 	}
 
 	public boolean isPhone(String phone) {

@@ -1,6 +1,9 @@
 package com.magpie.yoga.model;
 
+import java.util.Date;
+
 import com.magpie.base.model.BaseModel;
+import com.magpie.base.utils.DateUtil;
 
 public class UserConfiguration extends BaseModel {
 	private String id;
@@ -13,7 +16,7 @@ public class UserConfiguration extends BaseModel {
 	// Scheduling days Collected Text
 	private int[] schedulingDays = new int[] { 1, 1, 1, 1, 1, 1, 1 };
 	// Scheduling time of day Collected HHMM Time
-	private String schedulingTime;
+	private Date schedulingTime = DateUtil.getCurrentDate();
 
 	public String getId() {
 		return id;
@@ -47,11 +50,11 @@ public class UserConfiguration extends BaseModel {
 		this.remider = remider;
 	}
 
-	public String getSchedulingTime() {
+	public Date getSchedulingTime() {
 		return schedulingTime;
 	}
 
-	public void setSchedulingTime(String schedulingTime) {
+	public void setSchedulingTime(Date schedulingTime) {
 		this.schedulingTime = schedulingTime;
 	}
 
