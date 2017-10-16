@@ -257,18 +257,23 @@ public class UserService {
 
 		List<FacebookUserView> facebookUserViews = new ArrayList<>();
 		for (User user : userPage.getContent()) {
-			FacebookUserView view = new FacebookUserView();
-			FaceBookUser fbUser = FacebookDao.findByUid(user.getId());
-			if (fbUser != null) {
-				BeanUtils.copyProperties(fbUser, view);
-			}
-			view.setUser(user);
+			FacebookUserView view = getFacebookUserView(user);
 			facebookUserViews.add(view);
 		}
 
 		pageView.setContent(facebookUserViews);
 
 		return pageView;
+	}
+
+	private FacebookUserView getFacebookUserView(User user) {
+		FacebookUserView view = new FacebookUserView();
+		FaceBookUser fbUser = FacebookDao.findByUid(user.getId());
+		if (fbUser != null) {
+			BeanUtils.copyProperties(fbUser, view);
+		}
+		view.setUser(user);
+		return view;
 	}
 
 	public boolean isPhone(String phone) {
