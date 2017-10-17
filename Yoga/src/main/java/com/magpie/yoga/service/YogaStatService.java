@@ -179,10 +179,6 @@ public class YogaStatService {
 			routineDao.updateStat(routine);
 		}
 
-		// update user state
-		userWatchHistoryDao.aggregateCountPerUser(HistoryDest.CHALLENGE.getCode());
-		userWatchHistoryDao.aggregateCountPerUser(HistoryDest.WORKOUT.getCode());
-
 	}
 
 	/**
