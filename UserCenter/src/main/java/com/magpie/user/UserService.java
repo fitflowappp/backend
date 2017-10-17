@@ -26,6 +26,14 @@ import com.magpie.user.model.User;
 import com.magpie.user.req.SimpleRegUser;
 import com.magpie.user.view.FacebookUserView;
 import com.magpie.user.view.UserView;
+import com.magpie.yoga.constant.HistoryDest;
+import com.magpie.yoga.constant.HistoryEvent;
+import com.magpie.yoga.dao.ShareRecordDao;
+import com.magpie.yoga.dao.UserConfigurationDao;
+import com.magpie.yoga.dao.UserStateDao;
+import com.magpie.yoga.dao.UserWatchHistoryDao;
+import com.magpie.yoga.model.UserState;
+import com.magpie.yoga.stat.UserWatchHistoryStat;
 
 @Service
 public class UserService {
@@ -38,6 +46,16 @@ public class UserService {
 
 	@Autowired
 	private UserCacheService userCacheService;
+
+	@Autowired
+	private UserWatchHistoryDao userWatchHistoryDao;
+
+	@Autowired
+	private UserStateDao userStateDao;
+	@Autowired
+	private ShareRecordDao shareRecordDao;
+	@Autowired
+	private UserConfigurationDao userConfigurationDao;
 
 	public BaseView<UserView> register(SimpleRegUser simpleRegUser, String phoneVerifyCode, String token) {
 		if (!isPhone(simpleRegUser.getPhone())) {
@@ -277,6 +295,37 @@ public class UserService {
 			BeanUtils.copyProperties(fbUser, view);
 		}
 		view.setUser(user);
+		UserState userState = userStateDao.findUserState(user.getId());
+		if (userState != null) {
+			userState = new UserState();
+			int comChallengeNum = 0;
+			int comWorkoutNum = 0;
+			int routineDuration = 0;
+			for (UserWatchHistoryStat stat : userWatchHistoryDao.aggregateCountPerUser(user.getId())) {
+				if (stat.getDestType() == HistoryDest.CHALLENGE.getCode()
+						&& stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
+					comChallengeNum += stat.getCount();
+				}
+				if (stat.getDestType() == HistoryDest.WORKOUT.getCode()
+						&& stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
+					comWorkoutNum += stat.getCount();
+				}
+
+				if (stat.getDestType() == HistoryDest.ROUTINE.getCode()
+						&& stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
+					routineDuration += stat.getDuration();
+				}
+
+			}
+			userState.setCompletedChallengeNum(comChallengeNum);
+			userState.setCompletedWorkoutNum(comChallengeNum + comWorkoutNum);
+			userState.setDuration(routineDuration);
+		}
+		view.setUserState(userState);
+		view.setShareCount(shareRecordDao.count(user.getId()));
+
+		view.setUserConfiguration(userConfigurationDao.findOneByUid(user.getId()));
+
 		return view;
 	}
 
