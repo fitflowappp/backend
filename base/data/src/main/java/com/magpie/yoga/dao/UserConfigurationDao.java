@@ -2,6 +2,7 @@ package com.magpie.yoga.dao;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -23,6 +24,13 @@ public class UserConfigurationDao extends BaseMongoRepository<UserConfiguration,
 
 	public UserConfiguration findOneByUid(String uid) {
 		return findOneByQuery(new Query().addCriteria(Criteria.where("uid").is(uid)));
+	}
+
+	public List<UserConfiguration> findUserconfigurations(boolean pushNotification) {
+		Criteria criteria = Criteria.where("notification").is(true);
+		Query query = new Query();
+		query.addCriteria(criteria);
+		return findByQuery(query);
 	}
 
 	public long countReminder(Date start, Date end) {
