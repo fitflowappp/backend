@@ -44,5 +44,9 @@
 			<artifactId>spring-boot-starter-swagger</artifactId>
 			<version>1.4.1.RELEASE</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-social-facebook</artifactId>
+		</dependency>
 	</dependencies>
 </project>
