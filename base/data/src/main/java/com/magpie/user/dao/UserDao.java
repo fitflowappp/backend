@@ -40,6 +40,12 @@ public class UserDao extends BaseMongoRepository<User, Serializable> {
 		updateFirst(query, update);
 	}
 
+	public void updateUserRole(String uid, String role) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("id").is(new ObjectId(uid)));
+		updateFirst(query, new Update().set("role", role));
+	}
+
 	public Page<User> findPage(PageQuery pageQuery) {
 		Query query = new Query();
 		query.with(new Sort(Direction.DESC, "crDate"));
