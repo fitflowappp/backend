@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import com.magpie.getui.getui.cache.GetuiMessage;
 import com.magpie.getui.getui.service.AsyncGeTuiMsgSender;
+import com.magpie.user.dao.FacebookDao;
+import com.magpie.user.model.FaceBookUser;
 import com.magpie.yoga.dao.UserConfigurationDao;
 import com.magpie.yoga.model.UserConfiguration;
 import com.magpie.yoga.service.YogaStatService;
@@ -24,7 +26,9 @@ public class TaskComponent {
 	private UserConfigurationDao userConfigurationDao;
 
 	@Autowired
-	AsyncGeTuiMsgSender asyncGeTuiMsgSender;
+	private AsyncGeTuiMsgSender asyncGeTuiMsgSender;
+	@Autowired
+	private FacebookDao facebookDao;
 
 	@Scheduled(cron = "0 30 0 * * *")
 	public void generateDashboard() {
@@ -46,11 +50,15 @@ public class TaskComponent {
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
 		Date current = calendar.getTime();
-		GetuiMessage message = new GetuiMessage(GetuiMessage.DISP_TYPE, "test push info");
+
 		for (UserConfiguration userConfiguration : userConfigurationDao.findUserconfigurations(true)) {
+
 			if (userConfiguration.getSchedulingDays() == null) {
 				continue;
 			}
+			FaceBookUser faceBookUser = facebookDao.findByUid(userConfiguration.getUid());
+			GetuiMessage message = new GetuiMessage(GetuiMessage.DISP_TYPE, "Hey " + faceBookUser == null ? ""
+					: faceBookUser.getName() + "! Time for yoga. You know you will feel great afterwards.");
 			int flg = userConfiguration.getSchedulingDays()[Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1];
 			if (flg == 1 && current.compareTo(userConfiguration.getSchedulingTime()) == 0) {
 				asyncGeTuiMsgSender.send(userConfiguration.getUid(), message, true, 100);
