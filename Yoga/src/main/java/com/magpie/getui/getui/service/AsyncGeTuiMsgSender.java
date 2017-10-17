@@ -24,12 +24,12 @@ public class AsyncGeTuiMsgSender {
 	 * @param msg
 	 * @return
 	 */
-	public boolean send(String uid, GetuiMessage msg, boolean sendOffline) {
+	public boolean send(String uid, GetuiMessage msg, boolean sendOffline, int delay) {
 		if (StringUtils.isEmpty(uid) || msg == null) {
 			return false;
 		}
 		// 延时500毫秒发送
-		normalExecutorService.execute(new MyThread(uid, msg, 1500, sendOffline));
+		normalExecutorService.execute(new MyThread(uid, msg, delay, sendOffline));
 		return true;
 	}
 
@@ -39,12 +39,12 @@ public class AsyncGeTuiMsgSender {
 	 * @param msg
 	 * @return
 	 */
-	public boolean sendAll(GetuiMessage msg, boolean sendOffline) {
+	public boolean sendAll(GetuiMessage msg, boolean sendOffline, int delay) {
 		if (msg == null) {
 			return false;
 		}
 		// 延时500毫秒发送
-		normalExecutorService.execute(new MyThread(null, msg, 1500, sendOffline));
+		normalExecutorService.execute(new MyThread(null, msg, delay, sendOffline));
 		return true;
 	}
 
