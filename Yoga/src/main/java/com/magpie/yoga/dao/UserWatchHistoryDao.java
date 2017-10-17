@@ -64,6 +64,17 @@ public class UserWatchHistoryDao extends BaseMongoRepository<UserWatchHistory, S
 		return findOneByQuery(query);
 	}
 
+	public List<UserWatchHistoryStat> aggregateCountPerUser(int destType) {
+		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class,
+				match(Criteria.where("destType").is(destType)),
+				group("uid", "event").sum("duration").as("duration").count().as("count").first("uid").as("uid")
+						.first("destType").as("destType").first("event").as("event"),
+				project("uid", "duration", "count", "destType", "event"), sort(new Sort(Direction.DESC, "duration")));
+		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
+				UserWatchHistoryStat.class);
+		return result.getMappedResults();
+	}
+
 	public List<UserWatchHistoryStat> aggregateUserWatchHistory(String uid, int event) {
 		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class,
 				match(Criteria.where("uid").is(uid).and("event").is(event)),

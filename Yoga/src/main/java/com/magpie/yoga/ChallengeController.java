@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.magpie.base.query.PageQuery;
 import com.magpie.base.view.BaseView;
 import com.magpie.base.view.Result;
+import com.magpie.cache.yoga.YogaCacheService;
 import com.magpie.yoga.dao.ChallengeDao;
 import com.magpie.yoga.model.Challenge;
 
@@ -25,6 +26,8 @@ public class ChallengeController {
 
 	@Autowired
 	private ChallengeDao challengeDao;
+	@Autowired
+	private YogaCacheService yogaCacheService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
@@ -38,6 +41,7 @@ public class ChallengeController {
 	@ApiOperation(value = "add one new Challenge")
 	public BaseView<Challenge> addWorkout(@RequestBody Challenge challenge) {
 		challengeDao.save(challenge);
+		yogaCacheService.setChallenge(challenge);
 		return new BaseView<Challenge>(challenge);
 	}
 
@@ -54,6 +58,7 @@ public class ChallengeController {
 	public BaseView<Challenge> editWorkout(@PathVariable String id, @RequestBody Challenge challenge) {
 		challenge.setId(id);
 		challengeDao.save(challenge);
+		yogaCacheService.setChallenge(challenge);
 		return new BaseView<Challenge>(challenge);
 	}
 
@@ -62,6 +67,7 @@ public class ChallengeController {
 	@ApiOperation(value = "delete one Challenge")
 	public BaseView<?> removeWorkout(@PathVariable String id) {
 		challengeDao.delete(id);
+		yogaCacheService.delChallenge(id);
 		return new BaseView<Challenge>(Result.SUCCESS);
 	}
 

@@ -9,18 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.magpie.cache.yoga.YogaCacheService;
 import com.magpie.share.UserRef;
 import com.magpie.yoga.constant.DialogType;
 import com.magpie.yoga.constant.HistoryDest;
 import com.magpie.yoga.constant.HistoryEvent;
 import com.magpie.yoga.dao.AchievementRecordDao;
-import com.magpie.yoga.dao.ChallengeDao;
 import com.magpie.yoga.dao.ChallengeSetDao;
 import com.magpie.yoga.dao.MilestoneDao;
-import com.magpie.yoga.dao.RoutineDao;
 import com.magpie.yoga.dao.UserStateDao;
 import com.magpie.yoga.dao.UserWatchHistoryDao;
-import com.magpie.yoga.dao.WorkoutDao;
 import com.magpie.yoga.model.AchievementRecord;
 import com.magpie.yoga.model.Challenge;
 import com.magpie.yoga.model.ChallengeSet;
@@ -45,17 +43,13 @@ public class YogaService {
 	@Autowired
 	private ChallengeSetDao challengeSetDao;
 	@Autowired
-	private ChallengeDao challengeDao;
-	@Autowired
-	private WorkoutDao workoutDao;
-	@Autowired
-	private RoutineDao routineDao;
-	@Autowired
 	private UserWatchHistoryDao userWatchHistoryDao;
 	@Autowired
 	private MilestoneDao milestoneDao;
 	@Autowired
 	private AchievementRecordDao achievementRecordDao;
+	@Autowired
+	private YogaCacheService yogaCacheService;
 
 	public Achievement getUserAchievments(String uid) {
 		Achievement achievement = new Achievement();
@@ -141,7 +135,7 @@ public class YogaService {
 		BeanUtils.copyProperties(challengeSet, view, "challenges");
 		List<ChallengeView> challengeViews = new ArrayList<>();
 		for (Challenge challenge : challengeSet.getChallenges()) {
-			ChallengeView cView = initialChallengeView(challengeDao.findOne(challenge.getId()));
+			ChallengeView cView = initialChallengeView(yogaCacheService.getChallenge(challenge.getId()));
 			cView.setUnlocked(challenge.isUnlocked());
 			challengeViews.add(cView);
 		}
@@ -166,7 +160,8 @@ public class YogaService {
 
 	private ChallengeView getDefaultChallenge() {
 		ChallengeSet challengeSet = challengeSetDao.findOneByPrimary(true);
-		ChallengeView view = initialChallengeView(challengeDao.findOne(challengeSet.getChallenges().get(0).getId()));
+		ChallengeView view = initialChallengeView(
+				yogaCacheService.getChallenge(challengeSet.getChallenges().get(0).getId()));
 
 		for (WorkoutView w : view.getWorkouts()) {
 			w.setAvail(true);
@@ -196,7 +191,7 @@ public class YogaService {
 	}
 
 	private ChallengeView getChallenge(UserRef userRef, UserState userState, String cid) {
-		ChallengeView view = initialChallengeView(challengeDao.findOne(cid));
+		ChallengeView view = initialChallengeView(yogaCacheService.getChallenge(cid));
 
 		int status = HistoryEvent.UNWATCH.getCode();
 		int first = -1;
@@ -261,7 +256,8 @@ public class YogaService {
 		BeanUtils.copyProperties(challenge, view, "workouts");
 
 		HashMap<String, Workout> workoutMap = new HashMap<>();
-		for (Workout workout : workoutDao.findWorkouts(challenge.getWorkouts())) {
+		for (Workout workout : challenge.getWorkouts()) {
+			workout = yogaCacheService.getWorkout(workout.getId());
 			workoutMap.put(workout.getId(), workout);
 		}
 
@@ -281,7 +277,7 @@ public class YogaService {
 	 * @return
 	 */
 	public WorkoutView getWorkout(UserRef userRef, String cid, String workoutId) {
-		WorkoutView view = initialWorkoutView(workoutDao.findOne(workoutId));
+		WorkoutView view = initialWorkoutView(yogaCacheService.getWorkout(workoutId));
 
 		int status = HistoryEvent.UNWATCH.getCode();
 		int seconds = 0;
@@ -350,7 +346,8 @@ public class YogaService {
 		BeanUtils.copyProperties(workout, view, "routines");
 
 		HashMap<String, Routine> routineMap = new HashMap<>();
-		for (Routine routine : routineDao.findRoutines(workout.getRoutines())) {
+		for (Routine routine : workout.getRoutines()) {
+			routine = yogaCacheService.getRoutine(routine.getId());
 			routineMap.put(routine.getId(), routine);
 		}
 
@@ -366,8 +363,8 @@ public class YogaService {
 
 	public ActView skipWorkout(String uid, String cid, String wid) {
 
-		Challenge challenge = challengeDao.findOne(cid);
-		Workout workout = workoutDao.findOne(wid);
+		Challenge challenge = yogaCacheService.getChallenge(cid);
+		Workout workout = yogaCacheService.getWorkout(wid);
 
 		String lastRoutineIdOfChallenge = getLastRoutineIdOfChallenge(challenge);
 		String lastRoutineIdOfWorkout = getLastRoutineIdOfWorkout(workout);
@@ -410,9 +407,9 @@ public class YogaService {
 
 	public ActView watchingRoutine(String uid, String cid, String wid, String rid, int type, int seconds) {
 
-		Routine routine = routineDao.findOne(rid);
-		Challenge challenge = challengeDao.findOne(cid);
-		Workout workout = workoutDao.findOne(wid);
+		Routine routine = yogaCacheService.getRoutine(rid);
+		Challenge challenge = yogaCacheService.getChallenge(cid);
+		Workout workout = yogaCacheService.getWorkout(wid);
 		// only record for routine which show in app
 		if (routine != null && routine.isDisplay()) {
 			createIfNoUserState(uid);
@@ -512,7 +509,7 @@ public class YogaService {
 	}
 
 	private String getFirstRoutineIdOfWorkout(String workoutId) {
-		Workout workout = workoutDao.findOne(workoutId);
+		Workout workout = yogaCacheService.getWorkout(workoutId);
 		return getFirstRoutineIdOfWorkout(workout);
 	}
 
@@ -534,7 +531,7 @@ public class YogaService {
 	}
 
 	private String getLastRoutineIdOfWorkout(String workoutId) {
-		Workout workout = workoutDao.findOne(workoutId);
+		Workout workout = yogaCacheService.getWorkout(workoutId);
 		return getLastRoutineIdOfWorkout(workout);
 	}
 

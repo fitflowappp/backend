@@ -12,6 +12,8 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.magpie.base.utils.DateUtil;
+import com.magpie.user.dao.FacebookDao;
+import com.magpie.user.dao.UserDao;
 import com.magpie.yoga.constant.HistoryDest;
 import com.magpie.yoga.constant.HistoryEvent;
 import com.magpie.yoga.dao.AchievementRecordDao;
@@ -20,6 +22,7 @@ import com.magpie.yoga.dao.DashboardDao;
 import com.magpie.yoga.dao.RoutineDao;
 import com.magpie.yoga.dao.ShareRecordDao;
 import com.magpie.yoga.dao.UserConfigurationDao;
+import com.magpie.yoga.dao.UserStateDao;
 import com.magpie.yoga.dao.UserWatchHistoryDao;
 import com.magpie.yoga.dao.WorkoutDao;
 import com.magpie.yoga.model.AchievementRecord;
@@ -48,6 +51,12 @@ public class YogaStatService {
 	private WorkoutDao workoutDao;
 	@Autowired
 	private RoutineDao routineDao;
+	@Autowired
+	private UserDao userDao;
+	@Autowired
+	private FacebookDao facebookDao;
+	@Autowired
+	private UserStateDao userStateDao;
 
 	/**
 	 * get dashboard list
@@ -169,6 +178,11 @@ public class YogaStatService {
 		for (Routine routine : rMap.values()) {
 			routineDao.updateStat(routine);
 		}
+
+		// update user state
+		userWatchHistoryDao.aggregateCountPerUser(HistoryDest.CHALLENGE.getCode());
+		userWatchHistoryDao.aggregateCountPerUser(HistoryDest.WORKOUT.getCode());
+
 	}
 
 	/**
@@ -209,8 +223,12 @@ public class YogaStatService {
 		dashboard.setChallengeStartNum(challengeStartNum);
 		dashboard.setWorkoutCompleteNum(workoutCompleteNum + challengeCompleteNum);
 		dashboard.setWorkoutStartNum(workoutStartNum + challengeStartNum);
+		dashboard.setFacebookRegCompleteNum(facebookDao.count(null, null));
+		dashboard.setFacebookRegSubmitNum(userDao.count(true, null, null));
 
-		dashboard.setAchievementNum(getAchievementCount(achievementRecordDao.aggregateCount(null, null)));
+		// dashboard.setAchievementNum(getAchievementCount(achievementRecordDao.aggregateCount(null,
+		// null)));
+		dashboard.setAchievementNum(achievementRecordDao.count(null, null));
 
 		List<UserWatchHistoryStat> temp = userWatchHistoryDao.aggregateWorkoutUsers(HistoryEvent.COMPLETE.getCode(),
 				null, null);
@@ -292,11 +310,15 @@ public class YogaStatService {
 		dashboard.setWorkoutCompleteNum(workoutCompleteNum + challengeCompleteNum);
 		dashboard.setWorkoutStartNum(workoutStartNum + challengeStartNum);
 
-		dashboard.setAchievementNum(getAchievementCount(achievementRecordDao.aggregateCount(start, end)));
+		// dashboard.setAchievementNum(getAchievementCount(achievementRecordDao.aggregateCount(start,
+		// end)));
+		dashboard.setAchievementNum(achievementRecordDao.count(start, end));
 
 		List<UserWatchHistoryStat> temp = userWatchHistoryDao.aggregateWorkoutUsers(HistoryEvent.COMPLETE.getCode(),
 				start, end);
 		dashboard.setOneWorkoutCompleteUserNum(temp.size());
+		dashboard.setFacebookRegCompleteNum(facebookDao.count(start, end));
+		dashboard.setFacebookRegSubmitNum(userDao.count(true, start, end));
 
 		dashboard.setTotalDuration(
 				userWatchHistoryDao.aggregateTotalDuration(HistoryEvent.COMPLETE.getCode(), start, end).getDuration());

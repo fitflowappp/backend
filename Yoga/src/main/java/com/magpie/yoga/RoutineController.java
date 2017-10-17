@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.magpie.base.query.PageQuery;
 import com.magpie.base.view.BaseView;
 import com.magpie.base.view.Result;
+import com.magpie.cache.yoga.YogaCacheService;
 import com.magpie.yoga.dao.RoutineDao;
 import com.magpie.yoga.model.Routine;
 
@@ -25,6 +26,8 @@ public class RoutineController {
 
 	@Autowired
 	private RoutineDao routineDao;
+	@Autowired
+	private YogaCacheService yogaCacheService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
@@ -38,6 +41,7 @@ public class RoutineController {
 	@ApiOperation(value = "add one new routine")
 	public BaseView<Routine> addRoutine(@RequestBody Routine routine) {
 		routineDao.save(routine);
+		yogaCacheService.setRoutine(routine);
 		return new BaseView<Routine>(routine);
 	}
 
@@ -47,6 +51,7 @@ public class RoutineController {
 	public BaseView<Routine> editRoutine(@PathVariable String id, @RequestBody Routine routine) {
 		routine.setId(id);
 		routineDao.save(routine);
+		yogaCacheService.setRoutine(routine);
 		return new BaseView<Routine>(routine);
 	}
 
@@ -62,6 +67,7 @@ public class RoutineController {
 	@ApiOperation(value = "delete one routine")
 	public BaseView<?> removeRoutine(@PathVariable String id) {
 		routineDao.delete(id);
+		yogaCacheService.delRoutine(id);
 		return new BaseView<Routine>(Result.SUCCESS);
 	}
 

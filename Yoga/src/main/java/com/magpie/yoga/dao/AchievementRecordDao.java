@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.repository.support.MongoRepositoryFactory;
 import org.springframework.stereotype.Repository;
 
@@ -26,6 +27,14 @@ public class AchievementRecordDao extends BaseMongoRepository<AchievementRecord,
 	@Autowired
 	public AchievementRecordDao(MongoRepositoryFactory mongoRepositoryFactory, MongoOperations mongoOps) {
 		super(mongoRepositoryFactory.getEntityInformation(AchievementRecord.class), mongoOps);
+	}
+
+	public long count(Date start, Date end) {
+		Criteria criteria = new Criteria();
+		addDateCriteria(start, end, criteria);
+
+		Query query = new Query().addCriteria(criteria);
+		return count(query);
 	}
 
 	public List<AchievementRecord> aggregateCount(Date start, Date end) {

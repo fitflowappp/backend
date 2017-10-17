@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.magpie.base.query.PageQuery;
 import com.magpie.base.view.BaseView;
 import com.magpie.base.view.Result;
+import com.magpie.cache.yoga.YogaCacheService;
 import com.magpie.yoga.dao.WorkoutDao;
 import com.magpie.yoga.model.Workout;
 
@@ -25,6 +26,8 @@ public class WorkoutController {
 
 	@Autowired
 	private WorkoutDao workoutDao;
+	@Autowired
+	private YogaCacheService yogaCacheService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
@@ -38,6 +41,7 @@ public class WorkoutController {
 	@ApiOperation(value = "add one new Workout")
 	public BaseView<Workout> addWorkout(@RequestBody Workout workout) {
 		workoutDao.save(workout);
+		yogaCacheService.setWorkout(workout);
 		return new BaseView<Workout>(workout);
 	}
 
@@ -54,6 +58,7 @@ public class WorkoutController {
 	public BaseView<Workout> editWorkout(@PathVariable String id, @RequestBody Workout workout) {
 		workout.setId(id);
 		workoutDao.save(workout);
+		yogaCacheService.setWorkout(workout);
 		return new BaseView<Workout>(workout);
 	}
 
@@ -65,6 +70,7 @@ public class WorkoutController {
 		copyWorkout.setId(null);
 		copyWorkout.setTitle(title);
 		workoutDao.save(copyWorkout);
+		yogaCacheService.setWorkout(copyWorkout);
 		return new BaseView<Workout>(copyWorkout);
 	}
 
@@ -73,6 +79,7 @@ public class WorkoutController {
 	@ApiOperation(value = "delete one Workout")
 	public BaseView<?> removeWorkout(@PathVariable String id) {
 		workoutDao.delete(id);
+		yogaCacheService.delWorkout(id);
 		return new BaseView<Workout>(Result.SUCCESS);
 	}
 

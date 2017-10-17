@@ -11,6 +11,8 @@ import com.magpie.base.view.BaseView;
 import com.magpie.session.ActiveUser;
 import com.magpie.share.UserRef;
 import com.magpie.yoga.constant.HistoryEvent;
+import com.magpie.yoga.dao.ShareRecordDao;
+import com.magpie.yoga.model.ShareRecord;
 import com.magpie.yoga.service.YogaService;
 import com.magpie.yoga.view.Achievement;
 import com.magpie.yoga.view.ActView;
@@ -27,6 +29,19 @@ public class YogaApi {
 
 	@Autowired
 	private YogaService yogaService;
+
+	@Autowired
+	private ShareRecordDao shareRecordDao;
+
+	@RequestMapping(value = "/share", method = RequestMethod.PUT)
+	@ResponseBody
+	@ApiOperation(value = "share yoga to facebook")
+	public void share(@ActiveUser UserRef userRef) {
+
+		ShareRecord shareRecord = new ShareRecord();
+		shareRecord.setUid(userRef.getId());
+		shareRecordDao.save(shareRecord);
+	}
 
 	@RequestMapping(value = "/my/achievements", method = RequestMethod.GET)
 	@ResponseBody
