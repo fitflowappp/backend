@@ -1,11 +1,17 @@
 package com.magpie.user.view;
 
-import com.magpie.user.model.FaceBookUser;
 import com.magpie.user.model.User;
 import com.magpie.yoga.model.UserConfiguration;
 import com.magpie.yoga.model.UserState;
 
-public class FacebookUserView extends FaceBookUser {
+public class FacebookUserView {
+
+	private String facebookUid;//
+
+	private byte[] headerImgContent;
+
+	private String gender;
+	private String name;
 
 	private User user;
 
@@ -66,6 +72,38 @@ public class FacebookUserView extends FaceBookUser {
 	 */
 	public void setUserConfiguration(UserConfiguration userConfiguration) {
 		this.userConfiguration = userConfiguration;
+	}
+
+	public String getFacebookUid() {
+		return facebookUid;
+	}
+
+	public void setFacebookUid(String facebookUid) {
+		this.facebookUid = facebookUid;
+	}
+
+	public byte[] getHeaderImgContent() {
+		return headerImgContent;
+	}
+
+	public void setHeaderImgContent(byte[] headerImgContent) {
+		this.headerImgContent = headerImgContent;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }
