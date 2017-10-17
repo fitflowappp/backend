@@ -18,7 +18,7 @@ import com.magpie.share.UserRef;
 import io.swagger.annotations.ApiOperation;
 
 @Controller
-@RequestMapping(value = "/getui")
+@RequestMapping(value = "/yoga/getui")
 public class GetuiRegisterApi {
 
 	@Autowired
