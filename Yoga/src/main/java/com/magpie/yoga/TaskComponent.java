@@ -38,16 +38,15 @@ public class TaskComponent {
 		yogaStatService.updateCount();
 	}
 
-	// @Scheduled(cron = "0 0 0/4 * * *")
 	@Scheduled(cron = "0 0/1 * * * *")
-	// Challenge,Workout,Routine统计数据
+	// 推送处理
 	public void pushProcess() {
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
 		Date current = calendar.getTime();
-		GetuiMessage message = new GetuiMessage(GetuiMessage.DISP_TYPE, "");
+		GetuiMessage message = new GetuiMessage(GetuiMessage.DISP_TYPE, "test push info");
 		for (UserConfiguration userConfiguration : userConfigurationDao.findUserconfigurations(true)) {
 			if (userConfiguration.getSchedulingDays() == null) {
 				continue;
