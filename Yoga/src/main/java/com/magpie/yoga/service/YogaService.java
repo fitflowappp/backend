@@ -467,10 +467,10 @@ public class YogaService {
 		int countOfWorkouts = 0;
 		for (UserWatchHistoryStat stat : userWatchHistoryDao.aggregateUserWatchHistory(uid,
 				HistoryEvent.SKIPPED.getCode())) {
-			totalDuration += stat.getDuration();
 			if (HistoryDest.WORKOUT.getCode() == stat.getDestType()
 					|| HistoryDest.CHALLENGE.getCode() == stat.getDestType()) {
 				countOfWorkouts += stat.getCount();
+				totalDuration += stat.getDuration();
 			}
 		}
 
