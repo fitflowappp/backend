@@ -40,4 +40,14 @@ public class UserStateDao extends BaseMongoRepository<UserState, Serializable> {
 						.set("currentRoutineId", currentRoutineId).set("currentRoutineSeconds", seconds));
 	}
 
+	public void updateAchieveWorkout(String uid, boolean sendAchieveWorkoutDialog) {
+		Query query = new Query().addCriteria(Criteria.where("uid").is(uid));
+		updateFirst(query, new Update().set("sendAchieveWorkoutDialog", sendAchieveWorkoutDialog));
+	}
+
+	public void updateAchieveDuration(String uid, boolean sendAchieveDurationDialog) {
+		Query query = new Query().addCriteria(Criteria.where("uid").is(uid));
+		updateFirst(query, new Update().set("sendAchieveDurationDialog", sendAchieveDurationDialog));
+	}
+
 }

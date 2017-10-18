@@ -77,7 +77,7 @@ public class UserWatchHistoryDao extends BaseMongoRepository<UserWatchHistory, S
 
 	public List<UserWatchHistoryStat> aggregateUserWatchHistory(String uid, int event) {
 		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class,
-				match(Criteria.where("uid").is(uid).and("event").is(event)),
+				match(Criteria.where("uid").is(uid).and("event").gte(event)),
 				group("uid", "destType").sum("duration").as("duration").count().as("count").first("uid").as("uid")
 						.first("destType").as("destType"),
 				project("uid", "duration", "count", "destType"), sort(new Sort(Direction.DESC, "duration")));
