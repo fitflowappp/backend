@@ -466,7 +466,7 @@ public class YogaService {
 		int totalDuration = 0;
 		int countOfWorkouts = 0;
 		for (UserWatchHistoryStat stat : userWatchHistoryDao.aggregateUserWatchHistory(uid,
-				HistoryEvent.COMPLETE.getCode())) {
+				HistoryEvent.SKIPPED.getCode())) {
 			totalDuration += stat.getDuration();
 			if (HistoryDest.WORKOUT.getCode() == stat.getDestType()
 					|| HistoryDest.CHALLENGE.getCode() == stat.getDestType()) {
@@ -477,12 +477,14 @@ public class YogaService {
 		if (!userState.isSendAchieveDurationDialog() && totalDuration >= milestone.getAchievementMinutes()) {
 
 			achievementRecordDao.save(new AchievementRecord(uid, DialogType.DURATION.getCode()));
+			userStateDao.updateAchieveDuration(uid, true);
 			// show minutes dialog
 			return new ActView(DialogType.DURATION.getCode(), milestone.getAchievementMinutesContent());
 		}
 
 		if (!userState.isSendAchieveWorkoutDialog() && countOfWorkouts >= milestone.getAchievementWorkoutNum()) {
 			achievementRecordDao.save(new AchievementRecord(uid, DialogType.WORKOUT.getCode()));
+			userStateDao.updateAchieveWorkout(uid, true);
 			return new ActView(DialogType.WORKOUT.getCode(), milestone.getAchievementWorkoutContent());
 		}
 
