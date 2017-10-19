@@ -363,7 +363,7 @@ public class YogaService {
 
 		String lastWorkoutId = challenge.getWorkouts().get(challenge.getWorkouts().size() - 1).getId();
 		String lastRoutineIdOfChallenge = getLastRoutineIdOfWorkout(lastWorkoutId);
-		String lastRoutineIdOfWorkout = getLastRoutineIdOfWorkout(workout);
+		String lastRoutineIdOfWorkout = getLastRoutineIdOfWorkout(initialWorkoutView(workout));
 
 		logger.info("skip workout:{},{},{}", uid, cid, wid);
 		logger.info("lastWorkoutId:{},lastRoutineIdOfChallenge:{},lastRoutineIdOfWorkout:{}", lastWorkoutId,
@@ -425,12 +425,12 @@ public class YogaService {
 
 			String lastWorkoutId = challenge.getWorkouts().get(challenge.getWorkouts().size() - 1).getId();
 			String lastRoutineIdOfChallenge = getLastRoutineIdOfWorkout(lastWorkoutId);
-			String lastRoutineIdOfWorkout = getLastRoutineIdOfWorkout(workout);
+			String lastRoutineIdOfWorkout = getLastRoutineIdOfWorkout(initialWorkoutView(workout));
 
 			String firstWorkoutId = challenge.getWorkouts().get(0).getId();
 			String firstRoutineIdOfChallenge = getFirstRoutineIdOfWorkout(firstWorkoutId);
 
-			logger.info("watching routine:{},{},{},{}", uid, cid, wid, rid);
+			logger.info("watching routine:uid:{},cid:{},wid:{},rid:{}", uid, cid, wid, rid);
 			logger.info("lastWorkoutId:{},lastRoutineIdOfChallenge:{},lastRoutineIdOfWorkout:{}", lastWorkoutId,
 					lastRoutineIdOfChallenge, lastRoutineIdOfWorkout);
 
@@ -448,7 +448,8 @@ public class YogaService {
 			} else if (type == HistoryEvent.START.getCode()) {
 				history.setDestType((rid.equalsIgnoreCase(firstRoutineIdOfChallenge) && wid.equals(firstWorkoutId))
 						? HistoryDest.CHALLENGE.getCode()
-						: rid.equalsIgnoreCase(getFirstRoutineIdOfWorkout(workout)) ? HistoryDest.WORKOUT.getCode()
+						: rid.equalsIgnoreCase(getFirstRoutineIdOfWorkout(initialWorkoutView(workout)))
+								? HistoryDest.WORKOUT.getCode()
 								: HistoryDest.ROUTINE.getCode());
 			} else {
 				history.setDestType(HistoryDest.ROUTINE.getCode());
@@ -516,11 +517,10 @@ public class YogaService {
 	// }
 
 	private String getFirstRoutineIdOfWorkout(String workoutId) {
-		Workout workout = yogaCacheService.getWorkout(workoutId);
-		return getFirstRoutineIdOfWorkout(workout);
+		return getFirstRoutineIdOfWorkout(initialWorkoutView(yogaCacheService.getWorkout(workoutId)));
 	}
 
-	private String getFirstRoutineIdOfWorkout(Workout workout) {
+	private String getFirstRoutineIdOfWorkout(WorkoutView workout) {
 		if (workout.getRoutines() != null && !workout.getRoutines().isEmpty()) {
 			Routine firstRoutine = null;
 			for (Routine routine : workout.getRoutines()) {
@@ -538,12 +538,10 @@ public class YogaService {
 	}
 
 	private String getLastRoutineIdOfWorkout(String workoutId) {
-		Workout workout = yogaCacheService.getWorkout(workoutId);
-
-		return getLastRoutineIdOfWorkout(workout);
+		return getLastRoutineIdOfWorkout(initialWorkoutView(yogaCacheService.getWorkout(workoutId)));
 	}
 
-	private String getLastRoutineIdOfWorkout(Workout workout) {
+	private String getLastRoutineIdOfWorkout(WorkoutView workout) {
 
 		if (workout.getRoutines() != null && !workout.getRoutines().isEmpty()) {
 			Routine lastRoutine = null;
