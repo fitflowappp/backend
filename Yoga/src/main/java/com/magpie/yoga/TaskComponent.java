@@ -64,15 +64,21 @@ public class TaskComponent {
 			if (userConfiguration.getSchedulingDays() == null) {
 				continue;
 			}
+
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(userConfiguration.getSchedulingTime());
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			Date scheduleTime = cal.getTime();
+
 			FaceBookUser faceBookUser = facebookDao.findByUid(userConfiguration.getUid());
 			GetuiMessage message = new GetuiMessage(GetuiMessage.DISP_TYPE,
 					"Hey " + (faceBookUser == null ? "" : faceBookUser.getName())
 							+ "! Time for yoga. You know you will feel great afterwards.");
 			int flg = userConfiguration.getSchedulingDays()[Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1];
-			logger.info("flg:{},equal:{},currentTime:{},scheduleTime:{}", flg,
-					current.compareTo(userConfiguration.getSchedulingTime()), current,
-					userConfiguration.getSchedulingTime());
-			if (flg == 1 && current.compareTo(userConfiguration.getSchedulingTime()) == 0) {
+			logger.info("flg:{},equal:{},currentTime:{},scheduleTime:{}", flg, current.compareTo(scheduleTime), current,
+					scheduleTime);
+			if (flg == 1 && current.compareTo(scheduleTime) == 0) {
 				asyncGeTuiMsgSender.send(userConfiguration.getUid(), message, true, 100);
 
 				PushRecord pushRecord = new PushRecord();
