@@ -64,7 +64,7 @@ public class YogaService {
 		Achievement achievement = new Achievement();
 		User user = userDao.findOne(uid);
 		if (!user.isUnRegistered()) {
-			achievement.setDays(DateUtil.daysBetween(user.getRegisterDate(), Calendar.getInstance().getTime()));
+			achievement.setDays(DateUtil.daysBetween(user.getRegisterDate(), Calendar.getInstance().getTime()) + 1);
 		}
 		achievement.setCompletedChallengeCount(userWatchHistoryDao
 				.aggregateChallengeWatchHistory(uid, HistoryEvent.SKIPPED.getCode(), HistoryDest.CHALLENGE.getCode())
