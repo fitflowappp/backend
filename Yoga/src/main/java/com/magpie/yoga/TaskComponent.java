@@ -8,6 +8,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.magpie.getui.PushRecord;
+import com.magpie.getui.PushRecordDao;
 import com.magpie.getui.getui.cache.GetuiMessage;
 import com.magpie.getui.getui.service.AsyncGeTuiMsgSender;
 import com.magpie.user.dao.FacebookDao;
@@ -29,6 +31,8 @@ public class TaskComponent {
 	private AsyncGeTuiMsgSender asyncGeTuiMsgSender;
 	@Autowired
 	private FacebookDao facebookDao;
+	@Autowired
+	private PushRecordDao pushRecordDao;
 
 	@Scheduled(cron = "0 30 0 * * *")
 	public void generateDashboard() {
@@ -64,6 +68,12 @@ public class TaskComponent {
 			if (flg == 1 && current.compareTo(userConfiguration.getSchedulingTime()) == 0) {
 				asyncGeTuiMsgSender.send(userConfiguration.getUid(), message, true, 100);
 			}
+
+			PushRecord pushRecord = new PushRecord();
+			pushRecord.setUid(userConfiguration.getUid());
+			pushRecord.setContent(message.getContent());
+			pushRecord.setType(message.getType());
+			pushRecordDao.save(pushRecord);
 		}
 	}
 
