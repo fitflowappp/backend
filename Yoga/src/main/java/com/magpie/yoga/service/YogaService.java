@@ -1,6 +1,7 @@
 package com.magpie.yoga.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -10,8 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.magpie.base.utils.DateUtil;
 import com.magpie.cache.yoga.YogaCacheService;
 import com.magpie.share.UserRef;
+import com.magpie.user.dao.UserDao;
+import com.magpie.user.model.User;
 import com.magpie.yoga.constant.DialogType;
 import com.magpie.yoga.constant.HistoryDest;
 import com.magpie.yoga.constant.HistoryEvent;
@@ -51,11 +55,17 @@ public class YogaService {
 	private AchievementRecordDao achievementRecordDao;
 	@Autowired
 	private YogaCacheService yogaCacheService;
+	@Autowired
+	private UserDao userDao;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	public Achievement getUserAchievments(String uid) {
 		Achievement achievement = new Achievement();
+		User user = userDao.findOne(uid);
+		if (!user.isUnRegistered()) {
+			achievement.setDays(DateUtil.daysBetween(user.getRegisterDate(), Calendar.getInstance().getTime()));
+		}
 		achievement.setCompletedChallengeCount(userWatchHistoryDao
 				.aggregateChallengeWatchHistory(uid, HistoryEvent.SKIPPED.getCode(), HistoryDest.CHALLENGE.getCode())
 				.size());
