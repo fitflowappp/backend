@@ -56,14 +56,13 @@ public class YogaService {
 
 	public Achievement getUserAchievments(String uid) {
 		Achievement achievement = new Achievement();
-		for (UserWatchHistoryStat stat : userWatchHistoryDao.aggregateUserWatchHistory(uid,
-				HistoryEvent.COMPLETE.getCode())) {
-			if (stat.getDestType() == HistoryDest.CHALLENGE.getCode()) {
-				achievement.setCompletedChallengeCount(stat.getCount());
-			} else if (stat.getDestType() == HistoryDest.WORKOUT.getCode()) {
-				achievement.setCompletedWorkoutCount(stat.getCount());
-			}
-		}
+		achievement.setCompletedChallengeCount(userWatchHistoryDao
+				.aggregateChallengeWatchHistory(uid, HistoryEvent.SKIPPED.getCode(), HistoryDest.CHALLENGE.getCode())
+				.size());
+		achievement.setCompletedWorkoutCount(userWatchHistoryDao
+				.aggregateWorkoutWatchHistory(uid, HistoryEvent.SKIPPED.getCode(), HistoryDest.WORKOUT.getCode())
+				.size());
+
 		return achievement;
 	}
 
@@ -475,13 +474,10 @@ public class YogaService {
 
 		int totalDuration = 0;
 		int countOfWorkouts = 0;
-		for (UserWatchHistoryStat stat : userWatchHistoryDao.aggregateUserWatchHistory(uid,
-				HistoryEvent.SKIPPED.getCode())) {
-			if (HistoryDest.WORKOUT.getCode() == stat.getDestType()
-					|| HistoryDest.CHALLENGE.getCode() == stat.getDestType()) {
-				countOfWorkouts += stat.getCount();
-				totalDuration += stat.getDuration();
-			}
+		for (UserWatchHistoryStat stat : userWatchHistoryDao.aggregateWorkoutWatchHistory(uid,
+				HistoryEvent.SKIPPED.getCode(), HistoryDest.WORKOUT.getCode())) {
+			countOfWorkouts++;
+			totalDuration += stat.getDuration();
 		}
 
 		if (!userState.isSendAchieveDurationDialog() && totalDuration >= milestone.getAchievementMinutes()) {
