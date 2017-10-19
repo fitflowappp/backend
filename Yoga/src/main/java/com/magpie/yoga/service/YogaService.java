@@ -482,12 +482,11 @@ public class YogaService {
 			return null;
 		}
 
-		int totalDuration = 0;
+		int totalDuration = userWatchHistoryDao.aggregateDuration(uid);
 		int countOfWorkouts = 0;
 		for (UserWatchHistoryStat stat : userWatchHistoryDao.aggregateWorkoutWatchHistory(uid,
 				HistoryEvent.SKIPPED.getCode(), HistoryDest.WORKOUT.getCode())) {
 			countOfWorkouts++;
-			totalDuration += stat.getDuration();
 		}
 
 		if (!userState.isSendAchieveDurationDialog() && totalDuration >= milestone.getAchievementMinutes()) {
