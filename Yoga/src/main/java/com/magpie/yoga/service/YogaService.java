@@ -78,7 +78,7 @@ public class YogaService {
 		ChallengeSetView view = initialChallengeSetView(challengeSet);
 
 		UserState userState = userStateDao.findUserState(userRef.getId());
-		String currentChallengeId = null;
+		String currentChallengeId = challengeSet.getChallenges().get(0).getId();
 		if (userState != null) {
 			currentChallengeId = userState.getCurrentChallengeId();
 		}
