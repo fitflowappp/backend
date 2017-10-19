@@ -226,9 +226,7 @@ public class YogaService {
 			if (first == -1) {
 				first = status;
 			}
-			if (w.getStatus() > HistoryEvent.UNWATCH.getCode()) {
-				last = w.getStatus();
-			}
+			last = w.getStatus();
 			if (!StringUtils.isEmpty(userRef.getRole())) {// role不为空，则为超级用户
 				w.setAvail(true);
 			}
@@ -310,9 +308,7 @@ public class YogaService {
 				if (first == -1) {
 					first = status;
 				}
-				if (status > HistoryEvent.UNWATCH.getCode()) {
-					last = status;
-				}
+				last = status;
 
 			} else {
 				r.setAvail(false);
