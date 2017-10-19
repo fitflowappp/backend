@@ -3,6 +3,8 @@ package com.magpie.yoga.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,6 +51,8 @@ public class YogaService {
 	private AchievementRecordDao achievementRecordDao;
 	@Autowired
 	private YogaCacheService yogaCacheService;
+
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	public Achievement getUserAchievments(String uid) {
 		Achievement achievement = new Achievement();
@@ -353,7 +357,8 @@ public class YogaService {
 		Challenge challenge = yogaCacheService.getChallenge(cid);
 		Workout workout = yogaCacheService.getWorkout(wid);
 
-		String lastRoutineIdOfChallenge = getLastRoutineIdOfChallenge(challenge);
+		String lastWorkoutId = challenge.getWorkouts().get(challenge.getWorkouts().size() - 1).getId();
+		String lastRoutineIdOfChallenge = getLastRoutineIdOfWorkout(lastWorkoutId);
 		String lastRoutineIdOfWorkout = getLastRoutineIdOfWorkout(workout);
 
 		Routine lastRoutine = null;
@@ -369,7 +374,8 @@ public class YogaService {
 				history.setUid(uid);
 				history.setEvent(HistoryEvent.SKIPPED.getCode());
 				history.setDestType(
-						routine.getId().equalsIgnoreCase(lastRoutineIdOfChallenge) ? HistoryDest.CHALLENGE.getCode()
+						(routine.getId().equalsIgnoreCase(lastRoutineIdOfChallenge) && wid.equals(lastWorkoutId))
+								? HistoryDest.CHALLENGE.getCode()
 								: routine.getId().equals(lastRoutineIdOfWorkout) ? HistoryDest.WORKOUT.getCode()
 										: HistoryDest.ROUTINE.getCode());
 				histories.add(history);
@@ -397,6 +403,7 @@ public class YogaService {
 		Routine routine = yogaCacheService.getRoutine(rid);
 		Challenge challenge = yogaCacheService.getChallenge(cid);
 		Workout workout = yogaCacheService.getWorkout(wid);
+
 		// only record for routine which show in app
 		if (routine != null && routine.isDisplay()) {
 			createIfNoUserState(uid);
@@ -407,6 +414,13 @@ public class YogaService {
 				// update current user state
 				userStateDao.updateCurrentState(uid, cid, wid, rid);
 			}
+
+			String lastWorkoutId = challenge.getWorkouts().get(challenge.getWorkouts().size() - 1).getId();
+			String lastRoutineIdOfChallenge = getLastRoutineIdOfWorkout(lastWorkoutId);
+
+			String firstWorkoutId = challenge.getWorkouts().get(0).getId();
+			String firstRoutineIdOfChallenge = getFirstRoutineIdOfWorkout(firstWorkoutId);
+
 			UserWatchHistory history = new UserWatchHistory(cid, wid, rid);
 			history.setUid(uid);
 			history.setEvent(type);
@@ -414,16 +428,16 @@ public class YogaService {
 			if (type == HistoryEvent.COMPLETE.getCode() || type == HistoryEvent.SKIPPED.getCode()) {
 				history.setDuration(routine == null ? 0 : routine.getDuration());
 				history.setDestType(
-						rid.equalsIgnoreCase(getLastRoutineIdOfChallenge(challenge)) ? HistoryDest.CHALLENGE.getCode()
+						routine.getId().equalsIgnoreCase(lastRoutineIdOfChallenge) && wid.equals(lastWorkoutId)
+								? HistoryDest.CHALLENGE.getCode()
 								: rid.equalsIgnoreCase(getLastRoutineIdOfWorkout(workout))
 										? HistoryDest.WORKOUT.getCode()
 										: HistoryDest.ROUTINE.getCode());
 			} else if (type == HistoryEvent.START.getCode()) {
-				history.setDestType(
-						rid.equalsIgnoreCase(getFirstRoutineIdOfChallenge(challenge)) ? HistoryDest.CHALLENGE.getCode()
-								: rid.equalsIgnoreCase(getFirstRoutineIdOfWorkout(workout))
-										? HistoryDest.WORKOUT.getCode()
-										: HistoryDest.ROUTINE.getCode());
+				history.setDestType(rid.equalsIgnoreCase(firstRoutineIdOfChallenge) && wid.equals(firstWorkoutId)
+						? HistoryDest.CHALLENGE.getCode()
+						: rid.equalsIgnoreCase(getFirstRoutineIdOfWorkout(workout)) ? HistoryDest.WORKOUT.getCode()
+								: HistoryDest.ROUTINE.getCode());
 			} else {
 				history.setDestType(HistoryDest.ROUTINE.getCode());
 			}
@@ -489,14 +503,6 @@ public class YogaService {
 	// return getFirstRoutineIdOfWorkout(workout);
 	// }
 
-	private String getFirstRoutineIdOfChallenge(Challenge challenge) {
-		if (challenge.getWorkouts() != null && !challenge.getWorkouts().isEmpty()) {
-			return getFirstRoutineIdOfWorkout(challenge.getWorkouts().get(0).getId());
-		} else {
-			return null;
-		}
-	}
-
 	private String getFirstRoutineIdOfWorkout(String workoutId) {
 		Workout workout = yogaCacheService.getWorkout(workoutId);
 		return getFirstRoutineIdOfWorkout(workout);
@@ -521,10 +527,12 @@ public class YogaService {
 
 	private String getLastRoutineIdOfWorkout(String workoutId) {
 		Workout workout = yogaCacheService.getWorkout(workoutId);
+
 		return getLastRoutineIdOfWorkout(workout);
 	}
 
 	private String getLastRoutineIdOfWorkout(Workout workout) {
+
 		if (workout.getRoutines() != null && !workout.getRoutines().isEmpty()) {
 			Routine lastRoutine = null;
 			for (Routine routine : workout.getRoutines()) {
@@ -533,14 +541,6 @@ public class YogaService {
 				}
 			}
 			return lastRoutine == null ? null : lastRoutine.getId();
-		} else {
-			return null;
-		}
-	}
-
-	private String getLastRoutineIdOfChallenge(Challenge challenge) {
-		if (challenge.getWorkouts() != null && !challenge.getWorkouts().isEmpty()) {
-			return getLastRoutineIdOfWorkout(challenge.getWorkouts().get(challenge.getWorkouts().size() - 1).getId());
 		} else {
 			return null;
 		}
