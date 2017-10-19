@@ -1,7 +1,6 @@
 package com.magpie.yoga.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -255,15 +254,9 @@ public class YogaService {
 		ChallengeView view = new ChallengeView();
 		BeanUtils.copyProperties(challenge, view, "workouts");
 
-		HashMap<String, Workout> workoutMap = new HashMap<>();
-		for (Workout workout : challenge.getWorkouts()) {
-			workout = yogaCacheService.getWorkout(workout.getId());
-			workoutMap.put(workout.getId(), workout);
-		}
-
 		List<WorkoutView> workoutViews = new ArrayList<>();
 		for (Workout workout : challenge.getWorkouts()) {
-			workoutViews.add(initialWorkoutView(workoutMap.get(workout.getId())));
+			workoutViews.add(initialWorkoutView(yogaCacheService.getWorkout(workout.getId())));
 		}
 		view.setWorkouts(workoutViews);
 		return view;
@@ -345,16 +338,10 @@ public class YogaService {
 		WorkoutView view = new WorkoutView();
 		BeanUtils.copyProperties(workout, view, "routines");
 
-		HashMap<String, Routine> routineMap = new HashMap<>();
-		for (Routine routine : workout.getRoutines()) {
-			routine = yogaCacheService.getRoutine(routine.getId());
-			routineMap.put(routine.getId(), routine);
-		}
-
 		List<RoutineView> routineViews = new ArrayList<>();
 		for (Routine r : workout.getRoutines()) {
 			RoutineView routineView = new RoutineView();
-			BeanUtils.copyProperties(routineMap.get(r.getId()), routineView);
+			BeanUtils.copyProperties(yogaCacheService.getRoutine(r.getId()), routineView);
 			routineViews.add(routineView);
 		}
 		view.setRoutines(routineViews);
