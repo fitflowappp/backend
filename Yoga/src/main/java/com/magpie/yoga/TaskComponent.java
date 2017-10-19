@@ -57,8 +57,9 @@ public class TaskComponent {
 				continue;
 			}
 			FaceBookUser faceBookUser = facebookDao.findByUid(userConfiguration.getUid());
-			GetuiMessage message = new GetuiMessage(GetuiMessage.DISP_TYPE, "Hey " + faceBookUser == null ? ""
-					: faceBookUser.getName() + "! Time for yoga. You know you will feel great afterwards.");
+			GetuiMessage message = new GetuiMessage(GetuiMessage.DISP_TYPE,
+					"Hey " + (faceBookUser == null ? "" : faceBookUser.getName())
+							+ "! Time for yoga. You know you will feel great afterwards.");
 			int flg = userConfiguration.getSchedulingDays()[Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1];
 			if (flg == 1 && current.compareTo(userConfiguration.getSchedulingTime()) == 0) {
 				asyncGeTuiMsgSender.send(userConfiguration.getUid(), message, true, 100);
