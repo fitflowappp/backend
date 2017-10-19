@@ -365,6 +365,10 @@ public class YogaService {
 		String lastRoutineIdOfChallenge = getLastRoutineIdOfWorkout(lastWorkoutId);
 		String lastRoutineIdOfWorkout = getLastRoutineIdOfWorkout(workout);
 
+		logger.info("skip workout:{},{},{}", uid, cid, wid);
+		logger.info("lastWorkoutId:{},lastRoutineIdOfChallenge:{},lastRoutineIdOfWorkout:{}", lastWorkoutId,
+				lastRoutineIdOfChallenge, lastRoutineIdOfWorkout);
+
 		Routine lastRoutine = null;
 		Routine firstRoutine = null;
 		List<UserWatchHistory> histories = new ArrayList<>();
@@ -421,9 +425,14 @@ public class YogaService {
 
 			String lastWorkoutId = challenge.getWorkouts().get(challenge.getWorkouts().size() - 1).getId();
 			String lastRoutineIdOfChallenge = getLastRoutineIdOfWorkout(lastWorkoutId);
+			String lastRoutineIdOfWorkout = getLastRoutineIdOfWorkout(workout);
 
 			String firstWorkoutId = challenge.getWorkouts().get(0).getId();
 			String firstRoutineIdOfChallenge = getFirstRoutineIdOfWorkout(firstWorkoutId);
+
+			logger.info("watching routine:{},{},{},{}", uid, cid, wid, rid);
+			logger.info("lastWorkoutId:{},lastRoutineIdOfChallenge:{},lastRoutineIdOfWorkout:{}", lastWorkoutId,
+					lastRoutineIdOfChallenge, lastRoutineIdOfWorkout);
 
 			UserWatchHistory history = new UserWatchHistory(cid, wid, rid);
 			history.setUid(uid);
@@ -432,13 +441,12 @@ public class YogaService {
 			if (type == HistoryEvent.COMPLETE.getCode() || type == HistoryEvent.SKIPPED.getCode()) {
 				history.setDuration(routine == null ? 0 : routine.getDuration());
 				history.setDestType(
-						routine.getId().equalsIgnoreCase(lastRoutineIdOfChallenge) && wid.equals(lastWorkoutId)
+						(routine.getId().equalsIgnoreCase(lastRoutineIdOfChallenge) && wid.equals(lastWorkoutId))
 								? HistoryDest.CHALLENGE.getCode()
-								: rid.equalsIgnoreCase(getLastRoutineIdOfWorkout(workout))
-										? HistoryDest.WORKOUT.getCode()
+								: rid.equalsIgnoreCase(lastRoutineIdOfWorkout) ? HistoryDest.WORKOUT.getCode()
 										: HistoryDest.ROUTINE.getCode());
 			} else if (type == HistoryEvent.START.getCode()) {
-				history.setDestType(rid.equalsIgnoreCase(firstRoutineIdOfChallenge) && wid.equals(firstWorkoutId)
+				history.setDestType((rid.equalsIgnoreCase(firstRoutineIdOfChallenge) && wid.equals(firstWorkoutId))
 						? HistoryDest.CHALLENGE.getCode()
 						: rid.equalsIgnoreCase(getFirstRoutineIdOfWorkout(workout)) ? HistoryDest.WORKOUT.getCode()
 								: HistoryDest.ROUTINE.getCode());
