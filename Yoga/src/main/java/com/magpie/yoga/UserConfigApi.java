@@ -28,10 +28,10 @@ public class UserConfigApi {
 		userConfiguration.setUid(userRef.getId());
 		UserConfiguration repository = userConfigurationDao.findOneByUid(userRef.getId());
 		if (repository == null) {
-			repository = userConfiguration;
-		} else {
-			BeanUtils.copyProperties(userConfiguration, repository);
+			repository = new UserConfiguration();
 		}
+		BeanUtils.copyProperties(userConfiguration, repository, "id");
+
 		userConfigurationDao.save(repository);
 		return new BaseView<>(repository);
 	}
