@@ -3,6 +3,8 @@ package com.magpie.yoga;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -33,6 +35,8 @@ public class TaskComponent {
 	private FacebookDao facebookDao;
 	@Autowired
 	private PushRecordDao pushRecordDao;
+
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Scheduled(cron = "0 30 0 * * *")
 	public void generateDashboard() {
@@ -65,15 +69,19 @@ public class TaskComponent {
 					"Hey " + (faceBookUser == null ? "" : faceBookUser.getName())
 							+ "! Time for yoga. You know you will feel great afterwards.");
 			int flg = userConfiguration.getSchedulingDays()[Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1];
+			logger.info("flg:{},equal:{},currentTime:{},scheduleTime:{}", flg,
+					current.compareTo(userConfiguration.getSchedulingTime()), current,
+					userConfiguration.getSchedulingTime());
 			if (flg == 1 && current.compareTo(userConfiguration.getSchedulingTime()) == 0) {
 				asyncGeTuiMsgSender.send(userConfiguration.getUid(), message, true, 100);
+
+				PushRecord pushRecord = new PushRecord();
+				pushRecord.setUid(userConfiguration.getUid());
+				pushRecord.setContent(message.getContent());
+				pushRecord.setType(message.getType());
+				pushRecordDao.save(pushRecord);
 			}
 
-			PushRecord pushRecord = new PushRecord();
-			pushRecord.setUid(userConfiguration.getUid());
-			pushRecord.setContent(message.getContent());
-			pushRecord.setType(message.getType());
-			pushRecordDao.save(pushRecord);
 		}
 	}
 
