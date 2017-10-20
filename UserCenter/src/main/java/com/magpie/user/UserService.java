@@ -162,12 +162,12 @@ public class UserService {
 
 		FaceBookUser faceBookUser = FacebookDao.findByFacebookUid(fbUser.getId());
 
-		User user = new User();
-		user.setId(uid);
-		user.setUnRegistered(false);
-		user.setRegisterType("facebook");// facebook
-
 		if (faceBookUser == null) {
+
+			User user = new User();
+			user.setId(uid);
+			user.setUnRegistered(false);
+			user.setRegisterType("facebook");// facebook
 
 			faceBookUser = new FaceBookUser();
 			faceBookUser.setHeaderImgContent(imgBytes);
@@ -176,7 +176,6 @@ public class UserService {
 			return register(user);
 		} else {
 			faceBookUser.setHeaderImgContent(imgBytes);
-			userDao.save(user);
 			saveFacebookUser(faceBookUser.getUid(), fbUser, faceBookUser);
 			return getLoginUserView(userDao.findOne(faceBookUser.getUid()));
 		}
@@ -185,14 +184,15 @@ public class UserService {
 	public UserView loginIfRegistered(org.springframework.social.facebook.api.User fbUser, byte[] imgBytes) {
 
 		FaceBookUser faceBookUser = FacebookDao.findByFacebookUid(fbUser.getId());
-		// 生成user
-		User user = new User();
-		user.setUnRegistered(false);
-		user.setRegisterType("facebook");// facebook
-		user.setRegisterDate(DateUtil.getCurrentDate());
-		userDao.save(user);
 
 		if (faceBookUser == null) {
+			// 生成user
+			User user = new User();
+			user.setUnRegistered(false);
+			user.setRegisterType("facebook");// facebook
+			user.setRegisterDate(DateUtil.getCurrentDate());
+			userDao.save(user);
+
 			faceBookUser = new FaceBookUser();
 			faceBookUser.setHeaderImgContent(imgBytes);
 			saveFacebookUser(user.getId(), fbUser, faceBookUser);
