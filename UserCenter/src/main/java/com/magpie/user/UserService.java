@@ -219,8 +219,8 @@ public class UserService {
 
 		BeanUtils.copyProperties(user, exist);
 
-		user.setRegisterDate(DateUtil.getCurrentDate());
-		user.setLastLoginDate(DateUtil.getCurrentDate());
+		exist.setRegisterDate(DateUtil.getCurrentDate());
+		exist.setLastLoginDate(DateUtil.getCurrentDate());
 		userDao.save(exist);
 
 		return getLoginUserView(exist);
