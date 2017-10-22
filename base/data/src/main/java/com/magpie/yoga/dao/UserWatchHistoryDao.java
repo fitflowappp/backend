@@ -23,6 +23,7 @@ import org.springframework.stereotype.Repository;
 
 import com.magpie.base.dao.BaseMongoRepository;
 import com.magpie.yoga.constant.HistoryDest;
+import com.magpie.yoga.constant.HistoryEvent;
 import com.magpie.yoga.model.UserWatchHistory;
 import com.magpie.yoga.stat.UserWatchHistoryStat;
 
@@ -75,12 +76,42 @@ public class UserWatchHistoryDao extends BaseMongoRepository<UserWatchHistory, S
 		return result.getMappedResults();
 	}
 
-	public List<UserWatchHistoryStat> aggregateUserWatchHistory(String uid, int event) {
+	public List<UserWatchHistoryStat> aggregateWorkoutWatchHistory(String uid, int event, int destType) {
 		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class,
-				match(Criteria.where("uid").is(uid).and("event").is(event)),
-				group("uid", "destType").sum("duration").as("duration").count().as("count").first("uid").as("uid")
-						.first("destType").as("destType"),
-				project("uid", "duration", "count", "destType"), sort(new Sort(Direction.DESC, "duration")));
+				match(Criteria.where("uid").is(uid).and("event").gte(event).and("destType").lte(destType)),
+				group("uid", "workoutId").first("workoutId").as("workoutId").sum("duration").as("duration").count()
+						.as("count").first("uid").as("uid").first("destType").as("destType").max("event").as("event"),
+				project("uid", "duration", "workoutId", "count", "destType", "event"),
+				sort(new Sort(Direction.DESC, "duration")));
+		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
+				UserWatchHistoryStat.class);
+		return result.getMappedResults();
+	}
+
+	public int aggregateDuration(String uid) {
+		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class,
+				match(Criteria.where("uid").is(uid).and("event").is(HistoryEvent.COMPLETE.getCode())),
+				group("uid").first("workoutId").as("workoutId").sum("duration").as("duration").count().as("count")
+						.first("uid").as("uid").first("destType").as("destType").max("event").as("event"),
+				project("uid", "duration", "workoutId", "count", "destType", "event"),
+				sort(new Sort(Direction.DESC, "duration")));
+		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
+				UserWatchHistoryStat.class);
+		if (result.getMappedResults() != null && !result.getMappedResults().isEmpty()) {
+			return result.getMappedResults().get(0).getDuration();
+		} else {
+			return 0;
+		}
+	}
+
+	public List<UserWatchHistoryStat> aggregateChallengeWatchHistory(String uid, int event, int destType) {
+		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class,
+				match(Criteria.where("uid").is(uid).and("event").gte(event).and("destType").lte(destType)),
+				group("uid", "challengeId").first("challengeId").as("challengeId").sum("duration").as("duration")
+						.count().as("count").first("uid").as("uid").first("destType").as("destType").max("event")
+						.as("event"),
+				project("uid", "duration", "challengeId", "count", "destType", "event"),
+				sort(new Sort(Direction.DESC, "duration")));
 		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
 				UserWatchHistoryStat.class);
 		return result.getMappedResults();
