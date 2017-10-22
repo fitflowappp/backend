@@ -29,6 +29,12 @@ public class AchievementRecordDao extends BaseMongoRepository<AchievementRecord,
 		super(mongoRepositoryFactory.getEntityInformation(AchievementRecord.class), mongoOps);
 	}
 
+	public AchievementRecord findByNo(String uid, int type, int no) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("uid").is(uid).and("type").is(type).and("no").is(no));
+		return findOneByQuery(query);
+	}
+
 	public long count(Date start, Date end) {
 		Criteria criteria = new Criteria();
 		addDateCriteria(start, end, criteria);

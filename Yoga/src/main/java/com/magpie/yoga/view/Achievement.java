@@ -6,6 +6,8 @@ public class Achievement {
 
 	private int completedChallengeCount;
 
+	private int completedMinutes;
+
 	private int days;
 
 	public int getCompletedWorkoutCount() {
@@ -32,10 +34,25 @@ public class Achievement {
 	}
 
 	/**
-	 * @param days the days to set
+	 * @param days
+	 *            the days to set
 	 */
 	public void setDays(int days) {
 		this.days = days;
+	}
+
+	/**
+	 * @return the completedMinutes
+	 */
+	public int getCompletedMinutes() {
+		return completedMinutes;
+	}
+
+	/**
+	 * @param completedMinutes the completedMinutes to set
+	 */
+	public void setCompletedMinutes(int completedMinutes) {
+		this.completedMinutes = completedMinutes;
 	}
 
 }

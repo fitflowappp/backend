@@ -66,9 +66,7 @@ public class YogaService {
 		if (!user.isUnRegistered()) {
 			achievement.setDays(DateUtil.daysBetween(user.getRegisterDate(), Calendar.getInstance().getTime()) + 1);
 		}
-		achievement.setCompletedChallengeCount(userWatchHistoryDao
-				.aggregateChallengeWatchHistory(uid, HistoryEvent.SKIPPED.getCode(), HistoryDest.CHALLENGE.getCode())
-				.size());
+		achievement.setCompletedMinutes(userWatchHistoryDao.aggregateDuration(uid));
 		achievement.setCompletedWorkoutCount(userWatchHistoryDao
 				.aggregateWorkoutWatchHistory(uid, HistoryEvent.SKIPPED.getCode(), HistoryDest.WORKOUT.getCode())
 				.size());
@@ -470,12 +468,6 @@ public class YogaService {
 
 	private ActView createActView(String uid) {
 
-		UserState userState = userStateDao.findUserState(uid);
-		// dialog has been shown
-		if (userState.isSendAchieveDurationDialog() && userState.isSendAchieveWorkoutDialog()) {
-			return null;
-		}
-
 		Milestone milestone = milestoneDao.findOne();
 
 		if (milestone == null) {
@@ -483,23 +475,27 @@ public class YogaService {
 		}
 
 		int totalDuration = userWatchHistoryDao.aggregateDuration(uid);
+		int durationNo = totalDuration / milestone.getAchievementMinutes();
 		int countOfWorkouts = 0;
 		for (UserWatchHistoryStat stat : userWatchHistoryDao.aggregateWorkoutWatchHistory(uid,
 				HistoryEvent.SKIPPED.getCode(), HistoryDest.WORKOUT.getCode())) {
 			countOfWorkouts++;
 		}
+		int workoutCountNo = countOfWorkouts / milestone.getAchievementWorkoutNum();
 
-		if (!userState.isSendAchieveDurationDialog() && totalDuration >= milestone.getAchievementMinutes()) {
+		if (durationNo > 0 && achievementRecordDao.findByNo(uid, DialogType.DURATION.getCode(), durationNo) == null) {
 
-			achievementRecordDao.save(new AchievementRecord(uid, DialogType.DURATION.getCode()));
-			userStateDao.updateAchieveDuration(uid, true);
+			achievementRecordDao
+					.save(new AchievementRecord(uid, DialogType.DURATION.getCode(), durationNo, totalDuration));
 			// show minutes dialog
 			return new ActView(DialogType.DURATION.getCode(), milestone.getAchievementMinutesContent());
 		}
 
-		if (!userState.isSendAchieveWorkoutDialog() && countOfWorkouts >= milestone.getAchievementWorkoutNum()) {
-			achievementRecordDao.save(new AchievementRecord(uid, DialogType.WORKOUT.getCode()));
-			userStateDao.updateAchieveWorkout(uid, true);
+		if (workoutCountNo > 0
+				&& achievementRecordDao.findByNo(uid, DialogType.WORKOUT.getCode(), workoutCountNo) == null) {
+			achievementRecordDao
+					.save(new AchievementRecord(uid, DialogType.WORKOUT.getCode(), workoutCountNo, countOfWorkouts));
+
 			return new ActView(DialogType.WORKOUT.getCode(), milestone.getAchievementWorkoutContent());
 		}
 
