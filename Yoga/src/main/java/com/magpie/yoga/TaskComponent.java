@@ -44,7 +44,7 @@ public class TaskComponent {
 	}
 
 	// @Scheduled(cron = "0 0 0/4 * * *")
-	@Scheduled(cron = "0 0/5 * * * *")
+	@Scheduled(cron = "0 0/1 * * * *")
 	// Challenge,Workout,Routine统计数据
 	public void generateCWRStatistics() {
 		yogaStatService.updateCount();
