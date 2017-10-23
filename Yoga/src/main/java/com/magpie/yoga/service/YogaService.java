@@ -120,7 +120,7 @@ public class YogaService {
 					currentChallenge = c;
 				}
 			}
-			if (!StringUtils.isEmpty(userRef.getRole()) && "admin".equals(userRef.getRole())) {// role不为空且为admin，则为超级用户
+			if (!StringUtils.isEmpty(userRef.getRole()) && "0".equals(userRef.getRole())) {// role不为空且为admin，则为超级用户
 				c.setAvail(true);
 			}
 
@@ -234,7 +234,7 @@ public class YogaService {
 				first = status;
 			}
 			last = w.getStatus();
-			if (!StringUtils.isEmpty(userRef.getRole()) && "admin".equals(userRef.getRole())) {// role不为空且为admin，则为超级用户
+			if (!StringUtils.isEmpty(userRef.getRole()) && "0".equals(userRef.getRole())) {// role不为空且为admin，则为超级用户
 				w.setAvail(true);
 			}
 
@@ -321,7 +321,7 @@ public class YogaService {
 				r.setAvail(false);
 			}
 
-			if (!StringUtils.isEmpty(userRef.getRole()) && "admin".equals(userRef.getRole())) {// role不为空且为admin，则为超级用户
+			if (!StringUtils.isEmpty(userRef.getRole()) && "0".equals(userRef.getRole())) {// role不为空且为admin，则为超级用户
 				r.setAvail(true);
 			}
 
