@@ -46,8 +46,9 @@ public class DashboardController {
 				.append("Workouts started by unique users").append(",").append("Workouts completed by unique users")
 				.append(",").append("Unique users who completed a Workout").append(",")
 				.append("Cumulative duration of videos watched").append(",")
-				.append("Unique users who turned scheduling on").append("Unique users who have received achievements")
-				.append(",").append("Unique users who have shared on social media").append("\r\n");
+				.append("Unique users who turned scheduling on").append(",")
+				.append("Unique users who have received achievements").append(",")
+				.append("Unique users who have shared on social media").append("\r\n");
 
 		for (Dashboard board : yogaStatService.getDashboard()) {
 			sb.append(board.getDate()).append(",").append(board.getFacebookRegSubmitNum()).append(",")
