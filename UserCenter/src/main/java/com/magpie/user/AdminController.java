@@ -1,6 +1,7 @@
 package com.magpie.user;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -12,13 +13,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.magpie.base.query.PageQuery;
+import com.magpie.base.utils.CsvUtils;
 import com.magpie.base.view.BaseView;
 import com.magpie.base.view.PageView;
 import com.magpie.user.constant.RoleType;
 import com.magpie.user.dao.UserDao;
+import com.magpie.user.model.User;
 import com.magpie.user.req.AdminLoginReq;
 import com.magpie.user.view.AdminView;
 import com.magpie.user.view.FacebookUserView;
+import com.magpie.yoga.model.UserConfiguration;
+import com.magpie.yoga.model.UserState;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -32,6 +37,43 @@ public class AdminController {
 	private UserService userService;
 	@Autowired
 	private UserDao userDao;
+
+	@RequestMapping(method = RequestMethod.GET, value = "/csv")
+	@ResponseBody
+	@ApiOperation(value = "export csv")
+	public void exportCsv(HttpServletResponse response) {
+
+		StringBuffer sb = new StringBuffer();
+		sb.append("ID").append(",").append("Facebook ID").append(",").append("Email Address").append(",")
+				.append("Timestamp of App First Opened").append(",").append("Registered?").append(",")
+				.append("Timestamp of Facebook Registration submitted").append(",")
+				.append("Timestamp of Registration Completed").append(",").append("Current challenge ID").append(",")
+				.append("Cumulative duration of videos watched").append(",").append("Number of completed Workouts")
+				.append(",").append("Scheduling in-app notification on?").append(",")
+				.append("Scheduling calendar reminder on?").append(",").append("Cumulative number of social shares")
+				.append(",").append("\r\n");
+
+		PageQuery pageQuery = new PageQuery();
+		pageQuery.setSize(500000);
+		PageView<FacebookUserView> pageView = userService.getPageView(pageQuery);
+		User du = new User();
+		UserState dus = new UserState();
+		UserConfiguration duc = new UserConfiguration();
+		for (FacebookUserView fu : pageView.getContent()) {
+			User u = fu.getUser() == null ? du : fu.getUser();
+			UserState us = fu.getUserState() == null ? dus : fu.getUserState();
+			UserConfiguration uc = fu.getUserConfiguration() == null ? duc : fu.getUserConfiguration();
+
+			sb.append(u.getId()).append(",").append(fu.getFacebookUid()).append(",").append(fu.getEmail()).append(",")
+					.append(u.getCrDate()).append(",").append(u.isUnRegistered() ? "no" : "yes").append(",")
+					.append(u.getFacebookRegistrationSumbmittedDate()).append(",").append(u.getRegisterDate())
+					.append(",").append(us.getCurrentChallengeId()).append(",").append(us.getDuration()).append(",")
+					.append(us.getCompletedWorkoutNum()).append(",").append(uc.isNotification() ? "on" : "off")
+					.append(",").append(uc.isRemider() ? "on" : "off").append(",").append(us.getSocialShareNum())
+					.append("\r\n");
+		}
+		CsvUtils.download("user.csv", sb.toString(), response);
+	}
 
 	/**
 	 * 管理员登录
