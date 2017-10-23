@@ -2,6 +2,8 @@ package com.magpie.yoga;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.magpie.base.query.PageQuery;
+import com.magpie.base.utils.CsvUtils;
 import com.magpie.base.view.BaseView;
 import com.magpie.base.view.Result;
 import com.magpie.cache.yoga.YogaCacheService;
@@ -34,6 +37,24 @@ public class RoutineController {
 	@ApiOperation(value = "get all routines", response = Routine.class, responseContainer = "List")
 	public List<Routine> getRoutine(@ModelAttribute PageQuery pageQuery) {
 		return routineDao.findBySort(pageQuery);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/csv")
+	@ResponseBody
+	@ApiOperation(value = "export csv")
+	public void exportCsv(HttpServletResponse response) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("ID").append(",").append("Code").append(",").append("Title").append(",").append("Duration")
+				.append(",").append("Display in Workout detail page?").append(",").append("Number of times started")
+				.append(",").append("Number of times skipped").append("\r\n");
+
+		for (Routine routine : routineDao.findAll()) {
+			sb.append(routine.getId()).append(",").append(routine.getCode()).append(",").append(routine.getTitle())
+					.append(",").append(routine.getDuration()).append(",").append(routine.isDisplay() ? "yes" : "no")
+					.append(",").append(routine.getStartedTimes()).append(",").append(routine.getSkippedTimes())
+					.append("\r\n");
+		}
+		CsvUtils.download("routine.csv", sb.toString(), response);
 	}
 
 	@RequestMapping(method = RequestMethod.POST)

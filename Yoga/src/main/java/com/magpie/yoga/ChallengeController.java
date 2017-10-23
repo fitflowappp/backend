@@ -2,6 +2,8 @@ package com.magpie.yoga;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.magpie.base.query.PageQuery;
+import com.magpie.base.utils.CsvUtils;
 import com.magpie.base.view.BaseView;
 import com.magpie.base.view.Result;
 import com.magpie.cache.yoga.YogaCacheService;
@@ -34,6 +37,24 @@ public class ChallengeController {
 	@ApiOperation(value = "get all challenges", response = Challenge.class, responseContainer = "List")
 	public List<Challenge> getChallenge(@ModelAttribute PageQuery pageQuery) {
 		return challengeDao.findBySort(pageQuery);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/csv")
+	@ResponseBody
+	@ApiOperation(value = "export csv")
+	public void exportCsv(HttpServletResponse response) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("ID").append(",").append("Code").append(",").append("Title").append(",").append("times started")
+				.append(",").append("times completed").append(",").append("unique users started").append(",")
+				.append("unique users completed").append("\r\n");
+
+		for (Challenge challenge : challengeDao.findAll()) {
+			sb.append(challenge.getId()).append(",").append(challenge.getCode()).append(",")
+					.append(challenge.getTitle()).append(",").append(challenge.getStartedTimes()).append(",")
+					.append(challenge.getCompletedTimes()).append(",").append(challenge.getStartedUserCount())
+					.append(",").append(challenge.getCompletedUserCount()).append("\r\n");
+		}
+		CsvUtils.download("challenge.csv", sb.toString(), response);
 	}
 
 	@RequestMapping(method = RequestMethod.POST)

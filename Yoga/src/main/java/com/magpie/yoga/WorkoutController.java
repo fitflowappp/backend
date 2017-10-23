@@ -2,6 +2,8 @@ package com.magpie.yoga;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.magpie.base.query.PageQuery;
+import com.magpie.base.utils.CsvUtils;
 import com.magpie.base.view.BaseView;
 import com.magpie.base.view.Result;
 import com.magpie.cache.yoga.YogaCacheService;
@@ -34,6 +37,26 @@ public class WorkoutController {
 	@ApiOperation(value = "get all workouts", response = Workout.class, responseContainer = "List")
 	public List<Workout> getWorkout(@ModelAttribute PageQuery pageQuery) {
 		return workoutDao.findBySort(pageQuery);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/csv")
+	@ResponseBody
+	@ApiOperation(value = "export csv")
+	public void exportCsv(HttpServletResponse response) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("ID").append(",").append("Code").append(",").append("Title").append(",").append("Duration")
+				.append(",").append("times started").append(",").append("times completed").append(",")
+				.append("unique users started").append(",").append("unique users completed").append(",")
+				.append("Total duration of being watched").append("\r\n");
+
+		for (Workout workout : workoutDao.findAll()) {
+			sb.append(workout.getId()).append(",").append(workout.getCode()).append(",").append(workout.getTitle())
+					.append(",").append(workout.getDuration()).append(",").append(workout.getStartedTimes()).append(",")
+					.append(workout.getCompletedTimes()).append(",").append(workout.getStartedUserCount()).append(",")
+					.append(workout.getCompletedUserCount()).append(",").append(workout.getTotalDuration())
+					.append("\r\n");
+		}
+		CsvUtils.download("workout.csv", sb.toString(), response);
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
