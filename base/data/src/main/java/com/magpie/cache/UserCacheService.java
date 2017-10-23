@@ -145,7 +145,6 @@ public class UserCacheService {
 		String key = USER_KEY_PREFIX + user.getId();
 
 		valueOperations.set(key, JSON.toJSONString(user));
-		stringRedisTemplate.expire(key, 30, TimeUnit.DAYS);
 	}
 
 	public void saveToken(String token, String tokenKey, int time) {
