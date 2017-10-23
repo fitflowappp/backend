@@ -16,6 +16,8 @@ import com.magpie.base.query.PageQuery;
 import com.magpie.base.utils.CsvUtils;
 import com.magpie.base.view.BaseView;
 import com.magpie.base.view.PageView;
+import com.magpie.cache.UserCacheService;
+import com.magpie.share.UserRef;
 import com.magpie.user.constant.RoleType;
 import com.magpie.user.dao.UserDao;
 import com.magpie.user.model.User;
@@ -37,6 +39,8 @@ public class AdminController {
 	private UserService userService;
 	@Autowired
 	private UserDao userDao;
+	@Autowired
+	private UserCacheService userCacheService;
 
 	@RequestMapping(method = RequestMethod.GET, value = "/csv")
 	@ResponseBody
@@ -99,6 +103,9 @@ public class AdminController {
 	@ApiOperation(value = "升级为测试管理用户", response = BaseView.class)
 	public BaseView<?> upgradeUser(@PathVariable String uid) {
 		userDao.updateUserRole(uid, RoleType.ADMIN.getCode());
+		UserRef userRef = userCacheService.getById(uid);
+		userRef.setRole(RoleType.ADMIN.getCode());
+		userCacheService.saveUser(userRef);
 		return new BaseView<>();
 	}
 
@@ -112,6 +119,9 @@ public class AdminController {
 	@ApiOperation(value = "取消测试管理用户", response = BaseView.class)
 	public BaseView<?> cancelUpgradeUser(@PathVariable String uid) {
 		userDao.updateUserRole(uid, RoleType.CUSTOMER.getCode());
+		UserRef userRef = userCacheService.getById(uid);
+		userRef.setRole(RoleType.CUSTOMER.getCode());
+		userCacheService.saveUser(userRef);
 		return new BaseView<>();
 	}
 
