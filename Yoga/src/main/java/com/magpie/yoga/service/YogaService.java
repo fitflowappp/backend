@@ -66,7 +66,7 @@ public class YogaService {
 		if (!user.isUnRegistered()) {
 			achievement.setDays(DateUtil.daysBetween(user.getRegisterDate(), Calendar.getInstance().getTime()) + 1);
 		}
-		achievement.setCompletedMinutes(userWatchHistoryDao.aggregateDuration(uid));
+		achievement.setCompletedMinutes(userWatchHistoryDao.aggregateRoutineDuration(uid));
 		achievement.setCompletedWorkoutCount(userWatchHistoryDao
 				.aggregateWorkoutWatchHistory(uid, HistoryEvent.SKIPPED.getCode(), HistoryDest.WORKOUT.getCode())
 				.size());
@@ -120,7 +120,7 @@ public class YogaService {
 					currentChallenge = c;
 				}
 			}
-			if (!StringUtils.isEmpty(userRef.getRole())) {// role不为空，则为超级用户
+			if (!StringUtils.isEmpty(userRef.getRole()) && "admin".equals(userRef.getRole())) {// role不为空且为admin，则为超级用户
 				c.setAvail(true);
 			}
 
@@ -234,7 +234,7 @@ public class YogaService {
 				first = status;
 			}
 			last = w.getStatus();
-			if (!StringUtils.isEmpty(userRef.getRole())) {// role不为空，则为超级用户
+			if (!StringUtils.isEmpty(userRef.getRole()) && "admin".equals(userRef.getRole())) {// role不为空且为admin，则为超级用户
 				w.setAvail(true);
 			}
 
@@ -321,7 +321,7 @@ public class YogaService {
 				r.setAvail(false);
 			}
 
-			if (!StringUtils.isEmpty(userRef.getRole())) {// role不为空，则为超级用户
+			if (!StringUtils.isEmpty(userRef.getRole()) && "admin".equals(userRef.getRole())) {// role不为空且为admin，则为超级用户
 				r.setAvail(true);
 			}
 
@@ -474,7 +474,7 @@ public class YogaService {
 			return null;
 		}
 
-		int totalDuration = userWatchHistoryDao.aggregateDuration(uid);
+		int totalDuration = userWatchHistoryDao.aggregateRoutineDuration(uid);
 		int durationNo = totalDuration / milestone.getAchievementMinutes();
 		int countOfWorkouts = 0;
 		for (UserWatchHistoryStat stat : userWatchHistoryDao.aggregateWorkoutWatchHistory(uid,
