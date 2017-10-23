@@ -88,13 +88,11 @@ public class UserWatchHistoryDao extends BaseMongoRepository<UserWatchHistory, S
 		return result.getMappedResults();
 	}
 
-	public int aggregateDuration(String uid) {
+	public int aggregateRoutineDuration(String uid) {
 		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class,
-				match(Criteria.where("uid").is(uid).and("event").is(HistoryEvent.COMPLETE.getCode())),
-				group("uid").first("workoutId").as("workoutId").sum("duration").as("duration").count().as("count")
-						.first("uid").as("uid").first("destType").as("destType").max("event").as("event"),
-				project("uid", "duration", "workoutId", "count", "destType", "event"),
-				sort(new Sort(Direction.DESC, "duration")));
+				match(Criteria.where("uid").is(uid).and("destType").is(HistoryDest.ROUTINE.getCode()).and("event")
+						.is(HistoryEvent.COMPLETE.getCode())),
+				group("uid").sum("duration").as("duration").first("uid").as("uid"), project("uid", "duration"));
 		AggregationResults<UserWatchHistoryStat> result = getMongoOperations().aggregate(aggregation,
 				UserWatchHistoryStat.class);
 		if (result.getMappedResults() != null && !result.getMappedResults().isEmpty()) {
