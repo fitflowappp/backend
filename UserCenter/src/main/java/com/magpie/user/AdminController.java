@@ -69,7 +69,7 @@ public class AdminController {
 					.append(u.getFacebookRegistrationSumbmittedDate()).append(",").append(u.getRegisterDate())
 					.append(",").append(us.getCurrentChallengeId()).append(",").append(us.getDuration()).append(",")
 					.append(us.getCompletedWorkoutNum()).append(",").append(uc.isNotification() ? "on" : "off")
-					.append(",").append(uc.isRemider() ? "on" : "off").append(",").append(us.getSocialShareNum())
+					.append(",").append(uc.isRemider() ? "on" : "off").append(",").append(fu.getShareCount())
 					.append("\r\n");
 		}
 		CsvUtils.download("user.csv", sb.toString(), response);
