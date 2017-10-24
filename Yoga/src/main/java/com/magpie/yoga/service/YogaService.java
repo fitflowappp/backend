@@ -458,7 +458,9 @@ public class YogaService {
 				history.setDestType(HistoryDest.ROUTINE.getCode());
 			}
 
-			userWatchHistoryDao.save(history);
+			if (!userWatchHistoryDao.exists(history)) {
+				userWatchHistoryDao.save(history);
+			}
 			return createActView(uid);
 		} else {
 			return null;
