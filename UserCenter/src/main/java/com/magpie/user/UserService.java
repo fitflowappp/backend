@@ -164,16 +164,19 @@ public class UserService {
 
 		if (faceBookUser == null) {
 
-			User user = new User();
-			user.setId(uid);
-			user.setUnRegistered(false);
-			user.setRegisterType("facebook");// facebook
+			User exist = userDao.findOne(uid);
+			exist.setUnRegistered(false);
+			exist.setRegisterType("facebook");// facebook
+
+			exist.setRegisterDate(DateUtil.getCurrentDate());
+			exist.setLastLoginDate(DateUtil.getCurrentDate());
+			userDao.save(exist);
 
 			faceBookUser = new FaceBookUser();
 			faceBookUser.setHeaderImgContent(imgBytes);
 			saveFacebookUser(uid, fbUser, faceBookUser);
 
-			return register(user);
+			return getLoginUserView(exist);
 		} else {
 			faceBookUser.setHeaderImgContent(imgBytes);
 			saveFacebookUser(faceBookUser.getUid(), fbUser, faceBookUser);
