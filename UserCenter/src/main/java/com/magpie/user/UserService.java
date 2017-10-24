@@ -299,31 +299,31 @@ public class UserService {
 		}
 		view.setUser(user);
 		UserState userState = userStateDao.findUserState(user.getId());
-		if (userState != null) {
+		if (userState == null) {
 			userState = new UserState();
-			int comChallengeNum = 0;
-			int comWorkoutNum = 0;
-			int routineDuration = 0;
-			for (UserWatchHistoryStat stat : userWatchHistoryDao.aggregateCountPerUser(user.getId())) {
-				if (stat.getDestType() == HistoryDest.CHALLENGE.getCode()
-						&& stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
-					comChallengeNum += stat.getCount();
-				}
-				if (stat.getDestType() == HistoryDest.WORKOUT.getCode()
-						&& stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
-					comWorkoutNum += stat.getCount();
-				}
-
-				if (stat.getDestType() == HistoryDest.ROUTINE.getCode()
-						&& stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
-					routineDuration += stat.getDuration();
-				}
-
-			}
-			userState.setCompletedChallengeNum(comChallengeNum);
-			userState.setCompletedWorkoutNum(comChallengeNum + comWorkoutNum);
-			userState.setDuration(routineDuration);
 		}
+		int comChallengeNum = 0;
+		int comWorkoutNum = 0;
+		int routineDuration = 0;
+		for (UserWatchHistoryStat stat : userWatchHistoryDao.aggregateCountPerUser(user.getId())) {
+			if (stat.getDestType() == HistoryDest.CHALLENGE.getCode()
+					&& stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
+				comChallengeNum += stat.getCount();
+			}
+			if (stat.getDestType() == HistoryDest.WORKOUT.getCode()
+					&& stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
+				comWorkoutNum += stat.getCount();
+			}
+
+			if (stat.getDestType() == HistoryDest.ROUTINE.getCode()
+					&& stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
+				routineDuration += stat.getDuration();
+			}
+		}
+		userState.setCompletedChallengeNum(comChallengeNum);
+		userState.setCompletedWorkoutNum(comChallengeNum + comWorkoutNum);
+		userState.setDuration(routineDuration);
+
 		view.setUserState(userState);
 		view.setShareCount(shareRecordDao.count(user.getId()));
 
