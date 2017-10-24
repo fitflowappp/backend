@@ -315,8 +315,7 @@ public class UserService {
 				comWorkoutNum += stat.getCount();
 			}
 
-			if (stat.getDestType() == HistoryDest.ROUTINE.getCode()
-					&& stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
+			if (stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
 				routineDuration += stat.getDuration();
 			}
 		}
