@@ -397,7 +397,11 @@ public class YogaService {
 			createIfNoUserState(uid);
 			userStateDao.updateCurrentState(uid, cid, wid, lastRoutine.getId());
 		}
-		userWatchHistoryDao.save(histories);
+		if (!histories.isEmpty()) {
+			if (userWatchHistoryDao.countSkipWorkout(histories.get(0)) < histories.size()) {
+				userWatchHistoryDao.save(histories);
+			}
+		}
 		return createActView(uid);
 	}
 
