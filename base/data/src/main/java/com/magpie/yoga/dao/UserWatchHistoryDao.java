@@ -233,4 +233,19 @@ public class UserWatchHistoryDao extends BaseMongoRepository<UserWatchHistory, S
 		}
 	}
 
+	public boolean exists(UserWatchHistory history) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("uid").is(history.getUid()).and("challengeId").is(history.getChallengeId())
+				.and("workoutId").is(history.getWorkoutId()).and("routineId").is(history.getRoutineId()).and("event")
+				.is(history.getEvent()).and("destType").is(history.getDestType()));
+		return exists(query);
+	}
+
+	public int countSkipWorkout(UserWatchHistory history) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("uid").is(history.getUid()).and("challengeId").is(history.getChallengeId())
+				.and("workoutId").is(history.getWorkoutId()).and("event").is(history.getEvent()));
+		return (int) count(query);
+	}
+
 }
