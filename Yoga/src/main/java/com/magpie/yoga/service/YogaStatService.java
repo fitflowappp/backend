@@ -124,7 +124,7 @@ public class YogaStatService {
 				r.setId(stat.getRoutineId());
 				rMap.put(stat.getRoutineId(), r);
 			}
-			if (stat.getEvent() == HistoryEvent.SKIPPED.getCode()) {
+			if (stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
 				r.setSkippedTimes(stat.getCount());
 			} else if (stat.getEvent() == HistoryEvent.START.getCode()) {
 				r.setStartedTimes(stat.getCount());
@@ -142,7 +142,7 @@ public class YogaStatService {
 				c.setId(stat.getChallengeId());
 				cMap.put(stat.getChallengeId(), c);
 			}
-			if (stat.getEvent() == HistoryEvent.SKIPPED.getCode()) {
+			if (stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
 				c.setCompletedUserCount(c.getCompletedUserCount() + 1);
 			} else {
 				c.setStartedUserCount(c.getStartedUserCount() + 1);
@@ -159,7 +159,7 @@ public class YogaStatService {
 				w.setId(stat.getWorkoutId());
 				wMap.put(stat.getWorkoutId(), w);
 			}
-			if (stat.getEvent() == HistoryEvent.SKIPPED.getCode()) {
+			if (stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
 				w.setCompletedUserCount(w.getCompletedUserCount() + 1);
 			} else {
 				w.setStartedUserCount(w.getStartedUserCount() + 1);
