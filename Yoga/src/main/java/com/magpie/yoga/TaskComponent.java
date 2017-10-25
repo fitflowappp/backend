@@ -75,7 +75,17 @@ public class TaskComponent {
 			GetuiMessage message = new GetuiMessage(GetuiMessage.DISP_TYPE,
 					"Hey " + (faceBookUser == null ? "" : faceBookUser.getName())
 							+ "! Time for yoga. You know you will feel great afterwards.");
-			int flg = userConfiguration.getSchedulingDays()[Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1];
+			int index = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+			if (index == 1) {// 周日
+				index = 6;
+			} else {
+				index = index - 2;
+			}
+			if (index < 0) {
+				logger.error("bug report index:{},{}", index, Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+				continue;
+			}
+			int flg = userConfiguration.getSchedulingDays()[index];
 			logger.info("flg:{},equal:{},currentTime:{},scheduleTime:{}", flg, current.compareTo(scheduleTime), current,
 					scheduleTime);
 			if (flg == 1 && current.compareTo(scheduleTime) == 0) {
@@ -89,6 +99,10 @@ public class TaskComponent {
 			}
 
 		}
+	}
+
+	public static void main(String[] args) {
+		System.out.println(Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
 	}
 
 }
