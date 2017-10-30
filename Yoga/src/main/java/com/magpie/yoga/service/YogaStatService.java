@@ -125,8 +125,9 @@ public class YogaStatService {
 			}
 			if (stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
 				r.setSkippedTimes(stat.getCount());
+				r.setStartedTimes(r.getStartedTimes() + stat.getCount());
 			} else if (stat.getEvent() == HistoryEvent.START.getCode()) {
-				r.setStartedTimes(stat.getCount());
+				r.setStartedTimes(r.getStartedTimes() + stat.getCount());
 			}
 
 		}
