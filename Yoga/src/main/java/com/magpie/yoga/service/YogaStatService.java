@@ -22,7 +22,6 @@ import com.magpie.yoga.dao.DashboardDao;
 import com.magpie.yoga.dao.RoutineDao;
 import com.magpie.yoga.dao.ShareRecordDao;
 import com.magpie.yoga.dao.UserConfigurationDao;
-import com.magpie.yoga.dao.UserStateDao;
 import com.magpie.yoga.dao.UserWatchHistoryDao;
 import com.magpie.yoga.dao.WorkoutDao;
 import com.magpie.yoga.model.AchievementRecord;
@@ -55,8 +54,6 @@ public class YogaStatService {
 	private UserDao userDao;
 	@Autowired
 	private FacebookDao facebookDao;
-	@Autowired
-	private UserStateDao userStateDao;
 
 	/**
 	 * get dashboard list
@@ -146,6 +143,7 @@ public class YogaStatService {
 			}
 			if (stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
 				c.setCompletedUserCount(c.getCompletedUserCount() + 1);
+				c.setStartedUserCount(c.getStartedUserCount() + 1);
 			} else {
 				c.setStartedUserCount(c.getStartedUserCount() + 1);
 			}
@@ -163,6 +161,7 @@ public class YogaStatService {
 			}
 			if (stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
 				w.setCompletedUserCount(w.getCompletedUserCount() + 1);
+				w.setStartedUserCount(w.getStartedUserCount() + 1);
 			} else {
 				w.setStartedUserCount(w.getStartedUserCount() + 1);
 			}
