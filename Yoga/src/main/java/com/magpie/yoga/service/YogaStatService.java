@@ -89,8 +89,9 @@ public class YogaStatService {
 			}
 			if (stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
 				c.setCompletedTimes(stat.getCount());
+				c.setStartedTimes(c.getStartedTimes() + stat.getCount());
 			} else if (stat.getEvent() == HistoryEvent.START.getCode()) {
-				c.setStartedTimes(stat.getCount());
+				c.setStartedTimes(c.getStartedTimes() + stat.getCount());
 			}
 
 		}
@@ -108,8 +109,9 @@ public class YogaStatService {
 			if (stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
 				w.setCompletedTimes(stat.getCount());
 				w.setTotalDuration(stat.getDuration());
+				w.setStartedTimes(stat.getCount() + w.getStartedTimes());
 			} else if (stat.getEvent() == HistoryEvent.START.getCode()) {
-				w.setStartedTimes(stat.getCount());
+				w.setStartedTimes(stat.getCount() + w.getStartedTimes());
 			}
 
 		}
@@ -165,6 +167,19 @@ public class YogaStatService {
 				w.setStartedUserCount(w.getStartedUserCount() + 1);
 			}
 
+		}
+
+		for (UserWatchHistoryStat stat : userWatchHistoryDao.aggregateWorkoutDuration()) {
+			Workout w = null;
+			if (wMap.containsKey(stat.getWorkoutId())) {
+				w = wMap.get(stat.getWorkoutId());
+			} else {
+				w = new Workout();
+				w.setId(stat.getWorkoutId());
+				wMap.put(stat.getWorkoutId(), w);
+			}
+
+			w.setTotalDuration(stat.getDuration());
 		}
 
 		for (Challenge challenge : cMap.values()) {
