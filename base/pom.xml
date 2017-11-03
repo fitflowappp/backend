@@ -6,7 +6,7 @@
 	<version>${project.version}</version>
 	<packaging>pom</packaging>
 	<modules>
-		<module>。。/data</module>
+		<module>../data</module>
 		<module>../UserCenter</module>
 		<module>../FileManager</module>
 		<module>../Yoga</module>
