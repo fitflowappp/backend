@@ -123,10 +123,11 @@ public class YogaStatService {
 				r.setId(stat.getRoutineId());
 				rMap.put(stat.getRoutineId(), r);
 			}
-			if (stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
+			if (stat.getEvent() == HistoryEvent.SKIPPED.getCode()) {
 				r.setSkippedTimes(stat.getCount());
-				r.setStartedTimes(r.getStartedTimes() + stat.getCount());
 			} else if (stat.getEvent() == HistoryEvent.START.getCode()) {
+				r.setStartedTimes(r.getStartedTimes() + stat.getCount());
+			} else if (stat.getEvent() == HistoryEvent.COMPLETE.getCode()) {
 				r.setStartedTimes(r.getStartedTimes() + stat.getCount());
 			}
 
