@@ -23,6 +23,10 @@ import com.magpie.base.view.Result;
 import com.magpie.session.ActiveUser;
 import com.magpie.share.UserRef;
 import com.magpie.user.req.FacebookReq;
+import com.magpie.user.req.FindPassWordReq;
+import com.magpie.user.req.ResetPasswordReq;
+import com.magpie.user.req.SimpleRegUser;
+import com.magpie.user.utils.EmailUtils;
 import com.magpie.user.view.UserView;
 
 import io.swagger.annotations.ApiOperation;
@@ -73,5 +77,55 @@ public class FacebookApi {
 		}
 
 	}
+	/**
+	 * 功能：邮箱账号登陆<br>
+	 * 
+	 */
+	@RequestMapping(method = RequestMethod.POST,value = "/email/login")
+	@ResponseBody
+	@ApiOperation(value = "邮箱登陆")
+	public BaseView<UserView> mailLogin(@RequestBody SimpleRegUser simpleRegUser,HttpServletRequest request) {
+		return userService.login(simpleRegUser);
+	}
+	/**
+	 * 功能：邮箱注册<br>
+	 * 
+	 */
+	@RequestMapping(method = RequestMethod.POST,value = "/email/register")
+	@ResponseBody
+	@ApiOperation(value = "邮箱注册")
+	public BaseView mailRegister(@RequestBody SimpleRegUser simpleRegUser,@ActiveUser UserRef userRef) {
+		return userService.registerByEmail(simpleRegUser,userRef.getId());
+	}
+	/**
+	 * 功能：通过私钥重设密码<br>
+	 * 
+	 */
+	@RequestMapping(method = RequestMethod.POST,value = "/email/findPassword/reset")
+	@ResponseBody
+	@ApiOperation(value = "私钥重设密码")
+	public BaseView mailResetPassword(@RequestBody ResetPasswordReq req, HttpServletRequest request) {
+		String key=req.getKey();
+		String password=req.getPassword();
+		if(key==null||password==null||key.length()==0||password.length()==0){
+			return new BaseView<>(new Result(Result.CODE_FAILURE, "key or password is no"));
+		}
+		return userService.resetPasswordByMail(key, password);
+	}
+	/**
+	 * 功能：利用邮箱找回密码<br>
+	 * 
+	 */
+	@RequestMapping(method = RequestMethod.POST,value = "/email/findPassWord")
+	@ResponseBody
+	@ApiOperation(value = "邮箱找回密码")
+	public BaseView<Result> mailfindPassWord(@RequestBody FindPassWordReq findPassWordReq, HttpServletRequest request) {
+		if(EmailUtils.validEmail(findPassWordReq.getEmail())==false){
+			return new BaseView<>(Result.FAILURE);
+		}
+		return userService.sendFindPassWordEmail(findPassWordReq.getEmail());
+	}
+	
+	
 
 }

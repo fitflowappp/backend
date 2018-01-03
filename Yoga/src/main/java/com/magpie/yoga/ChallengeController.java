@@ -22,7 +22,14 @@ import com.magpie.yoga.dao.ChallengeDao;
 import com.magpie.yoga.model.Challenge;
 
 import io.swagger.annotations.ApiOperation;
-
+/**
+ * yoga管理后台接口
+* @ClassName: ChallengeController  
+* @Description: 管理后台走的都是http，如果是给app接口，不要放这里  
+* @author jiangming.xia  
+* @date 2017年12月29日 下午1:35:09  
+*
+ */
 @RestController
 @RequestMapping(value = "/manage/yoga/challenge")
 public class ChallengeController {
@@ -38,6 +45,7 @@ public class ChallengeController {
 	public List<Challenge> getChallenge(@ModelAttribute PageQuery pageQuery) {
 		return challengeDao.findBySort(pageQuery);
 	}
+	
 
 	@RequestMapping(method = RequestMethod.GET, value = "/csv")
 	@ResponseBody

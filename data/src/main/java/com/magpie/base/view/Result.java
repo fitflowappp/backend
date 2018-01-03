@@ -22,6 +22,10 @@ public class Result {
 		this.code = code;
 		this.msg = msg;
 	}
+	public Result(int code, String msg) {
+		this.code =""+ code;
+		this.msg = msg;
+	}
 
 	public String getCode() {
 		return code;

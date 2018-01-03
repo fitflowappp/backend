@@ -1,5 +1,10 @@
 package com.magpie.yoga;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,16 +13,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.magpie.base.view.BaseView;
+import com.magpie.base.view.Result;
 import com.magpie.session.ActiveUser;
 import com.magpie.share.UserRef;
 import com.magpie.yoga.constant.HistoryEvent;
 import com.magpie.yoga.dao.ShareRecordDao;
 import com.magpie.yoga.model.ShareRecord;
+import com.magpie.yoga.model.Workout;
 import com.magpie.yoga.service.YogaService;
 import com.magpie.yoga.view.Achievement;
 import com.magpie.yoga.view.ActView;
 import com.magpie.yoga.view.ChallengeSetView;
 import com.magpie.yoga.view.ChallengeView;
+import com.magpie.yoga.view.UserWorkoutStat;
 import com.magpie.yoga.view.WorkoutView;
 
 import io.swagger.annotations.ApiOperation;
@@ -41,6 +49,39 @@ public class YogaApi {
 		ShareRecord shareRecord = new ShareRecord();
 		shareRecord.setUid(userRef.getId());
 		shareRecordDao.save(shareRecord);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/challenge/getTopical")
+	@ResponseBody
+	@ApiOperation(value = "get all topical")
+	public List<Map<String, Object>> getTopical() {
+		ArrayList<String> titles = new ArrayList<String>() {
+			{
+				add("Learn yoga as a beginner");
+				add("Tone up and slim down");
+				add("Energize my mornings");
+				add("Relax my body and mind");
+			}
+		};
+		ArrayList<String> challenges = new ArrayList<String>() {
+			{
+				add("5a07f804fa4d6f3d2940e21e");
+				add("5a07f908fa4d6f3d2940e220");
+				add("5a07ffb3fa4d6f3d2940e239");
+				add("5a43722fb13bf305de542b03");
+			}
+		};
+
+		List<Map<String, Object>> topicals = new ArrayList<>();
+		HashMap<String, Object> item = null;
+		for (int i = 0; ((i < titles.size()) && i < challenges.size()); i++) {
+			item = new HashMap<>();
+			item.put("title", titles.get(i));
+			item.put("challengeId", challenges.get(i));
+			topicals.add(item);
+		}
+
+		return topicals;
 	}
 
 	@RequestMapping(value = "/my/achievements", method = RequestMethod.GET)
@@ -131,5 +172,64 @@ public class YogaApi {
 		return new BaseView<>(
 				yogaService.watchingRoutine(userRef.getId(), cid, wid, rid, HistoryEvent.COMPLETE.getCode(), 0));
 	}
+
+
+	@RequestMapping(method = RequestMethod.POST, value = "/challenge/workout/status")
+	@ResponseBody
+	@ApiOperation(value = "用户自身使用统计")
+	public BaseView<UserWorkoutStat> userWorkoutData(@ActiveUser UserRef userRef) {
+
+		return new BaseView<>(yogaService.getUserWorkoutStat(userRef.getId()));
+	}
+
+
+	@RequestMapping(method = RequestMethod.POST, value = "/challenge/myworkout/list")
+	@ResponseBody
+	@ApiOperation(value = "获取用户所有workout")
+	public BaseView<List<Workout>> userWorkoutlist(@ActiveUser UserRef userRef) {
+		List<Workout> workoutsList=yogaService.getUserWorkoutList(userRef.getId());
+		if(workoutsList==null||workoutsList.size()<=0){
+			workoutsList=yogaService.defaultUserWorkout(userRef.getId());
+		}
+		return new BaseView<>(workoutsList);
+	}
+
+	@RequestMapping(method = RequestMethod.DELETE, value = "/challenge/myworkout/{wid}/delete")
+	@ResponseBody
+	@ApiOperation(value = "删除用户workout")
+	public BaseView<Result> deleteUserWorkout(@ActiveUser UserRef userRef, @PathVariable String wid) {
+
+		if (yogaService.deleteUserWorkout(userRef.getId(), wid)) {
+
+			return new BaseView<>(Result.SUCCESS);
+		}
+		return new BaseView<>(Result.FAILURE);
+	}
+
+	@RequestMapping(method = RequestMethod.PUT, value = "/challenge/myworkout/add/{wid}")
+	@ResponseBody
+	@ApiOperation(value = "用户选择workout")
+	public BaseView<Result> addUserWorkout(@ActiveUser UserRef userRef, @PathVariable String wid) {
+		if (yogaService.addWorkout(userRef.getId(), wid)) {
+			return new BaseView<>(Result.SUCCESS);
+		}
+		return new BaseView<>(Result.FAILURE);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/challenge/single/workout")
+	@ResponseBody
+	@ApiOperation(value = "single workout list")
+	public BaseView<List<Workout>> singleWorkout() {
+		return new BaseView<>(yogaService.singleWorkoutList());
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value = "/challenge/single/addTestworkout")
+	@ResponseBody
+	@ApiOperation(value = "test single")
+	public BaseView<Result> testSingleWorkout() {
+		yogaService.testSingleWorkoutList();
+		return new BaseView<>(Result.SUCCESS);
+	}
+	
 
 }

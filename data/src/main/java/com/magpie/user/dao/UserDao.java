@@ -30,6 +30,9 @@ public class UserDao extends BaseMongoRepository<User, Serializable> {
 	public User findOneByPhone(String phone) {
 		return findOneByQuery(new Query().addCriteria(Criteria.where("phone").is(phone)));
 	}
+	public User findOneByEmail(String email) {
+		return findOneByQuery(new Query().addCriteria(Criteria.where("email").is(email)));
+	}
 
 	public void updateFacebookRegSubmit(String id, boolean submitted, Date submittedDate) {
 		Query query = new Query();
@@ -37,6 +40,20 @@ public class UserDao extends BaseMongoRepository<User, Serializable> {
 		Update update = new Update();
 		update.set("facebookRegistrationSumbmitted", submitted).set("facebookRegistrationSumbmittedDate",
 				submittedDate);
+		updateFirst(query, update);
+	}
+	public void updatePassword(String id ,String password){
+		Query query = new Query();
+		query.addCriteria(Criteria.where("id").is(new ObjectId(id)));
+		Update update = new Update();
+		update.set("password", password);
+		updateFirst(query, update);
+	}
+	public void updateChallenge(String id ,String challengeId){
+		Query query = new Query();
+		query.addCriteria(Criteria.where("id").is(new ObjectId(id)));
+		Update update = new Update();
+		update.set("challengeId", challengeId);
 		updateFirst(query, update);
 	}
 

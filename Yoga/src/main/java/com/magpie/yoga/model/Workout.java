@@ -35,6 +35,17 @@ public class Workout extends BaseModel {
 	private long startedUserCount;
 	private long completedUserCount;
 	private long totalDuration;
+	private boolean isSingle=false;
+	
+	
+
+	public boolean isSingle() {
+		return isSingle;
+	}
+
+	public void setSingle(boolean isSingle) {
+		this.isSingle = isSingle;
+	}
 
 	public long getStartedTimes() {
 		return startedTimes;

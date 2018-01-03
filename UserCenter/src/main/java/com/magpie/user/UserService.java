@@ -2,10 +2,13 @@ package com.magpie.user;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Executor;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.bouncycastle.asn1.cmp.Challenge;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,10 +23,13 @@ import com.magpie.base.view.Result;
 import com.magpie.cache.UserCacheService;
 import com.magpie.share.UserRef;
 import com.magpie.user.dao.FacebookDao;
+import com.magpie.user.dao.FindPassWordDao;
 import com.magpie.user.dao.UserDao;
 import com.magpie.user.model.FaceBookUser;
+import com.magpie.user.model.FindPassWord;
 import com.magpie.user.model.User;
 import com.magpie.user.req.SimpleRegUser;
+import com.magpie.user.utils.EmailUtils;
 import com.magpie.user.view.FacebookUserView;
 import com.magpie.user.view.UserView;
 import com.magpie.yoga.constant.HistoryDest;
@@ -38,11 +44,17 @@ import com.magpie.yoga.stat.UserWatchHistoryStat;
 @Service
 public class UserService {
 
+	public static int MAIL_REGISTERED = 10008;
+	public static int USER_ERROR_PASSWORD = MAIL_REGISTERED + 1;
+	public static int MAIL_NO_REGISTER = USER_ERROR_PASSWORD + 1;
+
 	@Autowired
 	private UserDao userDao;
 
 	@Autowired
 	private FacebookDao FacebookDao;
+	@Autowired
+	private FindPassWordDao findPassWordDao;
 
 	@Autowired
 	private UserCacheService userCacheService;
@@ -56,6 +68,13 @@ public class UserService {
 	private ShareRecordDao shareRecordDao;
 	@Autowired
 	private UserConfigurationDao userConfigurationDao;
+	
+	public User findOne(String uid){
+		if(uid!=null&&uid.length()>0){
+			return userDao.findOne(uid);
+		}
+		return null;
+	}
 
 	public BaseView<UserView> register(SimpleRegUser simpleRegUser, String phoneVerifyCode, String token) {
 		if (!isPhone(simpleRegUser.getPhone())) {
@@ -111,27 +130,178 @@ public class UserService {
 		return new BaseView<>(getLoginUserView(user));
 	}
 
+	public BaseView resetPasswordByMail(String key, String password) {
+		FindPassWord findPassWord = findPassWordDao.findOne(key);
+		if (findPassWord == null) {
+			return new BaseView<>(new Result(Result.CODE_FAILURE,
+					"The verification code is incorrect, please check your email again"));
+		}
+		if (findPassWord.getVaildDate().before(new Date())) {
+			return new BaseView<>(new Result(Result.CODE_FAILURE,
+					" The verification code has expired, please resend another email."));
+		}
+
+		userDao.updatePassword(findPassWord.getUserId(), password);
+		User user = userDao.findOne(findPassWord.getUserId());
+		BaseView baseView=new BaseView<>(getLoginUserView(user));
+		baseView.setResult(new Result(Result.CODE_SUCCESS, "Your password has been successfully changed"));
+		return baseView;
+
+	}
+
+	public BaseView registerByEmail(SimpleRegUser reguser,String userId) {
+		User user = userDao.findOneByEmail(reguser.getEmail());
+		if (user != null) {
+			return new BaseView<>(new Result(MAIL_REGISTERED, "An account with that email address already exists"));
+		}
+		if(userId!=null&&userId.length()>0){
+			user=userDao.findOne(userId);
+		}
+		if(user==null)
+			user = new User();
+		user.setEmail(reguser.getEmail());
+		user.setPassword(reguser.getPassword());
+		user.setFrom(reguser.getFrom());
+		user.setUnRegistered(false);
+		user.setClient(reguser.getClient());
+
+		user.setLastLoginDate(DateUtil.getCurrentDate());
+		if (StringUtils.isEmpty(user.getHeaderImg())) {
+			user.setHeaderImgUrl(generateRandomPicture());// 随机生成头像
+		}
+		user = userDao.save(user);
+		//异步推送欢迎邮件 
+		asyncSendRegisterWelcomeEmail(reguser.getEmail());
+		return new BaseView<>(getLoginUserView(user));
+	}
+
 	public BaseView<UserView> login(SimpleRegUser simpleRegUser) {
 		// 修改成可以使用万能密码登录
-		User user = userDao.findOneByPhone(simpleRegUser.getPhone());
+		User user = userDao.findOneByEmail(simpleRegUser.getEmail());
 		if (user == null) {
-			return new BaseView<>(Result.FAILURE);
+			return new BaseView<>(new Result(MAIL_NO_REGISTER, "Email not recognised. Please try again or sign up."));
 		}
 		if (StringUtils.isEmpty(simpleRegUser.getPassword())) {
 			return new BaseView<>(Result.FAILURE);
-		} else if (user.isSpecialLogin()) {
-			if (!"gszx2015".equals(simpleRegUser.getPassword())
-					&& (!DigestUtils.md5Hex(simpleRegUser.getPassword()).equals(user.getPassword()))) {
-				return new BaseView<>(Result.FAILURE);
-			}
-		} else if (!DigestUtils.md5Hex(simpleRegUser.getPassword()).equals(user.getPassword())) {
-			return new BaseView<>(Result.FAILURE);
+		} else if (simpleRegUser.getPassword().equals(user.getPassword()) == false) {
+			return new BaseView<>(new Result(USER_ERROR_PASSWORD,
+					"Your email & password do not match, please try again or reset your password."));
 		}
 
 		user.setLastLoginDate(Calendar.getInstance().getTime());
 		userDao.save(user);
+		
 
 		return new BaseView<>(getLoginUserView(user));
+	}
+
+	public boolean changeChallenge(String userId, String challengeId) {
+		if (userId == null || challengeId == null || userId.length() == 0 || challengeId.length() == 0) {
+			return false;
+		}
+		userDao.updateChallenge(userId, challengeId);
+		return true;
+	}
+
+	public Challenge getChallenge(String userId) {
+		if (userId != null && userId.length() > 0) {
+
+		}
+		return null;
+	}
+
+	public String getUserIdBySessionId(String seesionId) {
+		return null;
+	}
+
+	public BaseView<Result> sendFindPassWordEmail(String email) {
+		User user = userDao.findOneByEmail(email);
+		if (user == null) {
+			return new BaseView<>(new Result(MAIL_NO_REGISTER, "Email not recognized. Please try again or sign up"));
+		}
+
+		// 产生私钥发送给客户端
+		Random random = new Random();
+		String randomKey = "" + (random.nextInt(9) + 1);
+		for (int i = 0; i < 5; i++) {
+			randomKey = randomKey + (random.nextInt(9));
+		}
+		// 保存私钥
+		Date vaildDate = new Date();
+
+		Calendar c = Calendar.getInstance();
+		c.setTime(vaildDate);
+		c.add(Calendar.MINUTE, 15);
+
+		FindPassWord findPassWord = findPassWordDao.findOneByUserId(user.getId());
+		if (findPassWord == null) {
+			findPassWord = new FindPassWord();
+			findPassWord.setPrivateKey(randomKey);
+			findPassWord.setUserId(user.getId());
+
+			findPassWord.setVaildDate(c.getTime());
+			findPassWordDao.save(findPassWord);
+		} else {
+			findPassWord.setPrivateKey(randomKey);
+			findPassWord.setVaildDate(c.getTime());
+
+			findPassWordDao.update(user.getId(), randomKey, c.getTime());
+
+		}
+		// 发送邮件
+		StringBuilder emailBody = new StringBuilder();
+
+		emailBody.append("Dear Fitflow Member,<br/><br/>");
+		emailBody.append(
+				"You applied to reset your password through our app. If this was not you, please ignore this message.<br/><br/>");
+		emailBody.append("Your verification code is: " + randomKey + ".<br/><br/>");
+		emailBody.append(
+				"Please enter this in the Reset Password page of the app to create a new password. This code is valid for 15 minutes.<br/><br/>");
+		emailBody.append("Thank you for using Fitflow.<br/><br/>");
+		emailBody.append("FItflow Team.<br/><br/>");
+		emailBody.append(
+				"P.S. This is an automated inbox which is not monitored. If you have any other questions, please contact help@fitflow.io.<br/><br/>");
+		String messageBody = emailBody.toString();
+
+		boolean result = EmailUtils.sendEmail(email, "reset_password@fitflow.io",
+				randomKey + " is your Fitflow account recovery code", messageBody, "Yoga123!");
+		if (result)
+			return new BaseView<>(new Result(Result.CODE_SUCCESS, "Email sent, please check your inbox"));
+		else {
+			return new BaseView<>(Result.FAILURE);
+		}
+	}
+	@Autowired
+	Executor executor;
+	private void asyncSendRegisterWelcomeEmail(final String email){
+		executor.execute(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				sendRegisterWelcomeEmail(email);
+			}
+		});
+	}
+
+	private void sendRegisterWelcomeEmail(String email) {
+		
+		StringBuilder emailBody = new StringBuilder();
+		emailBody.append("Hi,<br/><br/>");
+		emailBody.append("I'm Anya from Fitflow. I'm here to support you as you embark on your yoga journey. By signing up, you've taken your first step towards a happier, healthier life.<br/><br/>");
+		emailBody.append(
+				"- We have designed a number of 1-4 week challenges to help you achieve your goal, be it toning, relaxing, or relieving pain.<br/>");
+		emailBody.append(
+				"- Fitflow offers 40+ online yoga classes you can take anytime at home. Each class lasts for only 15-30 minutes.<br/>");
+		emailBody.append("- Our app is 100% free. No subscriptions. No ads.<br/><br/>");
+		emailBody.append(
+				"Reply to this email if you have any questions. I will get back to you asap.<br/><br/>");
+		emailBody.append("Warm regards,<br/><br/>");
+		emailBody.append("Anya<br/>");
+		emailBody.append("Your Fitflow Coach<br/><br/>");
+		String messageBody = emailBody.toString();
+
+		EmailUtils.sendEmail(email, "coach@fitflow.io", "Nice to meet you!","Anya from Fitflow", messageBody, "Yoga123!");
 	}
 
 	public UserView getLoginUserView(User user) {
@@ -175,7 +345,8 @@ public class UserService {
 			faceBookUser = new FaceBookUser();
 			faceBookUser.setHeaderImgContent(imgBytes);
 			saveFacebookUser(uid, fbUser, faceBookUser);
-
+			//推送欢迎邮件
+			asyncSendRegisterWelcomeEmail(fbUser.getEmail());
 			return getLoginUserView(exist);
 		} else {
 			faceBookUser.setHeaderImgContent(imgBytes);
@@ -199,6 +370,8 @@ public class UserService {
 			faceBookUser = new FaceBookUser();
 			faceBookUser.setHeaderImgContent(imgBytes);
 			saveFacebookUser(user.getId(), fbUser, faceBookUser);
+			//推送欢迎邮件
+			asyncSendRegisterWelcomeEmail(fbUser.getEmail());
 
 			return getLoginUserView(user);
 		} else {
@@ -323,7 +496,7 @@ public class UserService {
 		userState.setCompletedChallengeNum(comChallengeNum);
 		userState.setCompletedWorkoutNum(comChallengeNum + comWorkoutNum);
 		userState.setDuration(routineDuration);
-
+		view.setEmail(user.getEmail());
 		view.setUserState(userState);
 		view.setShareCount(shareRecordDao.count(user.getId()));
 

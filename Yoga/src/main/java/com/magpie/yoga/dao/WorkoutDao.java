@@ -36,6 +36,12 @@ public class WorkoutDao extends BaseMongoRepository<Workout, Serializable> {
 		return findByQuery(query);
 	}
 
+	public List<Workout> findsginleList() {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("isSingle").in(true));
+
+		return findByQuery(query);
+	}
 	public List<Workout> findBySort(PageQuery pageQuery) {
 		Query query = new Query();
 		query.with(getSort(pageQuery));
@@ -51,6 +57,15 @@ public class WorkoutDao extends BaseMongoRepository<Workout, Serializable> {
 				.set("startedUserCount", workout.getStartedUserCount())
 				.set("completedUserCount", workout.getCompletedUserCount())
 				.set("totalDuration", workout.getTotalDuration());
+
+		updateFirst(query, update);
+	}
+	public void updateSingle(Workout workout){
+		Query query = new Query();
+		query.addCriteria(Criteria.where("id").is(new ObjectId(workout.getId())));
+
+		Update update = new Update();
+		update.set("isSingle",workout.isSingle());
 
 		updateFirst(query, update);
 	}

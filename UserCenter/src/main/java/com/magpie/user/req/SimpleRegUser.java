@@ -4,9 +4,18 @@ public class SimpleRegUser {
 
 	private String id;
 	private String phone;
+	private String email;
 	private String password;
 	private String from;// 来源
 	private String client;// 手机系统
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
 	public String getPhone() {
 		return phone;

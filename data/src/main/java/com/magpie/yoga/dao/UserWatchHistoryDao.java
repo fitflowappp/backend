@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOptions;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -22,10 +24,12 @@ import org.springframework.data.mongodb.repository.support.MongoRepositoryFactor
 import org.springframework.stereotype.Repository;
 
 import com.magpie.base.dao.BaseMongoRepository;
+import com.magpie.user.model.AggregationSum;
 import com.magpie.yoga.constant.HistoryDest;
 import com.magpie.yoga.constant.HistoryEvent;
 import com.magpie.yoga.model.UserWatchHistory;
 import com.magpie.yoga.stat.UserWatchHistoryStat;
+import com.mongodb.Cursor;
 
 @Repository
 public class UserWatchHistoryDao extends BaseMongoRepository<UserWatchHistory, Serializable> {
@@ -259,6 +263,27 @@ public class UserWatchHistoryDao extends BaseMongoRepository<UserWatchHistory, S
 		query.addCriteria(Criteria.where("uid").is(history.getUid()).and("challengeId").is(history.getChallengeId())
 				.and("workoutId").is(history.getWorkoutId()).and("event").is(history.getEvent()));
 		return (int) count(query);
+	}
+	public int countCompleteWorkout(String uid) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("uid").is(uid).and("event").is(HistoryEvent.COMPLETE.getCode()));
+		return (int) count(query);
+	}
+	public int sumWorkoutSeconds(String uid) {
+		
+		TypedAggregation<UserWatchHistory> aggregation = newAggregation(UserWatchHistory.class,
+	            group().sum("seconds").as("sum"),
+	            match(Criteria.where("uid").is(uid)),
+	            project("sum")
+	      );
+		
+		AggregationResults<AggregationSum> result = getMongoOperations().aggregate(aggregation,
+				AggregationSum.class);
+		if (result.getMappedResults() != null && !result.getMappedResults().isEmpty()) {
+			return result.getMappedResults().get(0).getSum();
+		} else {
+			return 0;
+		}
 	}
 
 }
