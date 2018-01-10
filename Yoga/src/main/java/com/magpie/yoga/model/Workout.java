@@ -36,8 +36,24 @@ public class Workout extends BaseModel {
 	private long completedUserCount;
 	private long totalDuration;
 	private boolean isSingle=false;
-	
-	
+	private int singlesSort=0;
+	private String singleChallengeId;
+
+	public int getSinglesSort() {
+		return singlesSort;
+	}
+
+	public void setSinglesSort(int singlesSort) {
+		this.singlesSort = singlesSort;
+	}
+
+	public String getSingleChallengeId() {
+		return singleChallengeId;
+	}
+
+	public void setSingleChallengeId(String singleChallengeId) {
+		this.singleChallengeId = singleChallengeId;
+	}
 
 	public boolean isSingle() {
 		return isSingle;

@@ -8,10 +8,19 @@ public class UserWorkout extends BaseModel {
 	private String id;
 	
 	private String uid;
+	private boolean isDelete=false;
 	private String workoutId;
 	@DBRef
 	private Workout workout;
 	
+	
+	
+	public boolean isDelete() {
+		return isDelete;
+	}
+	public void setDelete(boolean isDelete) {
+		this.isDelete = isDelete;
+	}
 	public String getId() {
 		return id;
 	}

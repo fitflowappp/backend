@@ -19,12 +19,14 @@ import com.magpie.share.UserRef;
 import com.magpie.yoga.constant.HistoryEvent;
 import com.magpie.yoga.dao.ShareRecordDao;
 import com.magpie.yoga.model.ShareRecord;
+import com.magpie.yoga.model.UserWorkout;
 import com.magpie.yoga.model.Workout;
 import com.magpie.yoga.service.YogaService;
 import com.magpie.yoga.view.Achievement;
 import com.magpie.yoga.view.ActView;
 import com.magpie.yoga.view.ChallengeSetView;
 import com.magpie.yoga.view.ChallengeView;
+import com.magpie.yoga.view.SinglesWorkoutView;
 import com.magpie.yoga.view.UserWorkoutStat;
 import com.magpie.yoga.view.WorkoutView;
 
@@ -189,7 +191,10 @@ public class YogaApi {
 	public BaseView<List<Workout>> userWorkoutlist(@ActiveUser UserRef userRef) {
 		List<Workout> workoutsList=yogaService.getUserWorkoutList(userRef.getId());
 		if(workoutsList==null||workoutsList.size()<=0){
-			workoutsList=yogaService.defaultUserWorkout(userRef.getId());
+			List<UserWorkout> allUserWorkouts=yogaService.getUserAllWorkoutList(userRef.getId());
+			if(allUserWorkouts==null||allUserWorkouts.size()<=0){//检测是否添加过，用户删除了singles
+				workoutsList=yogaService.defaultUserWorkout(userRef.getId());
+			}
 		}
 		return new BaseView<>(workoutsList);
 	}
@@ -219,8 +224,8 @@ public class YogaApi {
 	@RequestMapping(method = RequestMethod.GET, value = "/challenge/single/workout")
 	@ResponseBody
 	@ApiOperation(value = "single workout list")
-	public BaseView<List<Workout>> singleWorkout() {
-		return new BaseView<>(yogaService.singleWorkoutList());
+	public BaseView<List<SinglesWorkoutView>> singleWorkout(@ActiveUser UserRef userRef) {
+		return new BaseView<>(yogaService.singleWorkoutList(userRef.getId()));
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/challenge/single/addTestworkout")

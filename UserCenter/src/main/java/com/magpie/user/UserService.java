@@ -152,7 +152,7 @@ public class UserService {
 	public BaseView registerByEmail(SimpleRegUser reguser,String userId) {
 		User user = userDao.findOneByEmail(reguser.getEmail());
 		if (user != null) {
-			return new BaseView<>(new Result(MAIL_REGISTERED, "An account with that email address already exists"));
+			return new BaseView<>(new Result(MAIL_REGISTERED, "That email is already registered. Please sign in."));
 		}
 		if(userId!=null&&userId.length()>0){
 			user=userDao.findOne(userId);
@@ -263,8 +263,8 @@ public class UserService {
 				"P.S. This is an automated inbox which is not monitored. If you have any other questions, please contact help@fitflow.io.<br/><br/>");
 		String messageBody = emailBody.toString();
 
-		boolean result = EmailUtils.sendEmail(email, "reset_password@fitflow.io",
-				randomKey + " is your Fitflow account recovery code", messageBody, "Yoga123!");
+		boolean result = EmailUtils.sendEmail(email, "reset_password@fitflow.io", randomKey + " is your Fitflow account recovery code",
+				"Fitflow", messageBody,  "Yoga123!");
 		if (result)
 			return new BaseView<>(new Result(Result.CODE_SUCCESS, "Email sent, please check your inbox"));
 		else {
@@ -496,7 +496,12 @@ public class UserService {
 		userState.setCompletedChallengeNum(comChallengeNum);
 		userState.setCompletedWorkoutNum(comChallengeNum + comWorkoutNum);
 		userState.setDuration(routineDuration);
-		view.setEmail(user.getEmail());
+		String email=user.getEmail();
+		//补充facebook邮箱
+		if((email==null||email.length()==0)&&fbUser!=null){
+			email=fbUser.getEmail();
+		}
+		view.setEmail(email);
 		view.setUserState(userState);
 		view.setShareCount(shareRecordDao.count(user.getId()));
 

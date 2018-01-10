@@ -29,6 +29,34 @@ public class WorkoutView {
 
 	private int status;// HistoryEvent
 	private boolean avail;
+	private boolean isSingle=false;
+	
+	private String singleChallengeId;
+
+	private boolean isfollow=false;
+
+	public boolean isIsfollow() {
+		return isfollow;
+	}
+
+	public void setIsfollow(boolean isfollow) {
+		this.isfollow = isfollow;
+	}
+	public String getSingleChallengeId() {
+		return singleChallengeId;
+	}
+
+	public void setSingleChallengeId(String singleChallengeId) {
+		this.singleChallengeId = singleChallengeId;
+	}
+
+	public boolean isSingle() {
+		return isSingle;
+	}
+
+	public void setSingle(boolean isSingle) {
+		this.isSingle = isSingle;
+	}
 
 	public String getChallengeId() {
 		return challengeId;

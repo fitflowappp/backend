@@ -44,13 +44,13 @@ public class TaskComponent {
 	}
 
 	// @Scheduled(cron = "0 0 0/4 * * *")
-	@Scheduled(cron = "0 0/30 * * * *")
+	//@Scheduled(cron = "0 0/30 * * * *")
 	// Challenge,Workout,Routine统计数据
 	public void generateCWRStatistics() {
 		yogaStatService.updateCount();
 	}
 
-	@Scheduled(cron = "0 0/1 * * * *")
+	//@Scheduled(cron = "0 0/1 * * * *")
 	// 推送处理
 	public void pushProcess() {
 

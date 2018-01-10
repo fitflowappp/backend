@@ -22,6 +22,19 @@ public class Routine extends BaseModel {
 	private int startedTimes;
 	// Number of times skipped Collected Integer
 	private int skippedTimes;
+	
+	// Routine Image Admin create new or edit png, jpg, gif
+	private ResourceRef coverImg;
+	
+	
+
+	public ResourceRef getCoverImg() {
+		return coverImg;
+	}
+
+	public void setCoverImg(ResourceRef coverImg) {
+		this.coverImg = coverImg;
+	}
 
 	public int getStartedTimes() {
 		return startedTimes;

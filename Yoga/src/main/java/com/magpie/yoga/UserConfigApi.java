@@ -35,6 +35,36 @@ public class UserConfigApi {
 		userConfigurationDao.save(repository);
 		return new BaseView<>(repository);
 	}
+	@RequestMapping(value="/notification",method = RequestMethod.PUT)
+	@ResponseBody
+	public BaseView<UserConfiguration> updateNotification(@ActiveUser UserRef userRef,
+			@RequestBody UserConfiguration userConfiguration) {
+		UserConfiguration repository = userConfigurationDao.findOneByUid(userRef.getId());
+		if (repository == null) {
+			repository = new UserConfiguration();
+		}
+		repository.setNotification(userConfiguration.isNotification());
+		repository.setUid(userRef.getId());
+		
+		userConfigurationDao.save(repository);
+		return new BaseView<>(repository);
+	}
+	@RequestMapping(value="/remider",method = RequestMethod.PUT)
+	@ResponseBody
+	public BaseView<UserConfiguration> updateRemider(@ActiveUser UserRef userRef,
+			@RequestBody UserConfiguration userConfiguration) {
+		userConfiguration.setUid(userRef.getId());
+
+		UserConfiguration repository = userConfigurationDao.findOneByUid(userRef.getId());
+		if (repository == null) {
+			repository = new UserConfiguration();
+		}
+		BeanUtils.copyProperties(userConfiguration, repository, "id","notification");
+
+		
+		userConfigurationDao.save(repository);
+		return new BaseView<>(repository);
+	}
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody

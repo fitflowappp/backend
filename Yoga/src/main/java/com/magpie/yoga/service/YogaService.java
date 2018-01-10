@@ -43,6 +43,7 @@ import com.magpie.yoga.view.ActView;
 import com.magpie.yoga.view.ChallengeSetView;
 import com.magpie.yoga.view.ChallengeView;
 import com.magpie.yoga.view.RoutineView;
+import com.magpie.yoga.view.SinglesWorkoutView;
 import com.magpie.yoga.view.UserWorkoutStat;
 import com.magpie.yoga.view.WorkoutView;
 
@@ -281,10 +282,12 @@ public class YogaService {
 		BeanUtils.copyProperties(challenge, view, "workouts");
 
 		List<WorkoutView> workoutViews = new ArrayList<>();
+
 		for (Workout workout : challenge.getWorkouts()) {
 			workoutViews.add(initialWorkoutView(yogaCacheService.getWorkout(workout.getId())));
 		}
 		view.setWorkouts(workoutViews);
+
 		return view;
 	}
 
@@ -340,6 +343,10 @@ public class YogaService {
 				r.setAvail(true);
 			}
 
+		}
+		List<UserWorkout>	userWorkoutList=userWorkoutDao.findSortByDate(userRef.getId(), workoutId);
+		if(userWorkoutList!=null&&userWorkoutList.size()>0){
+			view.setIsfollow(true);
 		}
 
 		// UserWatchHistory wh =
@@ -431,27 +438,42 @@ public class YogaService {
 	public ActView watchingRoutine(String uid, String cid, String wid, String rid, int type, int seconds) {
 
 		Routine routine = yogaCacheService.getRoutine(rid);
-		Challenge challenge = yogaCacheService.getChallenge(cid);
+		Challenge challenge = null;
+		if(cid!=null&&cid.length()>0){
+			challenge=yogaCacheService.getChallenge(cid);
+		}
 		Workout workout = yogaCacheService.getWorkout(wid);
 
 		// only record for routine which show in app
 		if (routine != null && routine.isDisplay()) {
 			createIfNoUserState(uid);
-			if (type == HistoryEvent.STOP.getCode()) {
-				// update current user state
-				userStateDao.updateCurrentState(uid, cid, wid, rid, seconds);
-			} else {
-				// update current user state
-				userStateDao.updateCurrentState(uid, cid, wid, rid);
+			if(challenge!=null){
+				if (type == HistoryEvent.STOP.getCode()) {
+					// update current user state
+					userStateDao.updateCurrentState(uid, cid, wid, rid, seconds);
+				} else {
+					// update current user state
+					userStateDao.updateCurrentState(uid, cid, wid, rid);
+				}
 			}
+			//比较下第一个和最后一个的数据
+			String lastWorkoutId = null;
+			String lastRoutineIdOfChallenge =null; 
+			String lastRoutineIdOfWorkout =getLastRoutineIdOfWorkout(initialWorkoutView(workout));
+			
+			String firstWorkoutId = null;
+			String firstRoutineIdOfChallenge = null;
 
-			String lastWorkoutId = challenge.getWorkouts().get(challenge.getWorkouts().size() - 1).getId();
-			String lastRoutineIdOfChallenge = getLastRoutineIdOfWorkout(lastWorkoutId);
-			String lastRoutineIdOfWorkout = getLastRoutineIdOfWorkout(initialWorkoutView(workout));
-
-			String firstWorkoutId = challenge.getWorkouts().get(0).getId();
-			String firstRoutineIdOfChallenge = getFirstRoutineIdOfWorkout(firstWorkoutId);
-
+			if(challenge!=null){
+				lastWorkoutId=challenge.getWorkouts().get(challenge.getWorkouts().size() - 1).getId();
+				if(lastWorkoutId!=null){
+					lastRoutineIdOfChallenge=getLastRoutineIdOfWorkout(lastWorkoutId);
+				}
+				firstWorkoutId=challenge.getWorkouts().get(0).getId();
+				if(firstWorkoutId!=null){
+					firstRoutineIdOfChallenge=getFirstRoutineIdOfWorkout(firstWorkoutId);
+				}
+			}
 			logger.info("watching routine:uid:{},cid:{},wid:{},rid:{}", uid, cid, wid, rid);
 			logger.info("lastWorkoutId:{},lastRoutineIdOfChallenge:{},lastRoutineIdOfWorkout:{}", lastWorkoutId,
 					lastRoutineIdOfChallenge, lastRoutineIdOfWorkout);
@@ -462,17 +484,31 @@ public class YogaService {
 			history.setSeconds(seconds);
 			if (type == HistoryEvent.COMPLETE.getCode() || type == HistoryEvent.SKIPPED.getCode()) {
 				history.setDuration(routine == null ? 0 : routine.getDuration());
-				history.setDestType(
-						(routine.getId().equalsIgnoreCase(lastRoutineIdOfChallenge) && wid.equals(lastWorkoutId))
-								? HistoryDest.CHALLENGE.getCode()
-								: rid.equalsIgnoreCase(lastRoutineIdOfWorkout) ? HistoryDest.WORKOUT.getCode()
-										: HistoryDest.ROUTINE.getCode());
+				
+				if(challenge!=null){
+					history.setDestType(
+							(routine.getId().equalsIgnoreCase(lastRoutineIdOfChallenge) && wid.equals(lastWorkoutId))
+									? HistoryDest.CHALLENGE.getCode()
+									: rid.equalsIgnoreCase(lastRoutineIdOfWorkout) ? HistoryDest.WORKOUT.getCode()
+											: HistoryDest.ROUTINE.getCode());
+				}else{
+					history.setDestType(
+							 rid.equalsIgnoreCase(lastRoutineIdOfWorkout) ? HistoryDest.WORKOUT.getCode()
+											: HistoryDest.ROUTINE.getCode());
+				}
+				
 			} else if (type == HistoryEvent.START.getCode()) {
-				history.setDestType((rid.equalsIgnoreCase(firstRoutineIdOfChallenge) && wid.equals(firstWorkoutId))
-						? HistoryDest.CHALLENGE.getCode()
-						: rid.equalsIgnoreCase(getFirstRoutineIdOfWorkout(initialWorkoutView(workout)))
-								? HistoryDest.WORKOUT.getCode()
-								: HistoryDest.ROUTINE.getCode());
+				if(challenge!=null){
+					history.setDestType((rid.equalsIgnoreCase(firstRoutineIdOfChallenge) && wid.equals(firstWorkoutId))
+							? HistoryDest.CHALLENGE.getCode()
+							: rid.equalsIgnoreCase(getFirstRoutineIdOfWorkout(initialWorkoutView(workout)))
+									? HistoryDest.WORKOUT.getCode()
+									: HistoryDest.ROUTINE.getCode());
+				}else{
+					history.setDestType(rid.equalsIgnoreCase(getFirstRoutineIdOfWorkout(initialWorkoutView(workout)))
+									? HistoryDest.WORKOUT.getCode()
+									: HistoryDest.ROUTINE.getCode());
+				}
 			} else {
 				history.setDestType(HistoryDest.ROUTINE.getCode());
 			}
@@ -584,13 +620,15 @@ public class YogaService {
 		if(uid==null||uid.length()<=0){
 			return null;
 		}
-		List<Workout> workoutList=userWorkoutDao.findWorkoutSortByDate(uid);
-		List<Workout> resultWorkoutList=new ArrayList<>();
-		for (Workout workout : workoutList) {
-			workout.setRoutines(null);
-			resultWorkoutList.add(workout);
+		
+		
+		return userWorkoutDao.findWorkoutSortByDate(uid);
+	}
+	public List<UserWorkout> getUserAllWorkoutList(String uid){
+		if(uid==null||uid.length()<=0){
+			return null;
 		}
-		return resultWorkoutList;
+		return userWorkoutDao.findSortByDate(uid, null, true);
 	}
 	public List<Workout> defaultUserWorkout(String uid){
 		final List<String> defaultWorkoutIdList=new ArrayList<String>(){
@@ -598,7 +636,6 @@ public class YogaService {
 				add("5a079f20fa4d6f3d2940e142");
 				add("5a079d48fa4d6f3d2940e13c");
 				add("5a079f48fa4d6f3d2940e143");
-				
 			}
 		};
 		List<Serializable> ids=new ArrayList<>();
@@ -608,7 +645,7 @@ public class YogaService {
 		List<Workout> workoutList=new ArrayList<>();
 		Iterable<Workout> iterableWorkout=workoutDao.findAll(ids);
 		for (Workout workout : iterableWorkout) {
-			workout.setRoutines(null);
+			//workout.setRoutines(null);
 			workoutList.add(workout);
 		}
 		//异步删除到userworkout
@@ -639,10 +676,8 @@ public class YogaService {
 		});
 	}
 	public boolean deleteUserWorkout(String uid,String workoutId){
-		List<UserWorkout> list=userWorkoutDao.findSortByDate(uid, workoutId);
-		for (UserWorkout userWorkout : list) {
-			userWorkoutDao.delete(userWorkout);
-		}
+		
+		userWorkoutDao.updateDeleteStatus(uid,workoutId);
 		return true;
 	}
 	public boolean addWorkout(String uid,String workoutId){
@@ -657,12 +692,22 @@ public class YogaService {
 		userWorkoutDao.save(userWorkout);
 		return true;
 	}
-	public List<Workout> singleWorkoutList(){
+	public List<SinglesWorkoutView> singleWorkoutList(String uid){
 		List<Workout> workoutList=workoutDao.findsginleList();
-		List<Workout> resultWorkoutList=new ArrayList<>();
+		//List<UserWorkout> userWorkoutList=userWorkoutDao.findSortByDate(uid);//暂时屏蔽列表页状态
+		List<SinglesWorkoutView> resultWorkoutList=new ArrayList<>();
+		SinglesWorkoutView singlesWorkout=null;
+		//UserWorkout userWorkout=null;
 		for (Workout workout : workoutList) {
-			workout.setRoutines(null);
-			resultWorkoutList.add(workout);
+			singlesWorkout=new SinglesWorkoutView();
+			BeanUtils.copyProperties(workout,singlesWorkout);
+//			for (int i = 0; i < userWorkoutList.size(); i++) {
+//				userWorkout=userWorkoutList.get(i);
+//				if(workout.getId().equals(userWorkout.getWorkoutId())){
+//					singlesWorkout.setIsfollow(true);
+//				}
+//			}
+			resultWorkoutList.add(singlesWorkout);
 		}
 		return resultWorkoutList;
 	}
@@ -680,10 +725,14 @@ public class YogaService {
 				add("5a079f84fa4d6f3d2940e145");
 			}
 		};
-		for (String workoutId : testWorkoutList) {
+		int size=testWorkoutList.size();
+		String workoutId=null;
+		for (int i=0;i<size;i++) {
+			workoutId=testWorkoutList.get(i);
 			Workout workout=workoutDao.findOne(workoutId);
 			workout.setSingle(true);
-			workoutDao.updateSingle(workout);;
+			workout.setSinglesSort(size+10000-i);
+			workoutDao.updateSingle(workout);
 		}
 		
 	}
