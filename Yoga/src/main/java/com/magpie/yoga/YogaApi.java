@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,7 +22,7 @@ import com.magpie.yoga.dao.ShareRecordDao;
 import com.magpie.yoga.model.ShareRecord;
 import com.magpie.yoga.model.UserWorkout;
 import com.magpie.yoga.model.Workout;
-import com.magpie.yoga.service.YogaService;
+import com.magpie.yoga.service.impl.YogaService;
 import com.magpie.yoga.view.Achievement;
 import com.magpie.yoga.view.ActView;
 import com.magpie.yoga.view.ChallengeSetView;
@@ -32,6 +33,7 @@ import com.magpie.yoga.view.WorkoutView;
 
 import io.swagger.annotations.ApiOperation;
 import springfox.documentation.annotations.ApiIgnore;
+import com.magpie.yoga.UserWorkDef;
 
 @RestController
 @RequestMapping(value = "/yoga")
@@ -57,25 +59,11 @@ public class YogaApi {
 	@ResponseBody
 	@ApiOperation(value = "get all topical")
 	public List<Map<String, Object>> getTopical() {
-		ArrayList<String> titles = new ArrayList<String>() {
-			{
-				add("Learn yoga as a beginner");
-				add("Tone up and slim down");
-				add("Energize my mornings");
-				add("Relax my body and mind");
-			}
-		};
-		ArrayList<String> challenges = new ArrayList<String>() {
-			{
-				add("5a07f804fa4d6f3d2940e21e");
-				add("5a07f908fa4d6f3d2940e220");
-				add("5a07ffb3fa4d6f3d2940e239");
-				add("5a43722fb13bf305de542b03");
-			}
-		};
-
+		
 		List<Map<String, Object>> topicals = new ArrayList<>();
 		HashMap<String, Object> item = null;
+		ArrayList<String> titles=UserWorkDef.topicTileList;
+		ArrayList<String> challenges=UserWorkDef.topicChallengeList;
 		for (int i = 0; ((i < titles.size()) && i < challenges.size()); i++) {
 			item = new HashMap<>();
 			item.put("title", titles.get(i));
@@ -216,7 +204,7 @@ public class YogaApi {
 	@ApiOperation(value = "用户选择workout")
 	public BaseView<Result> addUserWorkout(@ActiveUser UserRef userRef, @PathVariable String wid) {
 		if (yogaService.addWorkout(userRef.getId(), wid)) {
-			return new BaseView<>(Result.SUCCESS);
+			return new BaseView(new Result(Result.CODE_SUCCESS,"You have added this single to your homepage."));
 		}
 		return new BaseView<>(Result.FAILURE);
 	}
@@ -236,5 +224,13 @@ public class YogaApi {
 		return new BaseView<>(Result.SUCCESS);
 	}
 	
+//	@Value("${server}")
+//    String content;
+//
+//    @RequestMapping("/config/")
+//    public String home() {
+//        return "spring.cloud.config.server.git.search-paths:" + content;
+//    }
+
 
 }

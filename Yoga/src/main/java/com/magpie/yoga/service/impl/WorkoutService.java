@@ -1,4 +1,4 @@
-package com.magpie.yoga.service;
+package com.magpie.yoga.service.impl;
 
 import java.util.List;
 
@@ -33,6 +33,20 @@ public class WorkoutService {
 			workoutDao.updateSingle(workoutId, true);
 		}else{
 			workoutDao.updateSingle(workoutId, true, workout.getSinglesSort()-1);
+		}
+	}
+	public void updateSinglesOrder(List<String> singlesOrder){
+		if(singlesOrder!=null&&singlesOrder.size()>0){
+			Workout workout=null;
+			int size=singlesOrder.size();
+			for(int i=0;i<size;i++){
+				workout=workoutDao.findOne(singlesOrder.get(i));
+				if(workout!=null){
+					workout.setSingle(true);
+					workout.setSinglesSort(10000+size-i);
+					workoutDao.save(workout);
+				}
+			}
 		}
 	}
 	public void updateSinglesWorkoutSort(String workoutId,int sort){

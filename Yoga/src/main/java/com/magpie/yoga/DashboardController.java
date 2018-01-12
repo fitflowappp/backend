@@ -16,7 +16,7 @@ import com.magpie.base.utils.CsvUtils;
 import com.magpie.base.view.BaseView;
 import com.magpie.yoga.model.Dashboard;
 import com.magpie.yoga.req.DashboardGenReq;
-import com.magpie.yoga.service.YogaStatService;
+import com.magpie.yoga.service.impl.YogaStatService;
 
 import io.swagger.annotations.ApiOperation;
 

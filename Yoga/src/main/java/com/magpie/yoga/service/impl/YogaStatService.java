@@ -1,4 +1,4 @@
-package com.magpie.yoga.service;
+package com.magpie.yoga.service.impl;
 
 import java.util.Calendar;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package com.magpie.yoga.service;
+package com.magpie.yoga.service.impl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,6 +18,7 @@ import com.magpie.cache.yoga.YogaCacheService;
 import com.magpie.share.UserRef;
 import com.magpie.user.dao.UserDao;
 import com.magpie.user.model.User;
+import com.magpie.yoga.UserWorkDef;
 import com.magpie.yoga.constant.DialogType;
 import com.magpie.yoga.constant.HistoryDest;
 import com.magpie.yoga.constant.HistoryEvent;
@@ -631,13 +632,20 @@ public class YogaService {
 		return userWorkoutDao.findSortByDate(uid, null, true);
 	}
 	public List<Workout> defaultUserWorkout(String uid){
-		final List<String> defaultWorkoutIdList=new ArrayList<String>(){
-			{
-				add("5a079f20fa4d6f3d2940e142");
-				add("5a079d48fa4d6f3d2940e13c");
-				add("5a079f48fa4d6f3d2940e143");
+		
+		UserState userState = userStateDao.findUserState(uid);
+		int index=0;
+		if(userState!=null){
+			String challengeId=userState.getCurrentChallengeId();
+			if(challengeId!=null&&challengeId.length()>0){
+				ArrayList<String> defaultChallengeIdList=UserWorkDef.topicChallengeList;
+				if(defaultChallengeIdList.contains(challengeId)){
+					index=defaultChallengeIdList.indexOf(challengeId);
+				}
 			}
-		};
+		}
+		
+		final List<String> defaultWorkoutIdList=UserWorkDef.singlesIdList.get(index);
 		List<Serializable> ids=new ArrayList<>();
 		for (String iterableItem : defaultWorkoutIdList) {
 			ids.add(iterableItem);
@@ -648,7 +656,7 @@ public class YogaService {
 			//workout.setRoutines(null);
 			workoutList.add(workout);
 		}
-		//异步删除到userworkout
+		//异步同步到userworkout
 		asyncInsertDefaultUserWorkout(defaultWorkoutIdList, uid);
 		return workoutList;
 	}
