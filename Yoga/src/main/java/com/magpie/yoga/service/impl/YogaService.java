@@ -38,6 +38,7 @@ import com.magpie.yoga.model.UserState;
 import com.magpie.yoga.model.UserWatchHistory;
 import com.magpie.yoga.model.UserWorkout;
 import com.magpie.yoga.model.Workout;
+import com.magpie.yoga.model.UserWorkout.FromType;
 import com.magpie.yoga.stat.UserWatchHistoryStat;
 import com.magpie.yoga.view.Achievement;
 import com.magpie.yoga.view.ActView;
@@ -78,7 +79,7 @@ public class YogaService {
 		Achievement achievement = new Achievement();
 		User user = userDao.findOne(uid);
 		if (!user.isUnRegistered()) {
-			achievement.setDays(DateUtil.daysBetween(user.getRegisterDate(), Calendar.getInstance().getTime()) + 1);
+			achievement.setDays(DateUtil.daysBetween(user.getCrDate(), Calendar.getInstance().getTime()) + 1);
 		}
 		achievement.setCompletedMinutes(userWatchHistoryDao.aggregateRoutineDuration(uid));
 		achievement.setCompletedWorkoutCount(userWatchHistoryDao
@@ -697,6 +698,7 @@ public class YogaService {
 		userWorkout.setUid(uid);
 		userWorkout.setWorkoutId(workoutId);
 		userWorkout.setWorkout(workout);
+		userWorkout.setFrom(FromType.USER);
 		userWorkoutDao.save(userWorkout);
 		return true;
 	}
