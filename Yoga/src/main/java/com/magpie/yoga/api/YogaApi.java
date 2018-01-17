@@ -24,7 +24,7 @@ import com.magpie.yoga.def.UserWorkDef;
 import com.magpie.yoga.model.ShareRecord;
 import com.magpie.yoga.model.UserWorkout;
 import com.magpie.yoga.model.Workout;
-import com.magpie.yoga.service.impl.YogaService;
+import com.magpie.yoga.service.YogaService;
 import com.magpie.yoga.view.Achievement;
 import com.magpie.yoga.view.ActView;
 import com.magpie.yoga.view.ChallengeSetView;
@@ -217,12 +217,6 @@ public class YogaApi {
 		return new BaseView<>(yogaService.singleWorkoutList(userRef.getId()));
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value = "/challenge/single/addTestworkout")
-	@ResponseBody
-	@ApiOperation(value = "test single")
-	public BaseView<Result> testSingleWorkout() {
-		yogaService.testSingleWorkoutList();
-		return new BaseView<>(Result.SUCCESS);
-	}
+	
 
 }

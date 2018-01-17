@@ -27,7 +27,8 @@ public class UserConfigServiceImpl implements UserConfigService  {
 			
 		}else{
 			BeanUtils.copyProperties(userBackgroundMusic, saved, "id");
-			return userBackgroundMusicDao.save(saved);
+			userBackgroundMusicDao.update(saved);
+			return saved;
 		}
 	}
 	@Override

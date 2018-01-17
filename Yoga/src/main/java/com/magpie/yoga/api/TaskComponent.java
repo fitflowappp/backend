@@ -18,7 +18,7 @@ import com.magpie.user.dao.FacebookDao;
 import com.magpie.user.model.FaceBookUser;
 import com.magpie.yoga.dao.UserConfigurationDao;
 import com.magpie.yoga.model.UserConfiguration;
-import com.magpie.yoga.service.impl.YogaStatService;
+import com.magpie.yoga.service.YogaStatService;
 
 @Component
 @EnableScheduling

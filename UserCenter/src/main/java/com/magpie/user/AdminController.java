@@ -23,6 +23,7 @@ import com.magpie.base.view.BaseView;
 import com.magpie.base.view.PageView;
 import com.magpie.cache.UserCacheService;
 import com.magpie.share.UserRef;
+import com.magpie.statistics.user.view.UserStatisticsView;
 import com.magpie.user.constant.RoleType;
 import com.magpie.user.dao.UserDao;
 import com.magpie.user.model.User;
@@ -33,7 +34,6 @@ import com.magpie.user.view.AdminView;
 import com.magpie.user.view.FacebookUserView;
 import com.magpie.yoga.model.UserConfiguration;
 import com.magpie.yoga.model.UserState;
-import com.magpie.yoga.statistics.user.view.UserStatisticsView;
 
 import io.swagger.annotations.ApiOperation;
 

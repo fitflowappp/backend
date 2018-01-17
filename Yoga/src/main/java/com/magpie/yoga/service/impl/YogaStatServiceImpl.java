@@ -29,10 +29,11 @@ import com.magpie.yoga.model.Challenge;
 import com.magpie.yoga.model.Dashboard;
 import com.magpie.yoga.model.Routine;
 import com.magpie.yoga.model.Workout;
+import com.magpie.yoga.service.YogaStatService;
 import com.magpie.yoga.stat.UserWatchHistoryStat;
 
 @Service
-public class YogaStatService {
+public class YogaStatServiceImpl implements YogaStatService {
 
 	@Autowired
 	private UserWatchHistoryDao userWatchHistoryDao;

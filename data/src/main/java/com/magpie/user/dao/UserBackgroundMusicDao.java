@@ -3,10 +3,12 @@ package com.magpie.user.dao;
 import java.io.Serializable;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.mongodb.repository.support.MongoRepositoryFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -37,6 +39,16 @@ public class UserBackgroundMusicDao extends BaseMongoRepository<UserBackgroundMu
 		Query query = new Query();
 		query.addCriteria(Criteria.where("userId").in(userIdList));
 		return findByQuery(query);
+	}
+	public void update(UserBackgroundMusic userBackgroundMusic){
+		Query query=new Query();
+		query.addCriteria(Criteria.where("id").is(new ObjectId(userBackgroundMusic.getId())));
+		Update update=new Update();
+		update.set("userId", userBackgroundMusic.getUserId());
+		update.set("status", userBackgroundMusic.getStatus());
+		update.set("musicType", userBackgroundMusic.getMusicType());
+		update.set("volume", userBackgroundMusic.getVolume());
+		updateMulti(query, update);
 	}
 	
 	

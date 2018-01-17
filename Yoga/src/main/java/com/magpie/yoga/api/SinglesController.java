@@ -1,7 +1,6 @@
 package com.magpie.yoga.api;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,9 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.magpie.base.view.BaseView;
 import com.magpie.base.view.Result;
-import com.magpie.yoga.model.ChallengeSet;
 import com.magpie.yoga.model.Workout;
-import com.magpie.yoga.service.impl.WorkoutService;
+import com.magpie.yoga.service.WorkoutService;
 
 import io.swagger.annotations.ApiOperation;
 

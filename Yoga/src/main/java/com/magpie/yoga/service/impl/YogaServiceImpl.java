@@ -39,6 +39,7 @@ import com.magpie.yoga.model.UserWatchHistory;
 import com.magpie.yoga.model.UserWorkout;
 import com.magpie.yoga.model.Workout;
 import com.magpie.yoga.model.UserWorkout.FromType;
+import com.magpie.yoga.service.YogaService;
 import com.magpie.yoga.stat.UserWatchHistoryStat;
 import com.magpie.yoga.view.Achievement;
 import com.magpie.yoga.view.ActView;
@@ -50,7 +51,7 @@ import com.magpie.yoga.view.UserWorkoutStat;
 import com.magpie.yoga.view.WorkoutView;
 
 @Service
-public class YogaService {
+public class YogaServiceImpl implements YogaService {
 
 	@Autowired
 	private UserStateDao userStateDao;

@@ -7,12 +7,12 @@ import org.springframework.stereotype.Service;
 
 import com.magpie.yoga.dao.WorkoutDao;
 import com.magpie.yoga.model.Workout;
+import com.magpie.yoga.service.WorkoutService;
 
 @Service
-public class WorkoutService {
+public class WorkoutServiceImpl implements WorkoutService {
 	@Autowired
 	WorkoutDao workoutDao;
-	
 	
 	public List<Workout> allSinglesList(){
 		return workoutDao.findsginleList();
