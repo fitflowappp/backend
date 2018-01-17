@@ -1,9 +1,14 @@
 package com.magpie.user;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,11 +26,14 @@ import com.magpie.share.UserRef;
 import com.magpie.user.constant.RoleType;
 import com.magpie.user.dao.UserDao;
 import com.magpie.user.model.User;
+import com.magpie.user.model.UserBackgroundMusic;
 import com.magpie.user.req.AdminLoginReq;
+import com.magpie.user.service.UserConfigService;
 import com.magpie.user.view.AdminView;
 import com.magpie.user.view.FacebookUserView;
 import com.magpie.yoga.model.UserConfiguration;
 import com.magpie.yoga.model.UserState;
+import com.magpie.yoga.statistics.user.view.UserStatisticsView;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -41,6 +49,8 @@ public class AdminController {
 	private UserDao userDao;
 	@Autowired
 	private UserCacheService userCacheService;
+	@Autowired
+	private UserConfigService UserConfigService;
 
 	@RequestMapping(method = RequestMethod.GET, value = "/csv")
 	@ResponseBody
@@ -128,10 +138,37 @@ public class AdminController {
 	@RequestMapping(value = "/user", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "获取所有用户（有分页）")
-	public PageView<FacebookUserView> getUsers(@ModelAttribute PageQuery pageQuery) {
-		return userService.getPageView(pageQuery);
-	}
+	public PageView<UserStatisticsView> getUsersStatis(@ModelAttribute PageQuery pageQuery) {
+		Page<User> userPage=userService.getUserPage(pageQuery);
+		PageView<UserStatisticsView> pageView = new PageView<>();
 
+		BeanUtils.copyProperties(userPage, pageView, "content");
+		List<String> list=new ArrayList<>();
+		for (User user : userPage.getContent()) {
+			list.add(user.getId());
+		}
+		List<UserBackgroundMusic> userBackgroundMusics=UserConfigService.findList(list);
+		List<UserStatisticsView> facebookUserViews = new ArrayList<>();
+		UserStatisticsView userStatisticsView=null;
+		int size=userBackgroundMusics.size();
+		UserBackgroundMusic item=null;
+		for (User user : userPage.getContent()) {
+			userStatisticsView=new UserStatisticsView();
+			BeanUtils.copyProperties(userService.getFacebookUserView(user),userStatisticsView);
+			facebookUserViews.add(userStatisticsView);
+			for(int i=0;i<size;i++){
+				item=userBackgroundMusics.get(i);
+				if(item.getUserId()!=null&&
+						item.getUserId().equals(user.getId())){
+					userStatisticsView.setMusicStatus(item.getStatus());
+					userStatisticsView.setMusicType(item.getMusicType());
+				}
+			}
+		}
+		pageView.setContent(facebookUserViews);
+		return pageView;
+	}
+	
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "获取用户详细信息")

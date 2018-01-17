@@ -12,7 +12,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import com.didispace.swagger.EnableSwagger2Doc;
 
 @SpringBootApplication
-//@EnableSwagger2Doc
+@EnableSwagger2Doc
 @ComponentScan(basePackages = { "com.magpie" })
 @EnableAsync
 public class YogaApplication {

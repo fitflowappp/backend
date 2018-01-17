@@ -1,4 +1,4 @@
-package com.magpie.yoga;
+package com.magpie.yoga.api;
 
 import java.util.List;
 

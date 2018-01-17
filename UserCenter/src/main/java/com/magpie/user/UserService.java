@@ -459,12 +459,15 @@ public class UserService {
 
 		return pageView;
 	}
+	public Page<User> getUserPage(PageQuery pageQuery){
+		return userDao.findPage(pageQuery);
+	}
 
 	public FacebookUserView getFacebookUserView(String uid) {
 		return getFacebookUserView(userDao.findOne(uid));
 	}
 
-	private FacebookUserView getFacebookUserView(User user) {
+	public FacebookUserView getFacebookUserView(User user) {
 		FacebookUserView view = new FacebookUserView();
 		FaceBookUser fbUser = FacebookDao.findByUid(user.getId());
 		if (fbUser != null) {

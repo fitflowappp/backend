@@ -10,6 +10,8 @@
 	<artifactId>data</artifactId>
 	<name>data</name>
 	<packaging>jar</packaging>
+	<version>0.0.1</version>
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -49,5 +51,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-social-facebook</artifactId>
 		</dependency>
+		
 	</dependencies>
+	
 </project>

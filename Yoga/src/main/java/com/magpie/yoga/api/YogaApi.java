@@ -1,4 +1,4 @@
-package com.magpie.yoga;
+package com.magpie.yoga.api;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,6 +20,7 @@ import com.magpie.session.ActiveUser;
 import com.magpie.share.UserRef;
 import com.magpie.yoga.constant.HistoryEvent;
 import com.magpie.yoga.dao.ShareRecordDao;
+import com.magpie.yoga.def.UserWorkDef;
 import com.magpie.yoga.model.ShareRecord;
 import com.magpie.yoga.model.UserWorkout;
 import com.magpie.yoga.model.Workout;
@@ -33,8 +35,7 @@ import com.magpie.yoga.view.WorkoutView;
 
 import io.swagger.annotations.ApiOperation;
 import springfox.documentation.annotations.ApiIgnore;
-import com.magpie.yoga.UserWorkDef;
-
+@RefreshScope
 @RestController
 @RequestMapping(value = "/yoga")
 public class YogaApi {
@@ -223,14 +224,5 @@ public class YogaApi {
 		yogaService.testSingleWorkoutList();
 		return new BaseView<>(Result.SUCCESS);
 	}
-	
-//	@Value("${server}")
-//    String content;
-//
-//    @RequestMapping("/config/")
-//    public String home() {
-//        return "spring.cloud.config.server.git.search-paths:" + content;
-//    }
-
 
 }

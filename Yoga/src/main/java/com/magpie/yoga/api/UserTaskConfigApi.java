@@ -1,4 +1,4 @@
-package com.magpie.yoga;
+package com.magpie.yoga.api;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import com.magpie.yoga.model.UserConfiguration;
 
 @RestController
 @RequestMapping(value = "/yoga/config")
-public class UserConfigApi {
+public class UserTaskConfigApi {
 
 	@Autowired
 	private UserConfigurationDao userConfigurationDao;

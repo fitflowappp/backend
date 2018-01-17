@@ -7,7 +7,19 @@ server:
 logging: 
   path: /usr/local/yogaserver/yoga/log
   file:  yoga.log
+
 spring:
+  application:
+    name: yoga
+  http:
+    converters:
+      preferred-json-mapper: fastjson
+  cloud:
+    config:
+      label: master
+      profile: default
+      uri: http://localhost:16000/
+      failFast: true
   data:
     mongodb:
       host: 127.0.0.1

@@ -1,4 +1,4 @@
-package com.magpie.yoga;
+package com.magpie.yoga.api;
 
 import java.util.List;
 
@@ -38,6 +38,7 @@ public class WorkoutController {
 	public List<Workout> getWorkout(@ModelAttribute PageQuery pageQuery) {
 		return workoutDao.findBySort(pageQuery);
 	}
+	
 
 	@RequestMapping(method = RequestMethod.GET, value = "/csv")
 	@ResponseBody

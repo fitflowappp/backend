@@ -117,4 +117,5 @@ public class WorkoutDao extends BaseMongoRepository<Workout, Serializable> {
 		update.inc("singlesSort", 1);
 		updateMulti(query, update);
 	}
+	
 }

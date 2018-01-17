@@ -38,6 +38,16 @@ public class Workout extends BaseModel {
 	private boolean isSingle=false;
 	private int singlesSort=0;
 	private String singleChallengeId;
+	private String shareUrl;
+	
+
+	public String getShareUrl() {
+		return shareUrl;
+	}
+
+	public void setShareUrl(String shareUrl) {
+		this.shareUrl = shareUrl;
+	}
 
 	public int getSinglesSort() {
 		return singlesSort;
