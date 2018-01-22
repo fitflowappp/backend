@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,12 +26,15 @@ public class WorkoutStatisticsServiceImpl implements WorkoutStatisticsService {
 	@Autowired
 	WorkoutDao workoutDao;
 	
+	private Logger logger = LoggerFactory.getLogger(getClass());
+
+	
 	@Override
 	public List<WorkoutStatisticsView> getWorkoutList(PageQuery pageQuery) {
 		// TODO Auto-generated method stub
 		List<Workout> workoutList=null;
 		boolean needSort=false;;
-		if(pageQuery.getSortKey().equals("userFavCount")||pageQuery.getSortKey().equals("userFavCount")){
+		if(pageQuery==null||pageQuery.getSortKey()==null||pageQuery.getSortKey().equals("userFavCount")||pageQuery.getSortKey().equals("userFavCount")){
 			workoutList=workoutDao.findAll();
 			needSort=true;
 		}else{
@@ -37,6 +42,7 @@ public class WorkoutStatisticsServiceImpl implements WorkoutStatisticsService {
 		}
 			
 		List<UserWorkoutAggregate> userWorkouts=userWorkoutDao.aggregateCountPerUser();
+		logger.info("userWorkout:"+userWorkouts);
 		int userWorkoutsSize=userWorkouts.size();
 		List<WorkoutStatisticsView> workoutStatisticsViews=new ArrayList<>();
 		WorkoutStatisticsView workoutStatisticsView=null;

@@ -22,11 +22,13 @@ spring:
       failFast: true
   data:
     mongodb:
-      host: 127.0.0.1
+      host: 172.31.27.148
+      # host: 127.0.0.1
       port: 27017
       database: yoga
   redis:
-    host: 127.0.0.1
+    host: 172.31.27.148
+    # host: 127.0.0.1
     password: 
     port: 6379
     pool:

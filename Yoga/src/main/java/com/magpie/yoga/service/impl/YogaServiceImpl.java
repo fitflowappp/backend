@@ -38,7 +38,6 @@ import com.magpie.yoga.model.UserState;
 import com.magpie.yoga.model.UserWatchHistory;
 import com.magpie.yoga.model.UserWorkout;
 import com.magpie.yoga.model.Workout;
-import com.magpie.yoga.model.UserWorkout.FromType;
 import com.magpie.yoga.service.YogaService;
 import com.magpie.yoga.stat.UserWatchHistoryStat;
 import com.magpie.yoga.view.Achievement;
@@ -695,12 +694,19 @@ public class YogaServiceImpl implements YogaService {
 		if(workout==null){
 			return false;
 		}
-		UserWorkout userWorkout=new UserWorkout();
-		userWorkout.setUid(uid);
-		userWorkout.setWorkoutId(workoutId);
-		userWorkout.setWorkout(workout);
-		userWorkout.setFrom(FromType.USER);
-		userWorkoutDao.save(userWorkout);
+		UserWorkout saved=userWorkoutDao.findOne(uid, workoutId);
+		if(saved==null){
+			UserWorkout userWorkout=new UserWorkout();
+			userWorkout.setUid(uid);
+			userWorkout.setWorkoutId(workoutId);
+			userWorkout.setWorkout(workout);
+			userWorkout.setFrom(UserWorkout.USER);
+			userWorkoutDao.save(userWorkout);
+
+		}else{
+			
+			userWorkoutDao.updateDeleteStatus(uid, workoutId, UserWorkout.USER, false);
+		}
 		return true;
 	}
 	public List<SinglesWorkoutView> singleWorkoutList(String uid){

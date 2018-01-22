@@ -1,4 +1,4 @@
-package com.magpie.user;
+package com.magpie.user.api;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +24,8 @@ import com.magpie.base.view.PageView;
 import com.magpie.cache.UserCacheService;
 import com.magpie.share.UserRef;
 import com.magpie.statistics.user.view.UserStatisticsView;
+import com.magpie.user.AdminService;
+import com.magpie.user.UserService;
 import com.magpie.user.constant.RoleType;
 import com.magpie.user.dao.UserDao;
 import com.magpie.user.model.User;
@@ -155,6 +157,8 @@ public class AdminController {
 		for (User user : userPage.getContent()) {
 			userStatisticsView=new UserStatisticsView();
 			BeanUtils.copyProperties(userService.getFacebookUserView(user),userStatisticsView);
+			userStatisticsView.setMusicStatus(1);
+			userStatisticsView.setMusicType(0);
 			facebookUserViews.add(userStatisticsView);
 			for(int i=0;i<size;i++){
 				item=userBackgroundMusics.get(i);

@@ -16,6 +16,7 @@ import com.magpie.user.service.UserConfigService;
 public class UserConfigServiceImpl implements UserConfigService  {
 	@Autowired
 	UserBackgroundMusicDao userBackgroundMusicDao;
+	
 	@Override
 	public UserBackgroundMusic updateBackgroundMusic(UserBackgroundMusic userBackgroundMusic){
 		if(StringUtils.isEmpty(userBackgroundMusic.getUserId())){
@@ -36,4 +37,15 @@ public class UserConfigServiceImpl implements UserConfigService  {
 		// TODO Auto-generated method stub
 		return userBackgroundMusicDao.findList(userIdList);
 	}
+	@Override
+	public UserBackgroundMusic getBackgroundMusic(String userId) {
+		// TODO Auto-generated method stub
+		if(StringUtils.isEmpty(userId)){
+			return null;
+		}
+		return userBackgroundMusicDao.findOneByUserId(userId);
+		
+	}
+	
+	
 }

@@ -24,10 +24,18 @@ public class UserConfigApi {
 	@RequestMapping(value="/background/music",method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "更新背景音乐配置")
-	public BaseView<UserBackgroundMusic> updateRemider(@ActiveUser UserRef userRef,
+	public BaseView<UserBackgroundMusic> updateBackgroundMusic(@ActiveUser UserRef userRef,
 			@RequestBody UserBackgroundMusic userBackgroundMusic) {
 		userBackgroundMusic.setUserId(userRef.getId());
 		return new BaseView<>(userConfigService.updateBackgroundMusic(userBackgroundMusic));
 	}
+	@RequestMapping(value="/background/music/get",method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "获取背景音乐配置")
+	public BaseView<UserBackgroundMusic> getMusic(@ActiveUser UserRef userRef) {
+		return new BaseView<>(userConfigService.getBackgroundMusic(userRef.getId()));
+	}
+	
+	
 	
 }

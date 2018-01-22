@@ -1,4 +1,4 @@
-package com.magpie.user;
+package com.magpie.user.api;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -22,6 +22,7 @@ import com.magpie.base.view.BaseView;
 import com.magpie.base.view.Result;
 import com.magpie.session.ActiveUser;
 import com.magpie.share.UserRef;
+import com.magpie.user.UserService;
 import com.magpie.user.req.FacebookReq;
 import com.magpie.user.req.FindPassWordReq;
 import com.magpie.user.req.ResetPasswordReq;

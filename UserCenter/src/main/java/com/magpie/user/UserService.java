@@ -8,7 +8,6 @@ import java.util.Random;
 import java.util.concurrent.Executor;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.bouncycastle.asn1.cmp.Challenge;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,12 +23,16 @@ import com.magpie.cache.UserCacheService;
 import com.magpie.share.UserRef;
 import com.magpie.user.dao.FacebookDao;
 import com.magpie.user.dao.FindPassWordDao;
+import com.magpie.user.dao.UserBackgroundMusicDao;
 import com.magpie.user.dao.UserDao;
 import com.magpie.user.model.FaceBookUser;
 import com.magpie.user.model.FindPassWord;
 import com.magpie.user.model.User;
+import com.magpie.user.model.UserBackgroundMusic;
 import com.magpie.user.req.SimpleRegUser;
+import com.magpie.user.service.UserConfigService;
 import com.magpie.user.utils.EmailUtils;
+import com.magpie.user.view.AppUserView;
 import com.magpie.user.view.FacebookUserView;
 import com.magpie.user.view.UserView;
 import com.magpie.yoga.constant.HistoryDest;
@@ -68,6 +71,9 @@ public class UserService {
 	private ShareRecordDao shareRecordDao;
 	@Autowired
 	private UserConfigurationDao userConfigurationDao;
+	@Autowired
+	UserBackgroundMusicDao userBackgroundMusicDao;
+	
 	
 	public User findOne(String uid){
 		if(uid!=null&&uid.length()>0){
@@ -203,12 +209,7 @@ public class UserService {
 		return true;
 	}
 
-	public Challenge getChallenge(String userId) {
-		if (userId != null && userId.length() > 0) {
-
-		}
-		return null;
-	}
+	
 
 	public String getUserIdBySessionId(String seesionId) {
 		return null;
@@ -307,7 +308,7 @@ public class UserService {
 	public UserView getLoginUserView(User user) {
 
 		UserRef userRef = saveCacheBySessionId(user);
-		UserView view = initialUserView(user);
+		UserView view = initialAppUserView(user);
 		view.setSessionId(userRef.getSessionId());
 		return view;
 	}
@@ -316,6 +317,11 @@ public class UserService {
 
 		UserView view = initialUserView(userDao.findOne(uid));
 		return view;
+	}
+	public AppUserView getAappUserView(String uid) {
+		
+		
+		return initialAppUserView(userDao.findOne(uid));
 	}
 
 	public BaseView<UserView> registerAnonymous(User user) {
@@ -440,6 +446,42 @@ public class UserService {
 			userView.setSessionId(ref.getSessionId());
 		}
 
+		return userView;
+	}
+	private AppUserView initialAppUserView(User user) {
+		AppUserView userView = new AppUserView();
+		if (user != null) {
+			BeanUtils.copyProperties(user, userView);
+			
+			if ("facebook".equals(user.getRegisterType())) {
+				FaceBookUser faceBookUser = FacebookDao.findByUid(user.getId());
+				userView.setName(faceBookUser.getName());
+				userView.setGender(faceBookUser.getGender());
+				userView.setHeaderImgContent(faceBookUser.getHeaderImgContent());
+			}
+			if (user.getHeaderImg() != null) {
+				userView.setHeaderImgUrl(user.getHeaderImg().getContentUri());
+			}
+			
+			userView.setRegisterDays(DateUtil.daysBetween(userView.getRegisterDate(), DateUtil.getCurrentDate()));
+			
+		}
+		
+		UserRef ref = userCacheService.getById(userView.getId());
+		if (ref != null) {
+			userView.setSessionId(ref.getSessionId());
+		}
+		UserBackgroundMusic userBackgroundMusic=userBackgroundMusicDao.findOneByUserId(user.getId());
+		if(userBackgroundMusic!=null){
+			userView.setMusicStatus(userBackgroundMusic.getStatus());
+			userView.setMusicType(userBackgroundMusic.getMusicType());
+			userView.setMusicVolume(userBackgroundMusic.getVolume());
+		}else{
+			userView.setMusicStatus(1);
+			userView.setMusicType(0);
+			userView.setMusicVolume(0.5f);
+		}
+		
 		return userView;
 	}
 

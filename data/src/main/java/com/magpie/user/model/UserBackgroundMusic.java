@@ -34,7 +34,7 @@ public class UserBackgroundMusic extends BaseModel {
 	}
 	private String id;
 	private String userId;
-	private int status;
+	private int status=1;
 	private int musicType;
 	private float volume;
 	

@@ -8,12 +8,23 @@ logging:
   path: /usr/local/yogaserver/usercenter/log
   file:  usercenter.log
 spring:
+  application:
+    name: user
+  cloud:
+    config:
+      label: master
+      profile: default
+      uri: http://localhost:16000/
+      failFast: true
   data:
     mongodb:
+      # host: 172.31.27.148
       host: 127.0.0.1
       port: 27017
       database: yoga
+
   redis:
+    # host: 172.31.27.148
     host: 127.0.0.1
     password: 
     port: 6379

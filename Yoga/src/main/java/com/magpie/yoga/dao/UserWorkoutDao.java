@@ -9,7 +9,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -21,18 +22,20 @@ import org.springframework.data.mongodb.repository.support.MongoRepositoryFactor
 import org.springframework.stereotype.Repository;
 
 import com.magpie.base.dao.BaseMongoRepository;
-import com.magpie.user.model.AggregationSum;
 import com.magpie.yoga.model.UserWorkout;
-import com.magpie.yoga.model.UserWorkout.FromType;
 import com.magpie.yoga.model.Workout;
 import com.magpie.yoga.statistics.model.UserWorkoutAggregate;
 @Repository
 public class UserWorkoutDao extends BaseMongoRepository<UserWorkout, Serializable> {
+	
+	private Logger logger = LoggerFactory.getLogger(getClass());
+
+	
 	@Autowired
 	public UserWorkoutDao(MongoRepositoryFactory mongoRepositoryFactory, MongoOperations mongoOps) {
 		super(mongoRepositoryFactory.getEntityInformation(UserWorkout.class), mongoOps);
 	}
-
+	
 	public List<Workout> findWorkoutSortByDate(String uid){
 		List<UserWorkout> userWorkoutList=findSortByDate(uid);
 		List<Workout> workoutList=new ArrayList<>();
@@ -41,12 +44,24 @@ public class UserWorkoutDao extends BaseMongoRepository<UserWorkout, Serializabl
 		}
 		return workoutList;
 	}
+	
 	public List<UserWorkout> findSortByDate(String uid){
 		return findSortByDate(uid, null);
 	}
 	public List<UserWorkout> findSortByDate(String uid,String workoutId){
 		return findSortByDate(uid, workoutId, false);
 	}
+	public UserWorkout findOne(String uid,String workoutId){
+		Query query = new Query();
+		query.addCriteria(Criteria.where("uid").in(uid));
+		
+		if(workoutId!=null&&workoutId.length()>0){
+			query.addCriteria(Criteria.where("workoutId").in(workoutId));
+		}
+		
+		return findOneByQuery(query);
+	}
+	
 	public List<UserWorkout> findSortByDate(String uid,String workoutId,boolean isAll){
 		Query query = new Query();
 		query.addCriteria(Criteria.where("uid").in(uid));
@@ -61,22 +76,36 @@ public class UserWorkoutDao extends BaseMongoRepository<UserWorkout, Serializabl
 	}
 	
 	public void updateDeleteStatus(String uid,String workoutId){
+		updateDeleteStatus(uid, workoutId, true);
+	}
+	public void updateDeleteStatus(String uid,String workoutId,boolean isDelete){
 		Query query = new Query();
 		query.addCriteria(Criteria.where("uid").is(uid));
 		query.addCriteria(Criteria.where("workoutId").is(workoutId));
 		Update update = new Update();
-		update.set("isDelete", true);
+		update.set("isDelete", isDelete);
+		updateMulti(query, update);
+	}
+	public void updateDeleteStatus(String uid,String workoutId,int from,boolean isDelete){
+		Query query = new Query();
+		query.addCriteria(Criteria.where("uid").is(uid));
+		query.addCriteria(Criteria.where("workoutId").is(workoutId));
+		Update update = new Update();
+		update.set("isDelete", isDelete);
+		if(from>0){
+			update.set("from", from);
+		}
 		updateMulti(query, update);
 	}
 	
-	
 	public List<UserWorkoutAggregate> aggregateCountPerUser() {
 		TypedAggregation<UserWorkout> aggregation = newAggregation(UserWorkout.class,
+	            match(Criteria.where("from").is(UserWorkout.USER)),
 				group("workoutId","isDelete").count().as("count"),
-				match(Criteria.where("from").is(FromType.USER)),
 				project("workoutId", "isDelete","count" ));
 		AggregationResults<UserWorkoutAggregate> result = getMongoOperations().aggregate(aggregation,
 				UserWorkoutAggregate.class);
+		logger.info("result:"+result.getServerUsed());
 		return result.getMappedResults();
 	}
 	

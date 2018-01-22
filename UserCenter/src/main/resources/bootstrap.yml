@@ -1,0 +1,13 @@
+
+spring:
+  application:
+    name:yoga
+  cloud:
+    config:
+      label: master
+      profile: default
+      uri: http://localhost:16000
+      failFast: true
+management: 
+  security:
+    enabled: false

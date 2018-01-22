@@ -1,4 +1,4 @@
-package com.magpie.user;
+package com.magpie.user.api;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,10 +19,14 @@ import com.magpie.base.view.BaseView;
 import com.magpie.base.view.Result;
 import com.magpie.session.ActiveUser;
 import com.magpie.share.UserRef;
+import com.magpie.user.UserService;
 import com.magpie.user.constant.RoleType;
 import com.magpie.user.dao.UserDao;
 import com.magpie.user.model.User;
+import com.magpie.user.model.UserBackgroundMusic;
 import com.magpie.user.req.SimpleRegUser;
+import com.magpie.user.service.UserConfigService;
+import com.magpie.user.view.AppUserView;
 import com.magpie.user.view.UserView;
 
 import io.swagger.annotations.ApiOperation;
@@ -34,6 +38,8 @@ public class UserApi {
 	private UserService userService;
 	@Autowired
 	private UserDao userDao;
+	@Autowired
+	UserConfigService userConfigService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -85,6 +91,21 @@ public class UserApi {
 			return new BaseView<>(Result.FAILURE);
 		} else {
 			return new BaseView<>(userService.getUserView(userRef.getId()));
+		}
+	}
+	/**
+	 * 功能：app获取用户信息<br>
+	 * 
+	 */
+	@RequestMapping(value="/app/",method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "获取app用户信息")
+	public BaseView<AppUserView> getAppUserInfo(@ActiveUser UserRef userRef) {
+		if (StringUtils.isEmpty(userRef.getId())) {
+			return new BaseView<>(Result.FAILURE);
+		} else {
+			
+			return new BaseView<>(userService.getAappUserView(userRef.getId()));
 		}
 	}
 	
