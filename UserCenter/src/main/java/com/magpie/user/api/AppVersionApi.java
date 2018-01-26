@@ -38,6 +38,14 @@ public class AppVersionApi {
 	
 	@Value("${app_no_update}")
 	String app_no_update_desc;
+
+	@Value("${normal_app_download_url}")
+	String normal_app_download_url;
+	
+	@Value("${force_app_download_url}")
+	String force_app_download_url;
+	
+	
 	
 	@RequestMapping(value="/update",method = RequestMethod.POST)
 	@ResponseBody
@@ -54,6 +62,11 @@ public class AppVersionApi {
 				BeanUtils.copyProperties(appupdateSettting.getUpdate(), appUpdateSettingView);
 			}
 			if(appUpdateSettingView.getBuild()>0){
+				if(appUpdateSettingView.getType()==AppUpdateSettingView.FORCE){
+					appUpdateSettingView.setDownloadUrl(force_app_download_url);
+				}else{
+					appUpdateSettingView.setDownloadUrl(normal_app_download_url);
+				}
 				return new BaseView<>(appUpdateSettingView);
 			}
 		}
@@ -78,14 +91,19 @@ public class AppVersionApi {
 	@RequestMapping(value="/backgroud/set",method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "更新更新配置内容")
-	public AppUpdateSetting addUpdateSetting(@RequestBody AppUpdateSetting appUpdateSetting) {
+	public BaseView addUpdateSetting(@RequestBody AppUpdateSetting appUpdateSetting) {
+		
 		if(appUpdateSetting.getForce()!=null&&appUpdateSetting.getForce().getBuild()<=0){
 			appUpdateSetting.setForce(null);
 		}
 		if(appUpdateSetting.getUpdate()!=null&&appUpdateSetting.getUpdate().getBuild()<=0){
 			appUpdateSetting.setUpdate(null);
 		}
-		return appVersionService.updateSetting(appUpdateSetting);
+		if(appUpdateSetting.getUpdate()!=null&&appUpdateSetting.getForce()!=null&&appUpdateSetting.getForce().getBuild()>=appUpdateSetting.getUpdate().getBuild()){
+			return new BaseView<>(Result.FAILURE);
+		}
+		
+		return new BaseView(appVersionService.updateSetting(appUpdateSetting));
 	}
 	
 

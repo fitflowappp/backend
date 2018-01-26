@@ -379,6 +379,9 @@ public class YogaServiceImpl implements YogaService {
 			BeanUtils.copyProperties(yogaCacheService.getRoutine(r.getId()), routineView);
 			routineViews.add(routineView);
 		}
+		if(StringUtils.isEmpty(view.getShareUrl())){
+			view.setShareUrl(UserWorkDef.SHARE_URL);
+		}
 		view.setRoutines(routineViews);
 		return view;
 	}
@@ -518,45 +521,71 @@ public class YogaServiceImpl implements YogaService {
 			if (!userWatchHistoryDao.exists(history)) {
 				userWatchHistoryDao.save(history);
 			}
-			return createActView(uid);
+			String shareUrl=workout.getShareUrl();
+			if(StringUtils.isEmpty(shareUrl)){
+				shareUrl=UserWorkDef.SHARE_URL;
+			}
+			return createActView(uid,shareUrl);
 		} else {
 			return null;
 		}
 
 	}
-
-	private ActView createActView(String uid) {
+	private ActView createActView(String uid){
+		return createActView(uid, null);
+	}
+	private ActView createActView(String uid,String shareUrl) {
 
 		Milestone milestone = milestoneDao.findOne();
-
+		
 		if (milestone == null) {
 			return null;
 		}
-
-		int totalDuration = userWatchHistoryDao.aggregateRoutineDuration(uid);
-		int durationNo = totalDuration / milestone.getAchievementMinutes();
-		int countOfWorkouts = 0;
-		for (UserWatchHistoryStat stat : userWatchHistoryDao.aggregateWorkoutWatchHistory(uid,
-				HistoryEvent.SKIPPED.getCode(), HistoryDest.WORKOUT.getCode())) {
-			countOfWorkouts++;
+		
+		int countOfWorkouts =0;
+		List<UserWatchHistoryStat> historys=userWatchHistoryDao.aggregateWorkoutWatchHistory(uid,
+				HistoryEvent.SKIPPED.getCode(), HistoryDest.WORKOUT.getCode());
+		if(historys!=null){
+			countOfWorkouts=historys.size();
 		}
 		int workoutCountNo = countOfWorkouts / milestone.getAchievementWorkoutNum();
-
-		if (durationNo > 0 && achievementRecordDao.findByNo(uid, DialogType.DURATION.getCode(), durationNo) == null) {
-
-			achievementRecordDao
-					.save(new AchievementRecord(uid, DialogType.DURATION.getCode(), durationNo, totalDuration));
-			// show minutes dialog
-			return new ActView(DialogType.DURATION.getCode(), milestone.getAchievementMinutesContent());
-		}
-
+		//&&(countOfWorkouts % milestone.getAchievementWorkoutNum())==0
 		if (workoutCountNo > 0
 				&& achievementRecordDao.findByNo(uid, DialogType.WORKOUT.getCode(), workoutCountNo) == null) {
 			achievementRecordDao
 					.save(new AchievementRecord(uid, DialogType.WORKOUT.getCode(), workoutCountNo, countOfWorkouts));
+			//
+			logger.info("milestone WORKOUT:"+countOfWorkouts);
 
-			return new ActView(DialogType.WORKOUT.getCode(), milestone.getAchievementWorkoutContent());
+			if(StringUtils.isEmpty(shareUrl)){
+				return new ActView(DialogType.WORKOUT.getCode(), milestone.getAchievementWorkoutContent());
+			}else{
+				return new ActView(DialogType.WORKOUT.getCode(), milestone.getAchievementWorkoutContent(),"I've done "
+						+countOfWorkouts+
+					" yoga classes on the Fitflow app. I loved it. And it's free. Check it out.",shareUrl);
+			}
 		}
+		
+
+		int totalDuration = userWatchHistoryDao.aggregateRoutineDuration(uid);
+		int durationNo = totalDuration / milestone.getAchievementMinutes();
+			logger.info("durationNo:"+durationNo+" workoutCountNo:"+workoutCountNo);
+		if (durationNo > 0 && achievementRecordDao.findByNo(uid, DialogType.DURATION.getCode(), durationNo) == null) {
+			logger.info("milestone minute:"+totalDuration);
+
+			achievementRecordDao
+					.save(new AchievementRecord(uid, DialogType.DURATION.getCode(), durationNo, totalDuration));
+			// show minutes dialog
+			if(StringUtils.isEmpty(shareUrl)){
+				return new ActView(DialogType.DURATION.getCode(), milestone.getAchievementMinutesContent());
+			}else{
+				return new ActView(DialogType.DURATION.getCode(), milestone.getAchievementMinutesContent(),
+						"I've done "+totalDuration+" minutes of yoga classes on the Fitflow app. I loved it. And it's free. Check it out."
+						,shareUrl);
+			}
+		}
+
+		
 
 		return null;
 
@@ -724,6 +753,9 @@ public class YogaServiceImpl implements YogaService {
 //					singlesWorkout.setIsfollow(true);
 //				}
 //			}
+			if(StringUtils.isEmpty(singlesWorkout.getShareUrl())){
+				singlesWorkout.setShareUrl(UserWorkDef.SHARE_URL);
+			}
 			resultWorkoutList.add(singlesWorkout);
 		}
 		return resultWorkoutList;

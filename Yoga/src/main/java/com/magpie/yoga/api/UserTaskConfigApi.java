@@ -44,6 +44,7 @@ public class UserTaskConfigApi {
 			repository = new UserConfiguration();
 		}
 		repository.setNotification(userConfiguration.isNotification());
+		repository.setSchedulingTime(userConfiguration.getSchedulingTime());
 		repository.setUid(userRef.getId());
 		
 		userConfigurationDao.save(repository);
@@ -59,7 +60,7 @@ public class UserTaskConfigApi {
 		if (repository == null) {
 			repository = new UserConfiguration();
 		}
-		BeanUtils.copyProperties(userConfiguration, repository, "id","notification");
+		BeanUtils.copyProperties(userConfiguration, repository, "id","notification","schedulingTime");
 
 		
 		userConfigurationDao.save(repository);

@@ -4,6 +4,26 @@ public class ActView {
 
 	private int type;
 	private String content;
+	private String shareTitle;
+	private String shareUrl;
+	
+	
+
+	public String getShareTitle() {
+		return shareTitle;
+	}
+
+	public void setShareTitle(String shareTitle) {
+		this.shareTitle = shareTitle;
+	}
+
+	public String getShareUrl() {
+		return shareUrl;
+	}
+
+	public void setShareUrl(String shareUrl) {
+		this.shareUrl = shareUrl;
+	}
 
 	public ActView() {
 
@@ -12,6 +32,12 @@ public class ActView {
 	public ActView(int type, String content) {
 		this.type = type;
 		this.content = content;
+	}
+	public ActView(int type, String content, String shareTitle , String shareUrl) {
+		this.type = type;
+		this.content = content;
+		this.shareTitle=shareTitle;
+		this.shareUrl=shareUrl;
 	}
 
 	public int getType() {

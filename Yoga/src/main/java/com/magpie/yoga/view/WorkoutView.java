@@ -34,6 +34,18 @@ public class WorkoutView {
 	private String singleChallengeId;
 
 	private boolean isfollow=false;
+	
+	private String shareUrl;
+	
+	
+
+	public String getShareUrl() {
+		return shareUrl;
+	}
+
+	public void setShareUrl(String shareUrl) {
+		this.shareUrl = shareUrl;
+	}
 
 	public boolean isIsfollow() {
 		return isfollow;

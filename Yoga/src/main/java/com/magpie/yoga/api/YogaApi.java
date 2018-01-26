@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -109,13 +110,16 @@ public class YogaApi {
 	public BaseView<ChallengeView> changeChallenge(@ApiIgnore @ActiveUser UserRef userRef, @PathVariable String cid) {
 		return new BaseView<ChallengeView>(yogaService.chooseChallenge(userRef, cid));
 	}
-
+	
 	@RequestMapping(value = "/challenge/{cid}/workout/{wid}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "get workout")
 	public BaseView<WorkoutView> getWorkout(@ApiIgnore @ActiveUser UserRef userRef, @PathVariable String cid,
 			@PathVariable String wid) {
 		WorkoutView workoutView = yogaService.getWorkout(userRef, cid, wid);
+		if(workoutView!=null && (StringUtils.isEmpty(workoutView.getShareUrl()))){
+			workoutView.setShareUrl(UserWorkDef.SHARE_URL);
+		}
 		return new BaseView<WorkoutView>(workoutView);
 	}
 
@@ -183,6 +187,11 @@ public class YogaApi {
 			List<UserWorkout> allUserWorkouts=yogaService.getUserAllWorkoutList(userRef.getId());
 			if(allUserWorkouts==null||allUserWorkouts.size()<=0){//检测是否添加过，用户删除了singles
 				workoutsList=yogaService.defaultUserWorkout(userRef.getId());
+			}
+		}
+		for (Workout workout : workoutsList) {
+			if(StringUtils.isEmpty(workout.getShareUrl())){
+				workout.setShareUrl(UserWorkDef.SHARE_URL);
 			}
 		}
 		return new BaseView<>(workoutsList);

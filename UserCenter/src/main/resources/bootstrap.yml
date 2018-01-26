@@ -1,7 +1,5 @@
 
 spring:
-  application:
-    name:yoga
   cloud:
     config:
       label: master

@@ -53,4 +53,6 @@ public class UserWorkDef {
 			
 		}
 	};
+	
+	public static String SHARE_URL="https://goo.gl/vcNqoP";
 }
