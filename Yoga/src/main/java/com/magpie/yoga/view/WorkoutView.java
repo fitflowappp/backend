@@ -37,7 +37,15 @@ public class WorkoutView {
 	
 	private String shareUrl;
 	
-	
+	private boolean singlesLock=false;
+
+	public boolean isSinglesLock() {
+		return singlesLock;
+	}
+
+	public void setSinglesLock(boolean singlesLock) {
+		this.singlesLock = singlesLock;
+	}
 
 	public String getShareUrl() {
 		return shareUrl;

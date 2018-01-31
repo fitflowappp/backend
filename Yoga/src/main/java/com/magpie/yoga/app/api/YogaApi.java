@@ -1,4 +1,4 @@
-package com.magpie.yoga.api;
+package com.magpie.yoga.app.api;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +25,7 @@ import com.magpie.yoga.def.UserWorkDef;
 import com.magpie.yoga.model.ShareRecord;
 import com.magpie.yoga.model.UserWorkout;
 import com.magpie.yoga.model.Workout;
+import com.magpie.yoga.service.WorkoutService;
 import com.magpie.yoga.service.YogaService;
 import com.magpie.yoga.view.Achievement;
 import com.magpie.yoga.view.ActView;
@@ -36,6 +37,7 @@ import com.magpie.yoga.view.WorkoutView;
 
 import io.swagger.annotations.ApiOperation;
 import springfox.documentation.annotations.ApiIgnore;
+
 @RefreshScope
 @RestController
 @RequestMapping(value = "/yoga")
@@ -46,6 +48,8 @@ public class YogaApi {
 
 	@Autowired
 	private ShareRecordDao shareRecordDao;
+	@Autowired
+	private WorkoutService workoutService;
 
 	@RequestMapping(value = "/share", method = RequestMethod.PUT)
 	@ResponseBody
@@ -61,11 +65,11 @@ public class YogaApi {
 	@ResponseBody
 	@ApiOperation(value = "get all topical")
 	public List<Map<String, Object>> getTopical() {
-		
+
 		List<Map<String, Object>> topicals = new ArrayList<>();
 		HashMap<String, Object> item = null;
-		ArrayList<String> titles=UserWorkDef.topicTileList;
-		ArrayList<String> challenges=UserWorkDef.topicChallengeList;
+		ArrayList<String> titles = UserWorkDef.topicTileList;
+		ArrayList<String> challenges = UserWorkDef.topicChallengeList;
 		for (int i = 0; ((i < titles.size()) && i < challenges.size()); i++) {
 			item = new HashMap<>();
 			item.put("title", titles.get(i));
@@ -110,15 +114,22 @@ public class YogaApi {
 	public BaseView<ChallengeView> changeChallenge(@ApiIgnore @ActiveUser UserRef userRef, @PathVariable String cid) {
 		return new BaseView<ChallengeView>(yogaService.chooseChallenge(userRef, cid));
 	}
-	
+
 	@RequestMapping(value = "/challenge/{cid}/workout/{wid}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "get workout")
 	public BaseView<WorkoutView> getWorkout(@ApiIgnore @ActiveUser UserRef userRef, @PathVariable String cid,
 			@PathVariable String wid) {
 		WorkoutView workoutView = yogaService.getWorkout(userRef, cid, wid);
-		if(workoutView!=null && (StringUtils.isEmpty(workoutView.getShareUrl()))){
-			workoutView.setShareUrl(UserWorkDef.SHARE_URL);
+		if (workoutView != null) {
+			if ((StringUtils.isEmpty(workoutView.getShareUrl()))) {
+				workoutView.setShareUrl(UserWorkDef.SHARE_URL);
+			}
+			if (workoutView.isSinglesLock()) {
+				if (workoutService.unlockStatus(userRef.getId(), workoutView.getId())) {
+					workoutView.setSinglesLock(false);// 用户已经解锁，屏蔽不需要解锁
+				}
+			}
 		}
 		return new BaseView<WorkoutView>(workoutView);
 	}
@@ -168,7 +179,6 @@ public class YogaApi {
 				yogaService.watchingRoutine(userRef.getId(), cid, wid, rid, HistoryEvent.COMPLETE.getCode(), 0));
 	}
 
-
 	@RequestMapping(method = RequestMethod.POST, value = "/challenge/workout/status")
 	@ResponseBody
 	@ApiOperation(value = "用户自身使用统计")
@@ -177,20 +187,19 @@ public class YogaApi {
 		return new BaseView<>(yogaService.getUserWorkoutStat(userRef.getId()));
 	}
 
-
 	@RequestMapping(method = RequestMethod.POST, value = "/challenge/myworkout/list")
 	@ResponseBody
 	@ApiOperation(value = "获取用户所有workout")
 	public BaseView<List<Workout>> userWorkoutlist(@ActiveUser UserRef userRef) {
-		List<Workout> workoutsList=yogaService.getUserWorkoutList(userRef.getId());
-		if(workoutsList==null||workoutsList.size()<=0){
-			List<UserWorkout> allUserWorkouts=yogaService.getUserAllWorkoutList(userRef.getId());
-			if(allUserWorkouts==null||allUserWorkouts.size()<=0){//检测是否添加过，用户删除了singles
-				workoutsList=yogaService.defaultUserWorkout(userRef.getId());
+		List<Workout> workoutsList = yogaService.getUserWorkoutList(userRef.getId());
+		if (workoutsList == null || workoutsList.size() <= 0) {
+			List<UserWorkout> allUserWorkouts = yogaService.getUserAllWorkoutList(userRef.getId());
+			if (allUserWorkouts == null || allUserWorkouts.size() <= 0) {// 检测是否添加过，用户删除了singles
+				workoutsList = yogaService.defaultUserWorkout(userRef.getId());
 			}
 		}
 		for (Workout workout : workoutsList) {
-			if(StringUtils.isEmpty(workout.getShareUrl())){
+			if (StringUtils.isEmpty(workout.getShareUrl())) {
 				workout.setShareUrl(UserWorkDef.SHARE_URL);
 			}
 		}
@@ -203,7 +212,6 @@ public class YogaApi {
 	public BaseView<Result> deleteUserWorkout(@ActiveUser UserRef userRef, @PathVariable String wid) {
 
 		if (yogaService.deleteUserWorkout(userRef.getId(), wid)) {
-
 			return new BaseView<>(Result.SUCCESS);
 		}
 		return new BaseView<>(Result.FAILURE);
@@ -214,7 +222,7 @@ public class YogaApi {
 	@ApiOperation(value = "用户选择workout")
 	public BaseView<Result> addUserWorkout(@ActiveUser UserRef userRef, @PathVariable String wid) {
 		if (yogaService.addWorkout(userRef.getId(), wid)) {
-			return new BaseView(new Result(Result.CODE_SUCCESS,"You have added this single to your homepage."));
+			return new BaseView(new Result(Result.CODE_SUCCESS, "You have added this single to your homepage."));
 		}
 		return new BaseView<>(Result.FAILURE);
 	}
@@ -225,7 +233,5 @@ public class YogaApi {
 	public BaseView<List<SinglesWorkoutView>> singleWorkout(@ActiveUser UserRef userRef) {
 		return new BaseView<>(yogaService.singleWorkoutList(userRef.getId()));
 	}
-	
-	
 
 }

@@ -1,4 +1,4 @@
-package com.magpie.yoga.api;
+package com.magpie.yoga.app.api;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

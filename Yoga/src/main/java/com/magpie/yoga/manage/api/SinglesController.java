@@ -1,4 +1,4 @@
-package com.magpie.yoga.api;
+package com.magpie.yoga.manage.api;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.magpie.base.view.BaseView;
 import com.magpie.base.view.Result;
+import com.magpie.yoga.model.SinglesSort;
 import com.magpie.yoga.model.Workout;
 import com.magpie.yoga.service.WorkoutService;
 
@@ -79,15 +80,19 @@ public class SinglesController {
 	@RequestMapping(value = "/orders", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "save singles orders")
-	public BaseView<Result> saveSinglesOrders(@RequestBody HashMap<Integer, String> singlesOrders) {
-		List<String> singlesIds=new ArrayList<>();
+	public BaseView<Result> saveSinglesOrders(@RequestBody HashMap<Integer, SinglesSort> singlesOrders) {
+		List<SinglesSort> singlesIds=new ArrayList<>();
+		List<String> singlesIdList=new ArrayList<>();
+		SinglesSort sort=null;
 		for(int i=0;i<singlesOrders.size();i++){
-			singlesIds.add(singlesOrders.get((i)));
+			sort=singlesOrders.get((i));
+			singlesIds.add(sort);
+			singlesIdList.add(sort.getSinglesId());
 		}
 		workoutService.updateSinglesOrder(singlesIds);
 		List<Workout> workoutList=workoutService.allSinglesList();
 		for (Workout workout : workoutList) {
-			if(workout!=null&&singlesIds.contains(workout.getId())==false){
+			if(workout!=null&&singlesIdList.contains(workout.getId())==false){
 				workoutService.deleteSinglesWorkout(workout.getId());
 			}
 		}

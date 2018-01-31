@@ -1,4 +1,4 @@
-package com.magpie.yoga.api;
+package com.magpie.yoga.manage.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

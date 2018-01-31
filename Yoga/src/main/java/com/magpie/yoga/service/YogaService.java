@@ -2,6 +2,9 @@ package com.magpie.yoga.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
+import com.magpie.base.query.PageQuery;
 import com.magpie.share.UserRef;
 import com.magpie.yoga.model.UserWorkout;
 import com.magpie.yoga.model.Workout;
@@ -75,5 +78,6 @@ public interface YogaService {
 	public boolean deleteUserWorkout(String uid,String workoutId);
 	public boolean addWorkout(String uid,String workoutId);
 	public List<SinglesWorkoutView> singleWorkoutList(String uid);
+
 	
 }
