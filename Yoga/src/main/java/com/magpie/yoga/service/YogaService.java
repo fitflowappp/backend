@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 
 import com.magpie.base.query.PageQuery;
 import com.magpie.share.UserRef;
+import com.magpie.yoga.model.Challenge;
 import com.magpie.yoga.model.UserWorkout;
 import com.magpie.yoga.model.Workout;
 import com.magpie.yoga.view.Achievement;
@@ -58,6 +59,8 @@ public interface YogaService {
 	 * @param workoutId
 	 * @return
 	 */
+	
+	
 	public WorkoutView getWorkout(UserRef userRef, String cid, String workoutId) ;
 
 	
@@ -79,5 +82,4 @@ public interface YogaService {
 	public boolean addWorkout(String uid,String workoutId);
 	public List<SinglesWorkoutView> singleWorkoutList(String uid);
 
-	
 }

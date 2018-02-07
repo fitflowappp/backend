@@ -24,5 +24,6 @@ public interface WorkoutService {
 	public boolean unlockStatus(String userId,String singlesId);
 	
 	public List<UserSinglesLock> singleLockList(String userId);
+	
 
 }

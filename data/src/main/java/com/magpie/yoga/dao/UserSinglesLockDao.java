@@ -26,6 +26,6 @@ public class UserSinglesLockDao extends BaseMongoRepository<UserSinglesLock, Ser
 	public boolean findUserStatus(String userId,String singles){
 		Query query=new Query();
 		query.addCriteria(Criteria.where("userId").is(userId).and("singlesId").is(singles));
-		return findOneByQuery(query)==null?true:false;
+		return findOneByQuery(query)==null?false:true;
 	}
 }

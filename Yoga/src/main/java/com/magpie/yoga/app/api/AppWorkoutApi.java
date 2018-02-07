@@ -22,7 +22,9 @@ import com.magpie.session.ActiveUser;
 import com.magpie.share.UserRef;
 import com.magpie.yoga.def.UserWorkDef;
 import com.magpie.yoga.model.UserSinglesLock;
+import com.magpie.yoga.model.UserWatchHistory;
 import com.magpie.yoga.model.Workout;
+import com.magpie.yoga.service.WatchHistoryService;
 import com.magpie.yoga.service.WorkoutService;
 import com.magpie.yoga.view.SinglesWorkoutView;
 
@@ -34,6 +36,8 @@ public class AppWorkoutApi {
 	
 	@Autowired
 	private WorkoutService workoutService;
+	@Autowired 
+	private WatchHistoryService watchHistoryService;
 	
 	
 	@RequestMapping(value = "/page", method = RequestMethod.GET)
@@ -41,8 +45,6 @@ public class AppWorkoutApi {
 	@ApiOperation(value = "single 列表")
 	public PageView<SinglesWorkoutView> singleWorkout(@ActiveUser UserRef userRef,@ModelAttribute PageQuery pageQuery) {
 		Page<Workout> singlesWorkoutPage=workoutService.singleWorkoutList(pageQuery,false);
-		
-		
 		return createSinglesWorkoutWithUserLock(singlesWorkoutPage, userRef.getId());
 	}
 	private PageView<SinglesWorkoutView> createSinglesWorkoutWithUserLock(Page<Workout> page,String userId){
@@ -52,18 +54,28 @@ public class AppWorkoutApi {
 		SinglesWorkoutView singlesWorkout=null;
 		List<SinglesWorkoutView> singlesWorkoutViews=new ArrayList<>();
 		List<UserSinglesLock> singlesLocks=workoutService.singleLockList(userId);
-		int size=singlesLocks==null?0:singlesLocks.size();
+		int lockSize=singlesLocks==null?0:singlesLocks.size();
+		
 		UserSinglesLock userSinglesLock=null;
+		List<UserWatchHistory> userWatchHistories=null;
 		for (Workout workout : page.getContent()) {
 			singlesWorkout = new SinglesWorkoutView();
 			BeanUtils.copyProperties(workout, singlesWorkout);
 			if(singlesWorkout.isSinglesLock()){
-				 for (int i = 0; i < size; i++) {
+				 for (int i = 0; i < lockSize; i++) {
 					 userSinglesLock=singlesLocks.get(i);
 					 if(singlesWorkout.getId().equals(userSinglesLock.getSinglesId())){
 						 singlesWorkout.setSinglesLock(false);
 					 }
 				 }
+				 //如果完整观看过singles，自动解锁
+				if(singlesWorkout.isSinglesLock()){
+					userWatchHistories=watchHistoryService.completeWorkoutList(userId, null, singlesWorkout.getId());
+					if(userWatchHistories!=null&&userWatchHistories.size()>0){
+						singlesWorkout.setSinglesLock(false);
+					}
+				}
+
 			}
 			if (StringUtils.isEmpty(singlesWorkout.getShareUrl())) {
 				singlesWorkout.setShareUrl(UserWorkDef.SHARE_URL);

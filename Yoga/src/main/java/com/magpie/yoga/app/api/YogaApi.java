@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -23,8 +25,10 @@ import com.magpie.yoga.constant.HistoryEvent;
 import com.magpie.yoga.dao.ShareRecordDao;
 import com.magpie.yoga.def.UserWorkDef;
 import com.magpie.yoga.model.ShareRecord;
+import com.magpie.yoga.model.UserWatchHistory;
 import com.magpie.yoga.model.UserWorkout;
 import com.magpie.yoga.model.Workout;
+import com.magpie.yoga.service.WatchHistoryService;
 import com.magpie.yoga.service.WorkoutService;
 import com.magpie.yoga.service.YogaService;
 import com.magpie.yoga.view.Achievement;
@@ -50,6 +54,11 @@ public class YogaApi {
 	private ShareRecordDao shareRecordDao;
 	@Autowired
 	private WorkoutService workoutService;
+	@Autowired
+	private WatchHistoryService watchHistoryService;
+	
+	
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@RequestMapping(value = "/share", method = RequestMethod.PUT)
 	@ResponseBody
@@ -126,9 +135,21 @@ public class YogaApi {
 				workoutView.setShareUrl(UserWorkDef.SHARE_URL);
 			}
 			if (workoutView.isSinglesLock()) {
+				logger.debug("try to unlock in user status");
 				if (workoutService.unlockStatus(userRef.getId(), workoutView.getId())) {
+					logger.debug("unlock in user status");
+
 					workoutView.setSinglesLock(false);// 用户已经解锁，屏蔽不需要解锁
 				}
+				
+				//如果完整观看过singles，自动解锁
+				if(workoutView.isSinglesLock()){
+					List<UserWatchHistory> userWatchHistories=watchHistoryService.completeWorkoutList(userRef.getId(), null, workoutView.getId());
+					if(userWatchHistories!=null&&userWatchHistories.size()>0){
+						workoutView.setSinglesLock(false);
+					}
+				}
+				
 			}
 		}
 		return new BaseView<WorkoutView>(workoutView);

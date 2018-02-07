@@ -80,9 +80,9 @@ public class YogaServiceImpl implements YogaService {
 	public Achievement getUserAchievments(String uid) {
 		Achievement achievement = new Achievement();
 		User user = userDao.findOne(uid);
-		if (!user.isUnRegistered()) {
-			achievement.setDays(DateUtil.daysBetween(user.getCrDate(), Calendar.getInstance().getTime()) + 1);
-		}
+		
+		achievement.setDays(DateUtil.daysBetween(user.getCrDate(), Calendar.getInstance().getTime()) + 1);
+		
 		achievement.setCompletedMinutes(userWatchHistoryDao.aggregateRoutineDuration(uid));
 		achievement.setCompletedWorkoutCount(userWatchHistoryDao
 				.aggregateWorkoutWatchHistory(uid, HistoryEvent.SKIPPED.getCode(), HistoryDest.WORKOUT.getCode())

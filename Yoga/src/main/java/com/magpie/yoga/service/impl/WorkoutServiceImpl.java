@@ -2,6 +2,8 @@ package com.magpie.yoga.service.impl;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,8 @@ public class WorkoutServiceImpl implements WorkoutService {
 	WorkoutDao workoutDao;
 	@Autowired 
 	UserSinglesLockDao userSinglesLockDao;
+	private Logger logger = LoggerFactory.getLogger(getClass());
+
 	
 	public List<Workout> allSinglesList(){
 		return workoutDao.findsginleList();
@@ -76,16 +80,6 @@ public class WorkoutServiceImpl implements WorkoutService {
 	@Override
 	public Page<Workout> singleWorkoutList( PageQuery pageQuery,boolean lock) {
 		// TODO Auto-generated method stub
-		Page<Workout> page=workoutDao.findSinglesBySort(pageQuery, lock);
-		if(page==null||page.getContent()==null||page.getContent().size()==0){
-			List<Workout> list=allSinglesList();
-			if(list!=null&&list.size()>0){
-				for (Workout workout : list) {
-					workout.setSinglesLock(true);
-					save(workout);
-				}
-			}
-		}
 		return workoutDao.findSinglesBySort(pageQuery, lock);
 	}
 	@Override
@@ -104,7 +98,7 @@ public class WorkoutServiceImpl implements WorkoutService {
 		}
 		Workout workout=workoutDao.findOne(singlesId);
 		if(workout!=null&&workout.isSinglesLock()&&
-				userSinglesLockDao.findUserStatus(userId, singlesId)){
+				userSinglesLockDao.findUserStatus(userId, singlesId)==false){
 			UserSinglesLock userSinglesLock=new UserSinglesLock();
 			userSinglesLock.setUserId(userId);
 			userSinglesLock.setSinglesId(singlesId);
@@ -123,6 +117,7 @@ public class WorkoutServiceImpl implements WorkoutService {
 		Workout workout=workoutDao.findOne(singlesId);
 		if(workout!=null&&workout.isSinglesLock()&&
 				userSinglesLockDao.findUserStatus(userId, singlesId)){
+			logger.debug("user unlocked");
 			return true;
 		}
 		return false;
