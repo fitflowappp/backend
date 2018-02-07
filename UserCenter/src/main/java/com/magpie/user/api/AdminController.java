@@ -67,6 +67,8 @@ public class AdminController {
 				.append("Cumulative duration of videos watched").append(",").append("Number of completed Workouts")
 				.append(",").append("Scheduling in-app notification on?").append(",")
 				.append("Scheduling calendar reminder on?").append(",").append("Cumulative number of social shares")
+				.append(",").append("Music on")
+				.append(",").append("Music track")
 				.append(",").append("\r\n");
 
 		PageQuery pageQuery = new PageQuery();
@@ -79,14 +81,14 @@ public class AdminController {
 			User u = fu.getUser() == null ? du : fu.getUser();
 			UserState us = fu.getUserState() == null ? dus : fu.getUserState();
 			UserConfiguration uc = fu.getUserConfiguration() == null ? duc : fu.getUserConfiguration();
-
+			UserBackgroundMusic ubm=UserConfigService.getBackgroundMusic(u.getId());
 			sb.append(u.getId()).append(",").append(fu.getFacebookUid()).append(",").append(fu.getEmail()).append(",")
 					.append(u.getCrDate()).append(",").append(u.isUnRegistered() ? "no" : "yes").append(",")
 					.append(u.getFacebookRegistrationSumbmittedDate()).append(",").append(u.getRegisterDate())
 					.append(",").append(us.getCurrentChallengeId()).append(",").append(us.getDuration()).append(",")
 					.append(us.getCompletedWorkoutNum()).append(",").append(uc.isNotification() ? "on" : "off")
 					.append(",").append(uc.isRemider() ? "on" : "off").append(",").append(fu.getShareCount())
-					.append("\r\n");
+					.append(",").append(ubm.getStatus()==0?"off":"on").append(",").append(""+(ubm.getMusicType()+1)).append("\r\n");
 		}
 		CsvUtils.download("user.csv", sb.toString(), response);
 	}
