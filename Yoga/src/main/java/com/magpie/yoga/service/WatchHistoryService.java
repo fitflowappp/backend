@@ -15,7 +15,7 @@ public interface WatchHistoryService {
 	 */
 	public UserWatchHistory findOne(String userId,String cid,String workoutId);
 	/**
-	 * 获取用户完成的workout列表
+	 * 获取用户完成的workout列表,完成的定义是最后一个runtine开始过
 	* @Title: completeWorkoutList  
 	* @Description: 如果cid为null，不是忽略cid，
 	* 而是就是要求cid为null，如果是null，主要是正对singles查询

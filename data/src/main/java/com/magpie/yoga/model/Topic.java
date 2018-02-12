@@ -6,8 +6,15 @@ public class Topic extends BaseModel {
 	private String id;
 	private String title;
 	private String challengeId;
-	private int sort;
+	private boolean isDefault=false;
+	private int sort=10001;
 	
+	public boolean isDefault() {
+		return isDefault;
+	}
+	public void setDefault(boolean isDefault) {
+		this.isDefault = isDefault;
+	}
 	public int getSort() {
 		return sort;
 	}

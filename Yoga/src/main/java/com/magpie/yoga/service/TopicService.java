@@ -5,10 +5,12 @@ import java.util.List;
 import com.magpie.yoga.model.Sort;
 import com.magpie.yoga.model.Topic;
 import com.magpie.yoga.model.TopicSingles;
+import com.magpie.yoga.model.TopicSort;
 
 public interface TopicService {
 	public List<Topic> findAll();
 	public Topic find(String topicId);
+	public Topic findOneByChallengeId(String challengeId);
 	public List<TopicSingles> findSingles(String topicId);
 	
 	public Topic save(Topic topic);
@@ -21,7 +23,7 @@ public interface TopicService {
 	public boolean delete(String topicId);
 	public boolean deleteTopicSingles(String topicId);
 	
-	public boolean sortTopicAndDeleteOther(List<Sort> sortList);
+	public boolean sortTopicAndDeleteOther(List<TopicSort> sortList);
 	
 
 }

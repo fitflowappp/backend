@@ -70,24 +70,25 @@ public class YogaApi {
 		shareRecordDao.save(shareRecord);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/challenge/getTopical")
-	@ResponseBody
-	@ApiOperation(value = "get all topical")
-	public List<Map<String, Object>> getTopical() {
-
-		List<Map<String, Object>> topicals = new ArrayList<>();
-		HashMap<String, Object> item = null;
-		ArrayList<String> titles = UserWorkDef.topicTileList;
-		ArrayList<String> challenges = UserWorkDef.topicChallengeList;
-		for (int i = 0; ((i < titles.size()) && i < challenges.size()); i++) {
-			item = new HashMap<>();
-			item.put("title", titles.get(i));
-			item.put("challengeId", challenges.get(i));
-			topicals.add(item);
-		}
-
-		return topicals;
-	}
+//	@RequestMapping(method = RequestMethod.GET, value = "/challenge/getTopical")
+//	@ResponseBody
+//	@ApiOperation(value = "get all topical")
+//	public List<Map<String, Object>> getTopical() {
+//
+//		List<Map<String, Object>> topicals = new ArrayList<>();
+//		HashMap<String, Object> item = null;
+//		ArrayList<String> titles = UserWorkDef.topicTileList;
+//		ArrayList<String> challenges = UserWorkDef.topicChallengeList;
+//		for (int i = 0; ((i < titles.size()) && i < challenges.size()); i++) {
+//			item = new HashMap<>();
+//			item.put("title", titles.get(i));
+//			item.put("challengeId", challenges.get(i));
+//			topicals.add(item);
+//		}
+//
+//		return topicals;
+//	}
+	
 
 	@RequestMapping(value = "/my/achievements", method = RequestMethod.GET)
 	@ResponseBody
@@ -216,11 +217,11 @@ public class YogaApi {
 		if (workoutsList == null || workoutsList.size() <= 0) {
 			List<UserWorkout> allUserWorkouts = yogaService.getUserAllWorkoutList(userRef.getId());
 			if (allUserWorkouts == null || allUserWorkouts.size() <= 0) {// 检测是否添加过，用户删除了singles
-				workoutsList = yogaService.defaultUserWorkout(userRef.getId());
+				workoutsList = yogaService.defaultUserWorkoutFromDatabase(userRef.getId());
 			}
 		}
 		for (Workout workout : workoutsList) {
-			if (StringUtils.isEmpty(workout.getShareUrl())) {
+			if (workout!=null&&StringUtils.isEmpty(workout.getShareUrl())) {
 				workout.setShareUrl(UserWorkDef.SHARE_URL);
 			}
 		}

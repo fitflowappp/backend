@@ -56,4 +56,7 @@ public class UserWorkDef {
 	};
 	
 	public static String SHARE_URL="https://goo.gl/vcNqoP";
+	
+	public static String DefaultChallengeId = "5a07f804fa4d6f3d2940e21e";
+
 }

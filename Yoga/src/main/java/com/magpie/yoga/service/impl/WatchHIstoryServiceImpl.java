@@ -28,7 +28,8 @@ public class WatchHIstoryServiceImpl implements WatchHistoryService {
 		if(StringUtils.isEmpty(userId)){
 			return null;
 		}
-		return userWatchHistoryDao.findUserHistoryList(userId, cid, workoutId, HistoryDest.WORKOUT.getCode(), HistoryEvent.COMPLETE.getCode());
+		//业务定义的完成是，跳过以及完整看完都算看过
+		return userWatchHistoryDao.complete(userId, cid, workoutId, HistoryDest.WORKOUT.getCode());
 	}
 
 }

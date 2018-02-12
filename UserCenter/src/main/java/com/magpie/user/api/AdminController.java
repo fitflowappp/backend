@@ -88,7 +88,14 @@ public class AdminController {
 					.append(",").append(us.getCurrentChallengeId()).append(",").append(us.getDuration()).append(",")
 					.append(us.getCompletedWorkoutNum()).append(",").append(uc.isNotification() ? "on" : "off")
 					.append(",").append(uc.isRemider() ? "on" : "off").append(",").append(fu.getShareCount())
-					.append(",").append(ubm.getStatus()==0?"off":"on").append(",").append(""+(ubm.getMusicType()+1)).append("\r\n");
+					.append(",");
+			if(ubm!=null){
+				sb.append(ubm.getStatus()==0?"off":"on").append(",").append(""+(ubm.getMusicType()+1));
+			}else{
+				sb.append("").append(",").append("");
+
+			}
+			sb.append("\r\n");
 		}
 		CsvUtils.download("user.csv", sb.toString(), response);
 	}

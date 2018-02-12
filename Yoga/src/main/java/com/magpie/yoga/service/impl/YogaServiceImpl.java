@@ -10,11 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.magpie.base.query.PageQuery;
 import com.magpie.base.utils.DateUtil;
 import com.magpie.cache.yoga.YogaCacheService;
 import com.magpie.share.UserRef;
@@ -26,6 +24,8 @@ import com.magpie.yoga.constant.HistoryEvent;
 import com.magpie.yoga.dao.AchievementRecordDao;
 import com.magpie.yoga.dao.ChallengeSetDao;
 import com.magpie.yoga.dao.MilestoneDao;
+import com.magpie.yoga.dao.TopicDao;
+import com.magpie.yoga.dao.TopicSinglesDao;
 import com.magpie.yoga.dao.UserStateDao;
 import com.magpie.yoga.dao.UserWatchHistoryDao;
 import com.magpie.yoga.dao.UserWorkoutDao;
@@ -36,6 +36,8 @@ import com.magpie.yoga.model.Challenge;
 import com.magpie.yoga.model.ChallengeSet;
 import com.magpie.yoga.model.Milestone;
 import com.magpie.yoga.model.Routine;
+import com.magpie.yoga.model.Topic;
+import com.magpie.yoga.model.TopicSingles;
 import com.magpie.yoga.model.UserState;
 import com.magpie.yoga.model.UserWatchHistory;
 import com.magpie.yoga.model.UserWorkout;
@@ -72,8 +74,11 @@ public class YogaServiceImpl implements YogaService {
 	private UserWorkoutDao userWorkoutDao;
 	@Autowired
 	private WorkoutDao workoutDao;
+	@Autowired
+	private TopicSinglesDao topicSinglesDao;
+	@Autowired
+	private TopicDao topicDao;
 
-	private static String DefaultChallengeId = "5a07f804fa4d6f3d2940e21e";
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -102,13 +107,13 @@ public class YogaServiceImpl implements YogaService {
 		ChallengeSetView view = initialChallengeSetView(challengeSet);
 
 		UserState userState = userStateDao.findUserState(userRef.getId());
-		String currentChallengeId = DefaultChallengeId;
+		String currentChallengeId = yogaCacheService.getDefaultChallengeId();;//yogaCacheService.getDefaultChallengeId();
 		if (userState != null && userState.getCurrentChallengeId() != null
 				&& userState.getCurrentChallengeId().length() > 0) {
 			currentChallengeId = userState.getCurrentChallengeId();
 		} else {
 			createIfNoUserState(userRef.getId());
-			userStateDao.updateCurrentState(userRef.getId(), DefaultChallengeId, null, null);
+			userStateDao.updateCurrentState(userRef.getId(), currentChallengeId, null, null);
 		}
 
 		boolean needUnlocked = false;
@@ -191,12 +196,14 @@ public class YogaServiceImpl implements YogaService {
 	}
 
 	private ChallengeView getDefaultChallenge() {
-		ChallengeView view = initialChallengeView(yogaCacheService.getChallenge(DefaultChallengeId));
-
-		for (WorkoutView w : view.getWorkouts()) {
-			w.setAvail(true);
-			break;
+		ChallengeView view = initialChallengeView(yogaCacheService.getChallenge(yogaCacheService.getDefaultChallengeId()));
+		if(view!=null){
+			for (WorkoutView w : view.getWorkouts()) {
+				w.setAvail(true);
+				break;
+			}
 		}
+		
 		return view;
 	}
 
@@ -679,15 +686,46 @@ public class YogaServiceImpl implements YogaService {
 		}
 
 		final List<String> defaultWorkoutIdList = UserWorkDef.singlesIdList.get(index);
-		List<Serializable> ids = new ArrayList<>();
-		for (String iterableItem : defaultWorkoutIdList) {
-			ids.add(iterableItem);
-		}
 		List<Workout> workoutList = new ArrayList<>();
-		Iterable<Workout> iterableWorkout = workoutDao.findAll(ids);
-		for (Workout workout : iterableWorkout) {
-			// workout.setRoutines(null);
-			workoutList.add(workout);
+		String iterableItem =null;
+		Workout workout=null;
+		for (int i=0;i<defaultWorkoutIdList.size();i++) {
+			iterableItem=defaultWorkoutIdList.get(i);
+			workout=yogaCacheService.getWorkout(iterableItem);
+			if(workout!=null){
+				workoutList.add(workout);
+			}
+		}
+		
+		// 异步同步到userworkout
+		asyncInsertDefaultUserWorkout(defaultWorkoutIdList, uid);
+		return workoutList;
+	}
+	public List<Workout> defaultUserWorkoutFromDatabase(String uid) {
+		
+		UserState userState = userStateDao.findUserState(uid);
+		List<TopicSingles> topicSinglesList=null;
+		if(userState!=null){
+			String challengeId=userState.getCurrentChallengeId();
+			if(StringUtils.isEmpty(challengeId)==false){
+				Topic topic=topicDao.findOneByChallengeId(challengeId);
+				if(topic!=null){
+					topicSinglesList=topicSinglesDao.findList(topic.getId());
+				}
+			}
+		}
+		if(topicSinglesList==null){
+			topicSinglesList=topicSinglesDao.findList(yogaCacheService.getDefaultTopicId());
+		}
+		final List<String> defaultWorkoutIdList = new ArrayList<>();
+		List<Workout> workoutList = new ArrayList<>();
+		TopicSingles topicSingles =null;
+		if(topicSinglesList!=null){
+			for (int i=0;i<topicSinglesList.size();i++) {
+				topicSingles=topicSinglesList.get(i);
+				workoutList.add(yogaCacheService.getWorkout(topicSingles.getSinglesId()));
+				defaultWorkoutIdList.add(topicSingles.getSinglesId());
+			}
 		}
 		// 异步同步到userworkout
 		asyncInsertDefaultUserWorkout(defaultWorkoutIdList, uid);

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -29,8 +31,10 @@ public class TopicSinglesDao extends BaseMongoRepository<TopicSingles, Serializa
 		}
 		Query query=new Query();
 		query.addCriteria(Criteria.where("topicId").is(topicId));
+		query.with(new Sort(Direction.ASC, "sort"));
 		return findByQuery(query);
 	}
+	
 	public TopicSingles findOneBySinglesId(String singlesId){
 		if(StringUtils.isEmpty(singlesId)){
 			return null;

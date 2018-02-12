@@ -3,6 +3,8 @@ package com.magpie.yoga.app.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -39,6 +41,8 @@ public class AppWorkoutApi {
 	@Autowired 
 	private WatchHistoryService watchHistoryService;
 	
+	private Logger logger = LoggerFactory.getLogger(getClass());
+
 	
 	@RequestMapping(value = "/page", method = RequestMethod.GET)
 	@ResponseBody
@@ -49,7 +53,7 @@ public class AppWorkoutApi {
 	}
 	private PageView<SinglesWorkoutView> createSinglesWorkoutWithUserLock(Page<Workout> page,String userId){
 		PageView<SinglesWorkoutView> pageView = new PageView<>();
-
+		logger.trace("start create PageView<SinglesWorkoutView> time:{}", System.currentTimeMillis());
 		BeanUtils.copyProperties(page, pageView, "content");
 		SinglesWorkoutView singlesWorkout=null;
 		List<SinglesWorkoutView> singlesWorkoutViews=new ArrayList<>();
@@ -68,13 +72,17 @@ public class AppWorkoutApi {
 						 singlesWorkout.setSinglesLock(false);
 					 }
 				 }
+				logger.trace("start check user watch history time:{}", System.currentTimeMillis());
+
 				 //如果完整观看过singles，自动解锁
-				if(singlesWorkout.isSinglesLock()){
+				if(singlesWorkout.isSinglesLock()&&StringUtils.isEmpty(userId)==false){
 					userWatchHistories=watchHistoryService.completeWorkoutList(userId, null, singlesWorkout.getId());
 					if(userWatchHistories!=null&&userWatchHistories.size()>0){
 						singlesWorkout.setSinglesLock(false);
 					}
 				}
+				logger.trace("end check user watch history time:{}", System.currentTimeMillis());
+
 
 			}
 			if (StringUtils.isEmpty(singlesWorkout.getShareUrl())) {
@@ -83,6 +91,8 @@ public class AppWorkoutApi {
 			singlesWorkoutViews.add(singlesWorkout);
 		}
 		pageView.setContent(singlesWorkoutViews);
+		logger.trace("end create PageView<SinglesWorkoutView> time:{}", System.currentTimeMillis());
+
 		return pageView;
 	}
 	

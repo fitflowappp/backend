@@ -76,8 +76,22 @@ public class UserWatchHistoryDao extends BaseMongoRepository<UserWatchHistory, S
 	}
 	public List<UserWatchHistory> findUserHistoryList(String uid, String cid, String wid,int destType,int event) {
 		Query query = new Query();
-		query.addCriteria(Criteria.where("uid").is(uid).and("challengeId").is(cid).and("workoutId").is(wid)
-				.and("event").is(event));
+		Criteria criteria=Criteria.where("uid").is(uid).and("workoutId").is(wid)
+				.and("event").is(event);
+		if(cid==null){
+			criteria=criteria.and("challengeId").is("(null)");//bug fixed，在userwatchhistory null是(null)字符
+		}
+		query.addCriteria(criteria);
+		return findByQuery(query);
+	}
+	public List<UserWatchHistory> complete(String uid, String cid, String wid,int destType) {
+		Query query = new Query();
+		Criteria criteria=Criteria.where("uid").is(uid).and("workoutId").is(wid)
+				.and("event").gte(HistoryEvent.SKIPPED.getCode());
+		if(cid==null){
+			criteria=criteria.and("challengeId").is("(null)");//bug fixed，在userwatchhistory null是(null)字符
+		}
+		query.addCriteria(criteria);
 		return findByQuery(query);
 	}
 

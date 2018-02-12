@@ -5,8 +5,10 @@ server:
     accesslog: 
       enabled: true
 logging: 
-  path: /usr/local/yogaserver/yoga/log
   file:  yoga.log
+  level: 
+    com.magpie.yoga: TRACE
+    org.springframework.web: DEBUG
 
 spring:
   application:

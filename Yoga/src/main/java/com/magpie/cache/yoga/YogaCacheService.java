@@ -14,15 +14,20 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.magpie.yoga.dao.ChallengeDao;
 import com.magpie.yoga.dao.RoutineDao;
+import com.magpie.yoga.dao.TopicDao;
 import com.magpie.yoga.dao.WorkoutDao;
+import com.magpie.yoga.def.UserWorkDef;
 import com.magpie.yoga.model.Challenge;
 import com.magpie.yoga.model.Routine;
+import com.magpie.yoga.model.Topic;
 import com.magpie.yoga.model.Workout;
 
 @Service
 public class YogaCacheService {
 
 	private final String YOGA_CHALLENGE_KEY_PREFIX = getClass().getName() + ":CHALLENGE:";//
+	private final String YOGA_DEFAULT_CHALLENGE_KEY_PREFIX = getClass().getName() + ":DEFAULTCHALLENGE:";//
+	private final String YOGA_DEFAULT_TOPIC_KEY_PREFIX = getClass().getName() + ":TOPIC:";//
 	private final String YOGA_WORKOUT_KEY_PREFIX = getClass().getName() + ":WORKOUT:";//
 	private final String YOGA_ROUTINE_KEY_PREFIX = getClass().getName() + ":ROUTINE:";//
 
@@ -38,6 +43,8 @@ public class YogaCacheService {
 	private WorkoutDao workoutDao;
 	@Autowired
 	private RoutineDao routineDao;
+	@Autowired
+	private TopicDao topicDao;
 
 	@PostConstruct
 	public void initalYogaCache() {
@@ -53,6 +60,16 @@ public class YogaCacheService {
 		for (Routine routine : routineDao.findAll()) {
 			this.setRoutine(routine);
 		}
+		Topic topic=topicDao.findDefault();
+		if(topic==null){
+			topic=topicDao.findOne();
+		}
+		if(topic!=null){
+			this.setDefaultChallengeId(topic.getChallengeId());
+			this.setDefaultTopicId(topic.getId());
+		}else{
+			logger.error("topic error:{}", "tipic is empty in mongo database ");
+		}
 	}
 
 	public Challenge getChallenge(String id) {
@@ -62,6 +79,18 @@ public class YogaCacheService {
 			return null;
 		}
 		return JSON.parseObject(value, Challenge.class);
+	}
+	public void setDefaultChallengeId(String challengeId){
+		valueOperations.set(YOGA_DEFAULT_CHALLENGE_KEY_PREFIX, challengeId);
+	}
+	public String getDefaultChallengeId(){
+		return valueOperations.get(YOGA_DEFAULT_CHALLENGE_KEY_PREFIX);
+	}
+	public void setDefaultTopicId(String topicId){
+		valueOperations.set(YOGA_DEFAULT_TOPIC_KEY_PREFIX, topicId);
+	}
+	public String getDefaultTopicId(){
+		return valueOperations.get(YOGA_DEFAULT_TOPIC_KEY_PREFIX);
 	}
 
 	public Workout getWorkout(String id) {

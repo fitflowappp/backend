@@ -293,13 +293,14 @@ public class UserService {
 		emailBody.append(
 				"- We have designed a number of 1-4 week challenges to help you achieve your goal, be it toning, relaxing, or relieving pain.<br/>");
 		emailBody.append(
-				"- Fitflow offers 40+ online yoga classes you can take anytime at home. Each class lasts for only 15-30 minutes.<br/>");
-		emailBody.append("- Our app is 100% free. No subscriptions. No ads.<br/><br/>");
+				"- Fitflow offers 60+ online yoga classes you can take anytime at home. Each class lasts for only 15-30 minutes.<br/>");
+		emailBody.append("- All the yoga classes are free. If you like Fitflow, we would really appreciate if you could leave a positive review on the App Store.<br/><br/>");
 		emailBody.append(
 				"Reply to this email if you have any questions. I will get back to you asap.<br/><br/>");
 		emailBody.append("Warm regards,<br/><br/>");
 		emailBody.append("Anya<br/>");
-		emailBody.append("Your Fitflow Coach<br/><br/>");
+		emailBody.append("Your Fitflow Coach<br/>");
+		emailBody.append("International Yoga Alliance Certified lead teacher & a dedicated yoga practitioner for 14 years<br/><br/>");
 		String messageBody = emailBody.toString();
 
 		EmailUtils.sendEmail(email, "coach@fitflow.io", "Nice to meet you!","Anya from Fitflow", messageBody, "Yoga123!");

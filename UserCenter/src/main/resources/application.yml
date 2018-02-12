@@ -1,11 +1,10 @@
 server:
   port: 10000
   tomcat: 
-    basedir: ~/usr/local/yogaserver/usercenter
+    basedir: /usr/local/yogaserver/usercenter
     accesslog: 
       enabled: true
 logging: 
-  path: /usr/local/yogaserver/usercenter/log
   file:  usercenter.log
 spring:
   application:

@@ -77,6 +77,7 @@ public interface YogaService {
 	public List<Workout> getUserWorkoutList(String uid);
 	public List<UserWorkout> getUserAllWorkoutList(String uid);
 	public List<Workout> defaultUserWorkout(String uid);
+	public List<Workout> defaultUserWorkoutFromDatabase(String uid);
 	
 	public boolean deleteUserWorkout(String uid,String workoutId);
 	public boolean addWorkout(String uid,String workoutId);
